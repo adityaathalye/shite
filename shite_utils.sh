@@ -119,3 +119,51 @@ shite_build_page() {
 </html>
 EOF
 }
+
+
+# ####################################################################
+# CONVENTION FOR CONTENT IN HTML FILES
+#
+# Suppose the first line of a page is an HTML comment, having page data?
+# Suppose we literally write down an associative array in Bash? Like so:
+#
+# <!-- ([page_id]="hello-world-page") -->
+# <h1>Hello, world!</h1>
+# <p>How are you doing today?</p>
+# <p>I'm here.</p>
+# <p>And I'm going to take you head-on...</p>
+#
+# Suppose you stop shivering with fear, and just play along for a bit?
+# :D
+#
+# Now we can do something like this in our shell session:
+#
+#   $ declare -A page_data="$(get_html_page_data ./sample/hello-data.html)"
+#
+#   $ shite_build_page /sample/hello-data.html except_html_page_data
+#
+# Notice that the page_id we declared in hello-data.html gets injected
+# into the page. Rejoice a little!
+#
+# ####################################################################
+
+get_html_page_data() {
+    local file_name=${1:?"Fail. We expect a valid file name."}
+
+    # We can commandeer the HTML comment in the first line of a page,
+    # to declare a Bash array of data specific to that page.
+    head -1 ${file_name} |
+        grep '^<!--' |
+        sed -E "s;(<\!--\s+)(.*)(\s+-->)$;\2;"
+}
+
+except_html_page_data() {
+    local file_name=${1:?"Fail. We expect a valid file name."}
+
+    # If the first line of a page is a comment, elide it, assuming
+    # it contains page data relevant only for page build process.
+    if head -1 ${file_name} | grep -q '^<!--'
+    then tail +2 ${file_name}
+    else cat ${file_name}
+    fi
+}
