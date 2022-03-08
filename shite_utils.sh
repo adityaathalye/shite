@@ -167,3 +167,70 @@ except_html_page_data() {
     else cat ${file_name}
     fi
 }
+
+
+# ####################################################################
+# BUILD PUBLIC HTML
+#
+# By convention we write all processed HTML into the "public" folder.
+#
+# Try building the sample pages.
+#
+#   $ ls sample/hello*.html | shite_build_public_html > /dev/null
+#
+# Also try building some detailed content, mapping to the pages linked
+# in the top navigation.
+#
+#   $ ls content/*.html | shite_build_public_html > /dev/null
+#
+# Note how this function knows the global data as well as infers / adds
+# page-specific data that only it knows at build time, e.g. constructing
+# the canonical URL.
+#
+# ####################################################################
+
+shite_build_public_html() {
+    # Given a list of content files, write well-formed HTML into the
+    # designated public directory.
+
+    local page_data_fn=${1:-"get_html_page_data"} # assume HTML with expected data
+    local content_proc_fn=${2:-"except_html_page_data"} # could be pandoc etc.
+    local html_pretty_printer=${3:-"cat"} # could be `tidy -i` etc.
+
+    # Set globally-relevant information that we inject into components,
+    # and that we may also use to control site build behaviour.
+    local -A shite_data=(
+        [title]="A static shite from shell"
+        [author]="Yours Truly"
+        [description]="In which we work our way to world domination the hard way."
+        [keywords]="blog, world domination, being awesome"
+        [default_build_env]="dev"
+        [url_dev]="http://localhost:8080"
+        [url_prod]="https://example.com"
+        [publish_dir]="public"
+    )
+
+    # Ensure global build parameters are set before processing anything.
+    local build_env=${shite_build_env:-${shite_data[default_build_env]}}
+
+    # Process pages one by one.
+    while read body_content_file
+    do  # Ensure page-specific data is set before processing.
+        # The page builder function depends on us doing so before calling it.
+        local -A page_data="$(${page_data_fn} ${body_content_file})"
+        local slug=$(basename ${body_content_file} | sed -E "s;(.*)(\..*)$;\1;")
+        local html_file_name="${slug}.html"
+
+        # Inject page-specific data into page context, that we can infer or set
+        # only at the time of building the page.
+        page_data+=(
+            [slug]="${slug}"
+            [canonical_url]="${shite_data[url_${build_env}]}/${html_file_name}"
+        )
+
+        # Build page and tee it into the public directory, namespaced by the slug
+        shite_build_page ${body_content_file} ${content_proc_fn} |
+            ${html_pretty_printer} |
+            tee "${shite_data[publish_dir]}/${html_file_name}"
+    done
+}
