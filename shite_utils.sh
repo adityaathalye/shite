@@ -112,7 +112,7 @@ shite_build_page() {
     <body ${maybe_page_id}>
         $(shite_header)
         <main>
-          $(${content_proc_fn} ${body_content_file})
+          $(cat ${body_content_file} | ${content_proc_fn})
         </main>
         $(shite_footer)
     </body>
@@ -140,30 +140,39 @@ EOF
 #
 #   $ declare -A page_data="$(get_html_page_data ./sample/hello-data.html)"
 #
-#   $ shite_build_page /sample/hello-data.html except_html_page_data
+#   $ shite_build_page ./sample/hello-data.html except_html_page_data
 #
 # Notice that the page_id we declared in hello-data.html gets injected
 # into the page. Rejoice a little!
 #
+# The "dumbness" of shite_build_page is so nice, that we can even...
+#
+#   $ declare -A page_data="$(get_html_page_data ./sample/hello-data.md)"
+#
+#   $ shite_build_page ./sample/hello-data.md "except_html_page_data | pandoc -f markdown -t html"
+#
+#
 # ####################################################################
 
 get_html_page_data() {
-    local file_name=${1:?"Fail. We expect a valid file name."}
+    local body_content_file=${1:?"Fail. We expect a valid file name."}
 
     # We can commandeer the HTML comment in the first line of a page,
     # to declare a Bash array of data specific to that page.
-    head -1 ${file_name} |
+    head -1 ${body_content_file} |
         grep '^<!--' |
         sed -E "s;(<\!--\s+)(.*)(\s+-->)$;\2;"
 }
 
 except_html_page_data() {
-    local file_name=${1:?"Fail. We expect a valid file name."}
+    local content="$(cat -)"
+
+    __spit_page_content() { printf "%s\n" "${content}"; }
 
     # If the first line of a page is a comment, elide it, assuming
     # it contains page data relevant only for page build process.
-    if head -1 ${file_name} | grep -q '^<!--'
-    then tail +2 ${file_name}
-    else cat ${file_name}
+    if __spit_page_content | head -1 | grep -q '^<!--'
+    then __spit_page_content | tail +2
+    else __spit_page_content
     fi
 }
