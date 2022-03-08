@@ -6,7 +6,18 @@ The little static site generator from shell. Assumes Bash 4.4+.
 Before you get too exshited, may I warn you that the MIT license means I don't
 have to give a shite if this little shite maker fails to make your shite work.
 
+Nothing here will surprise a Perl/PHP gentleperson hacker from the last century.
+
 Also, I hereby decree that all texsht herein be read in Sean Connery voish.
+
+# Backstory
+
+I accidentally started blogging after a long haitus. Before I could get words
+into the cloud, I muddled about with "modern" Static Site Generators. Because
+WordPress is so last century (or so I told myself). Then I got annoyed by the
+SSG Jamstack bespoke templating building etc. magic. Now I am going down the dark
+path of making this. It is being blogged about at:
+[shite: static sites from shell: part 1/2](https://www.evalapply.org/posts/shite-the-static-sites-from-shell-part-1/)
 
 # Usage
 
