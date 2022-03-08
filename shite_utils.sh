@@ -234,3 +234,32 @@ shite_build_public_html() {
             tee "${shite_data[publish_dir]}/${html_file_name}"
     done
 }
+
+
+# ####################################################################
+# SITE PUBLISHING
+#
+# Convenience functions to remind us what and how to create the full site,
+# and publish it to the public directory.
+#
+# ####################################################################
+
+shite_build_public_static() {
+    cp -fr ./static/* ./public
+}
+
+shite_build_all_html_static() {
+    mkdir -p public # ensure the public dir. exists
+    shite_build_public_static
+    ls content/*.html |
+        shite_build_public_html > /dev/null
+    printf "%s\n" \
+           "Built and published HTML pages and static files to public/ directory." \
+           "cd into it, open index.html and enjoy your website."
+}
+
+shite_rebuild_all_html_static() {
+    # Rebuild from scratch
+    rm -r public/*
+    shite_build_all_html_static
+}

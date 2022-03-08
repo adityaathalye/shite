@@ -1,0 +1,37 @@
+:root {
+  color: #1a2639;
+  background-color: #f0ece2;
+  font-family: sans-serif;
+}
+/* Find all the fancily named colours at:
+            https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#Color_keywords */
+body {
+  /* Default background colour for all content inside the page body. */
+  background-color: lightyellow;
+  /* Constrain body width. */
+  max-width: 72ch;
+  /* Prevent content from sticking to inside edges of body. */
+  padding: 1.5rem;
+  /* Position body in the middle of the screen. */
+  margin-top: 1.5rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+a {
+  color: darkred;
+}
+nav {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+#index-page {
+  background-color: lightyellow;
+}
+#about-page {
+  background-color: azure;
+}
+#resume-page {
+  background-color: whitesmoke;
+}
