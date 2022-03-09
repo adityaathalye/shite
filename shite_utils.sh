@@ -119,9 +119,10 @@ EOF
 
 
 # ####################################################################
-# CONVENTION FOR CONTENT IN HTML FILES
+# CONVENTIONS AND UTILITIES TO PROCESS CONTENT FILES
 #
 # Suppose the first line of a page is an HTML comment, having page data?
+#
 # Suppose we literally write down an associative array in Bash? Like so:
 #
 #   <!-- ([page_id]="hello-world-page") -->
@@ -130,31 +131,48 @@ EOF
 #   <p>I'm here.</p>
 #   <p>And I'm going to take you head-on...</p>
 #
-# Suppose you stop shivering with fear, and just play along for a bit?
-# :D
+# Suppose you suppress your horror, and just play along for a bit? :D
 #
 # Now we can do something like this in our shell session:
 #
-#   $ declare -A page_data="$(shite_get_html_page_data ./sample/hello-data.html)"
+#   $ declare -A page_data="$(shite_get_page_header_data ./sample/hello-data.html)"
 #
-#   $ shite_build_page ./sample/hello-data.html shite_proc_html_content
+#   $ shite_build_page ./sample/hello-data.html shite_drop_page_header_data
 #
 # Notice that the page_id we declared in hello-data.html gets injected
 # into the page. Rejoice a little!
 #
+# Notice that we can generally support content written as HTML, markdown,
+# org-mode, and probably other text formats too. Rejoice a little more!
+#
 # ####################################################################
 
-shite_get_html_page_data() {
+shite_get_page_header_data() {
     local file_name=${1:?"Fail. We expect a valid file name."}
     # We can commandeer the HTML comment in the first line of a page,
-    # to declare a Bash array of data specific to that page.
-    sed -E "1s/(<\!--\s+)(\(.*\))(\s+-->)$/\2/;1q" "${file_name}"
+    # to declare a Bash array of data specific to that page. This trick
+    # works for plain HTML, markdown, and orgmode files.
+    sed -E "1s/(.*<\!--.*)(\(.*\))(\s+-->)$/\2/;1q" "${file_name}"
+}
+
+shite_drop_page_header_data() {
+    # If the first line of a page is a comment, elide it, assuming
+    # it contains page data relevant only for page build process.
+    sed -E "1s/(.*<\!--.*)(\(.*\))(\s+-->)$//1"
 }
 
 shite_proc_html_content() {
-    # If the first line of a page is a comment, elide it, assuming
-    # it contains page data relevant only for page build process.
-    sed -E "1s/(<\!--\s+)(\(.*\))(\s+-->)$//1"
+    shite_drop_page_header_data
+}
+
+shite_proc_markdown_content() {
+    # I already have pandoc, but you could use any other MD to HTML processor.
+    shite_drop_page_header_data | pandoc -f markdown -t html
+}
+
+shite_proc_orgmode_content() {
+    # I already have pandoc, but you could use any other MD to HTML processor.
+    shite_drop_page_header_data | pandoc -f org -t html
 }
 
 # ####################################################################
@@ -181,9 +199,9 @@ shite_build_public_html() {
     # Given a list of content files, write well-formed HTML into the
     # designated public directory.
 
-    local page_data_fn=${1:-"shite_get_html_page_data"} # assume HTML with expected data
-    local content_proc_fn=${2:-"shite_proc_html_content"} # could be pandoc etc.
-    local html_pretty_printer=${3:-"cat"} # could be `tidy -i` etc.
+    local content_proc_fn=${1:-"shite_drop_page_header_data"} # the least we can do
+    local html_formatter_fn=${2:-"cat"} # could be `tidy -i` etc.
+    local page_data_fn=${3:-"shite_get_page_header_data"} # default page-data convention
 
     # Set globally-relevant information that we inject into components,
     # and that we may also use to control site build behaviour.
@@ -207,21 +225,21 @@ shite_build_public_html() {
         # The page builder function depends on us doing so before calling it.
         local -A page_data="$(${page_data_fn} ${body_content_file})"
         local slug=$(basename ${body_content_file} | sed -E "s;(.*)(\..*)$;\1;")
-        local html_file_name="${slug}.html"
+        local html_output_file_name="${slug}.html"
 
         # Inject page-specific data into page context, that we can infer or set
         # only at the time of building the page.
         page_data+=(
             [slug]="${slug}"
-            [canonical_url]="${shite_data[url_${build_env}]}/${html_file_name}"
+            [canonical_url]="${shite_data[url_${build_env}]}/${html_output_file_name}"
         )
 
         # Build page and tee it into the public directory, namespaced by the slug
         cat ${body_content_file} |
             ${content_proc_fn} |
             shite_build_page  |
-            ${html_pretty_printer} |
-            tee "${shite_data[publish_dir]}/${html_file_name}"
+            ${html_formatter_fn} |
+            tee "${shite_data[publish_dir]}/${html_output_file_name}"
     done
 }
 
@@ -229,10 +247,14 @@ shite_build_public_html() {
 # ####################################################################
 # SITE PUBLISHING
 #
-# Convenience functions to remind us what and how to create the full site,
-# and publish it to the public directory.
+# Convenience functions to remind us how to create the full site, and
+# publish it to the public directory.
 #
 # ####################################################################
+
+shite_tidy_html() {
+    tidy -q -i
+}
 
 shite_build_public_static() {
     cp -fr ./static/* ./public
@@ -240,12 +262,31 @@ shite_build_public_static() {
 
 shite_build_all_html_static() {
     mkdir -p public # ensure the public dir. exists
+
     shite_build_public_static
-    ls ./content/*.html |
-        shite_build_public_html > /dev/null
-    printf "%s\n" \
-           "Built and published HTML pages and static files to public/ directory." \
-           "cd into it, open index.html and enjoy your website."
+
+    find content/ -type f -name *.html |
+        shite_build_public_html \
+            shite_proc_html_content \
+            shite_tidy_html > /dev/null
+
+    find content/ -type f -name *.md |
+        shite_build_public_html \
+            shite_proc_markdown_content \
+            shite_tidy_html > /dev/null
+
+    find content/ -type f -name *.org |
+        shite_build_public_html \
+            shite_proc_orgmode_content \
+            shite_tidy_html > /dev/null
+
+    # Write informational log to stderr
+    (
+        1>&2 cat <<EOF
+Built and published HTML pages and static files to public/ directory.
+cd into it, open index.html and enjoy your website.
+EOF
+    )
 }
 
 shite_rebuild_all_html_static() {
