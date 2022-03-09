@@ -152,9 +152,7 @@ get_html_page_data() {
 
     # We can commandeer the HTML comment in the first line of a page,
     # to declare a Bash array of data specific to that page.
-    head -1 ${file_name} |
-        grep '^<!--' |
-        sed -E "s;(<\!--\s+)(.*)(\s+-->)$;\2;"
+    sed -E "1s/(<\!--\s+)(\(.*\))(\s+-->)$/\2/;1q"
 }
 
 except_html_page_data() {
@@ -162,10 +160,7 @@ except_html_page_data() {
 
     # If the first line of a page is a comment, elide it, assuming
     # it contains page data relevant only for page build process.
-    if head -1 ${file_name} | grep -q '^<!--'
-    then tail +2 ${file_name}
-    else cat ${file_name}
-    fi
+    sed -E "1s/(<\!--\s+)(\(.*\))(\s+-->)$//1"
 }
 
 
