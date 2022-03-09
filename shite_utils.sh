@@ -80,9 +80,9 @@ EOF
 #
 # Try these invocations with the sample files
 #
-# $ shite_build_page ./sample/hello.html cat
+# $ cat ./sample/hello.html | shite_build_page
 #
-# $ shite_build_page ./sample/hello.md "pandoc -f markdown -t html"
+# $ cat ./sample/hello.md | pandoc -f markdown -t html | shite_build_page
 #
 # ####################################################################
 
@@ -93,9 +93,6 @@ shite_build_page() {
     # We know the file type, and so we must supply the appropriate tool
     # to process the content into HTML. If the content is already HTML,
     # just pass `cat`!
-
-    local body_content_file=${1:?"Fail. Provide file name of body content to inject into page."}
-    local content_proc_fn=${2:?"Fail. Provide util to process content into HTML."}
 
     # We expect some outside process to set the `page_data` array for us.
     local maybe_page_id=${page_data[page_id]:+"id=\"${page_data[page_id]}\""}
@@ -112,7 +109,7 @@ shite_build_page() {
     <body ${maybe_page_id}>
         $(shite_header)
         <main>
-          $(${content_proc_fn} ${body_content_file})
+          $(cat -)
         </main>
         $(shite_footer)
     </body>
@@ -138,31 +135,27 @@ EOF
 #
 # Now we can do something like this in our shell session:
 #
-#   $ declare -A page_data="$(get_html_page_data ./sample/hello-data.html)"
+#   $ declare -A page_data="$(shite_get_html_page_data ./sample/hello-data.html)"
 #
-#   $ shite_build_page ./sample/hello-data.html except_html_page_data
+#   $ shite_build_page ./sample/hello-data.html shite_proc_html_content
 #
 # Notice that the page_id we declared in hello-data.html gets injected
 # into the page. Rejoice a little!
 #
 # ####################################################################
 
-get_html_page_data() {
+shite_get_html_page_data() {
     local file_name=${1:?"Fail. We expect a valid file name."}
-
     # We can commandeer the HTML comment in the first line of a page,
     # to declare a Bash array of data specific to that page.
-    sed -E "1s/(<\!--\s+)(\(.*\))(\s+-->)$/\2/;1q"
+    sed -E "1s/(<\!--\s+)(\(.*\))(\s+-->)$/\2/;1q" "${file_name}"
 }
 
-except_html_page_data() {
-    local file_name=${1:?"Fail. We expect a valid file name."}
-
+shite_proc_html_content() {
     # If the first line of a page is a comment, elide it, assuming
     # it contains page data relevant only for page build process.
     sed -E "1s/(<\!--\s+)(\(.*\))(\s+-->)$//1"
 }
-
 
 # ####################################################################
 # BUILD PUBLIC HTML
@@ -188,8 +181,8 @@ shite_build_public_html() {
     # Given a list of content files, write well-formed HTML into the
     # designated public directory.
 
-    local page_data_fn=${1:-"get_html_page_data"} # assume HTML with expected data
-    local content_proc_fn=${2:-"except_html_page_data"} # could be pandoc etc.
+    local page_data_fn=${1:-"shite_get_html_page_data"} # assume HTML with expected data
+    local content_proc_fn=${2:-"shite_proc_html_content"} # could be pandoc etc.
     local html_pretty_printer=${3:-"cat"} # could be `tidy -i` etc.
 
     # Set globally-relevant information that we inject into components,
@@ -224,7 +217,9 @@ shite_build_public_html() {
         )
 
         # Build page and tee it into the public directory, namespaced by the slug
-        shite_build_page ${body_content_file} ${content_proc_fn} |
+        cat ${body_content_file} |
+            ${content_proc_fn} |
+            shite_build_page  |
             ${html_pretty_printer} |
             tee "${shite_data[publish_dir]}/${html_file_name}"
     done
@@ -246,7 +241,7 @@ shite_build_public_static() {
 shite_build_all_html_static() {
     mkdir -p public # ensure the public dir. exists
     shite_build_public_static
-    ls content/*.html |
+    ls ./content/*.html |
         shite_build_public_html > /dev/null
     printf "%s\n" \
            "Built and published HTML pages and static files to public/ directory." \
