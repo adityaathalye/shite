@@ -4,7 +4,7 @@
 # Functions to make a shite from shell.
 # ####################################################################
 #
-# Usage:
+# USAGE:
 #
 # In a new terminal session or tmux pane (i.e. a clean, throwaway environment):
 #
@@ -19,7 +19,7 @@
 
 
 # ####################################################################
-# Common component templates
+# COMMON COMPONENT TEMPLATES
 #
 # Try calling a function at the terminal, context-free, e.g.:
 #
@@ -127,11 +127,11 @@ EOF
 # Suppose the first line of a page is an HTML comment, having page data?
 # Suppose we literally write down an associative array in Bash? Like so:
 #
-# <!-- ([page_id]="hello-world-page") -->
-# <h1>Hello, world!</h1>
-# <p>How are you doing today?</p>
-# <p>I'm here.</p>
-# <p>And I'm going to take you head-on...</p>
+#   <!-- ([page_id]="hello-world-page") -->
+#   <h1>Hello, world!</h1>
+#   <p>How are you doing today?</p>
+#   <p>I'm here.</p>
+#   <p>And I'm going to take you head-on...</p>
 #
 # Suppose you stop shivering with fear, and just play along for a bit?
 # :D
@@ -140,7 +140,7 @@ EOF
 #
 #   $ declare -A page_data="$(get_html_page_data ./sample/hello-data.html)"
 #
-#   $ shite_build_page /sample/hello-data.html except_html_page_data
+#   $ shite_build_page ./sample/hello-data.html except_html_page_data
 #
 # Notice that the page_id we declared in hello-data.html gets injected
 # into the page. Rejoice a little!
