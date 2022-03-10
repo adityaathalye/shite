@@ -27,9 +27,9 @@
 #
 # Now try calling it again with context set:
 #
-#   declare -A shite_data=(
+#   declare -A shite_global_data=(
 #     [title]="Foo" [author]="Bar" [description]="Baz" [keywords]="quxx, moo"
-#    ) && shite_meta && unset shite_data
+#    ) && shite_meta && unset shite_global_data
 # ####################################################################
 
 shite_meta() {
@@ -37,10 +37,10 @@ shite_meta() {
 <!-- Some basic hygiene meta-data -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${shite_data[title]}</title>
-<meta name="author" content="${shite_data[author]}">
-<meta name="description" content="${shite_data[description]}">
-<meta name="keywords" content="${shite_data[keywords]}">
+<title>${shite_global_data[title]}</title>
+<meta name="author" content="${shite_global_data[author]}">
+<meta name="description" content="${shite_global_data[description]}">
+<meta name="keywords" content="${shite_global_data[keywords]}">
 EOF
 }
 
@@ -53,7 +53,7 @@ EOF
 shite_header() {
     cat <<EOF
 <header id="site-header">
-  <h1>${shite_data[title]} by ${shite_data[author]}</h1>
+  <h1>${shite_global_data[title]} by ${shite_global_data[author]}</h1>
   <nav>
       <span><a href="index.html">Blog</a></span>
       <span><a href="about.html">About</a></span>
@@ -68,7 +68,7 @@ shite_footer() {
     cat <<EOF
 <footer>
 <hr>
-<p>Copyright, ${shite_data[author]} $(date +%Y).</p>
+<p>Copyright, ${shite_global_data[author]} $(date +%Y).</p>
 <p>All content is MIT licensed, except where specified otherwise.</p>
 </footer>
 EOF
@@ -94,9 +94,9 @@ shite_build_page() {
     # to process the content into HTML. If the content is already HTML,
     # just pass `cat`!
 
-    # We expect some outside process to set the `page_data` array for us.
-    local maybe_page_id=${page_data[page_id]:+"id=\"${page_data[page_id]}\""}
-    local maybe_canonical_url=${page_data[canonical_url]:+"<link rel=\"canonical\" href=\"${page_data[canonical_url]}\">"}
+    # We expect some outside process to set the `shite_page_data` array for us.
+    local maybe_page_id=${shite_page_data[page_id]:+"id=\"${shite_page_data[page_id]}\""}
+    local maybe_canonical_url=${shite_page_data[canonical_url]:+"<link rel=\"canonical\" href=\"${shite_page_data[canonical_url]}\">"}
 
     cat <<EOF
 <!DOCTYPE html>
@@ -135,7 +135,7 @@ EOF
 #
 # Now we can do something like this in our shell session:
 #
-#   $ declare -A page_data="$(shite_get_page_header_data ./sample/hello-data.html)"
+#   $ declare -A shite_page_data="$(shite_get_page_header_data ./sample/hello-data.html)"
 #
 #   $ shite_build_page ./sample/hello-data.html shite_drop_page_header_data
 #
@@ -205,7 +205,7 @@ shite_build_public_html() {
 
     # Set globally-relevant information that we inject into components,
     # and that we may also use to control site build behaviour.
-    local -A shite_data=(
+    local -A shite_global_data=(
         [title]="A static shite from shell"
         [author]="Yours Truly"
         [description]="In which we work our way to world domination the hard way."
@@ -217,13 +217,13 @@ shite_build_public_html() {
     )
 
     # Ensure global build parameters are set before processing anything.
-    local build_env=${shite_build_env:-${shite_data[default_build_env]}}
+    local build_env=${shite_build_env:-${shite_global_data[default_build_env]}}
 
     # Process pages one by one.
     while read body_content_file
     do  # Ensure page-specific data is set before processing.
         # The page builder function depends on us doing so before calling it.
-        local -A page_data="$(${page_data_fn} ${body_content_file})"
+        local -A shite_page_data="$(${page_data_fn} ${body_content_file})"
         local slug=$(basename ${body_content_file} | sed -E "s;(.*)(\..*)$;\1;")
         local html_output_file_name="${slug}.html"
 
@@ -231,15 +231,17 @@ shite_build_public_html() {
         # only at the time of building the page.
         page_data+=(
             [slug]="${slug}"
-            [canonical_url]="${shite_data[url_${build_env}]}/${html_output_file_name}"
+            [canonical_url]="${shite_global_data[url_${build_env}]}/${html_output_file_name}"
         )
 
         # Build page and tee it into the public directory, namespaced by the slug
         cat ${body_content_file} |
             ${content_proc_fn} |
+            # We have only one page builder today, but
+            # we could have a variable number tomorrow.
             shite_build_page  |
             ${html_formatter_fn} |
-            tee "${shite_data[publish_dir]}/${html_output_file_name}"
+            tee "${shite_global_data[publish_dir]}/${html_output_file_name}"
     done
 }
 
