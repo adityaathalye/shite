@@ -3,6 +3,22 @@ shite
 
 The little static site generator from shell. Assumes Bash 4.4+.
 
+This is baaasically what it does.
+
+``` shell
+cat ${body_content_file} |
+    ${content_proc_fn} |
+    shite_build_page  |
+    ${html_formatter_fn} |
+    tee "${shite_data[publish_dir]}/${html_output_file_name}"
+```
+
+The demo shite looks like this:
+
+| Index page                                                  | About page                                                  | Resume page                                                   |
+| ----------------------------------------------------------- | ----------------------------------------------------------- | -----------------------------------------------------------   |
+| ![Index page](sample/demo-screenshots/shite-demo-index.png) | ![About page](sample/demo-screenshots/shite-demo-about.png) | ![Resume page](sample/demo-screenshots/shite-demo-resume.png) |
+
 Before you get too exshited, may I warn you that the MIT license means I don't
 have to give a shite if this little shite maker fails to make your shite work.
 
@@ -12,7 +28,7 @@ Also, I hereby decree that all texsht herein be read in Sean Connery voish.
 
 # Backstory
 
-I accidentally started blogging after a long haitus. Before I could get words
+I accidentally restarted blogging after a long haitus. Before I could get words
 into the cloud, I muddled about with "modern" Static Site Generators. Because
 WordPress is so last century (or so I told myself). Then I got annoyed by the
 SSG Jamstack bespoke templating building etc. magic. Now I am going down the dark
@@ -42,20 +58,26 @@ See how the workhorse functions ... erm ... workhorse:
 
 - build the site with the available content
   ``` shell
-  ls content/*.html | shite_build_public_html > /dev/null
+  find content/ -type f -name *.html | shite_build_public_html > /dev/null
   ```
 
 - OR, if you have an html pretty-printer like `tidy`, then:
   ``` shell
-  ls content/*.html |
-  shite_build_public_html get_html_page_data except_html_page_data "tidy -q -i" > /dev/null
+  find content/ -type f -name *.html |
+      shite_build_public_html \
+          shite_proc_html_content \
+          shite_tidy_html > /dev/null
   ```
 
-Play! Try calling any function at the terminal, context-free, e.g.:
+Play! Type `shiTABTAB` to tab-complete utility functions. They are all prefixed
+`shite_`. Try calling any of them, for example:
+
+Call the meta component generator context-free.
 
 ``` shell
   shite_meta
 ```
+
 Now try calling the same function again with context set, e.g.:
 
 ``` shell
@@ -89,8 +111,8 @@ I like to write [Functional Programming style Bash](https://www.evalapply.org/po
   This choice can control build steps as well as content/metadata injected.
   Default is 'dev'.
 
-- `shite_data`, which is a Bash array of globally-relevant values like
+- `shite_global_data`, which is a Bash array of globally-relevant values like
   site title, site author name etc.
 
-- `page_data`, which is a Bash array of data presumed to be specific to the
+- `shite_page_data`, which is a Bash array of data presumed to be specific to the
   current page being processed
