@@ -10,7 +10,7 @@ cat ${body_content_file} |
     ${content_proc_fn} |
     shite_build_page  |
     ${html_formatter_fn} |
-    tee "${shite_data[publish_dir]}/${html_output_file_name}"
+    tee "${shite_global_data[publish_dir]}/${html_output_file_name}"
 ```
 
 The demo shite looks like this:
@@ -81,9 +81,9 @@ Call the meta component generator context-free.
 Now try calling the same function again with context set, e.g.:
 
 ``` shell
-declare -A shite_data=(
+declare -A shite_global_data=(
   [title]="Foo" [author]="Bar" [description]="Baz" [keywords]="quxx, moo"
-  ) && shite_meta && unset shite_data
+  ) && shite_meta && unset shite_global_data
 ```
 
 # Design

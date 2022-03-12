@@ -229,7 +229,7 @@ shite_build_public_html() {
 
         # Inject page-specific data into page context, that we can infer or set
         # only at the time of building the page.
-        page_data+=(
+        shite_page_data+=(
             [slug]="${slug}"
             [canonical_url]="${shite_global_data[url_${build_env}]}/${html_output_file_name}"
         )
