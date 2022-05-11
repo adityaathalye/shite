@@ -3,6 +3,16 @@ shite
 
 The little static site generator from shell. Assumes Bash 4.4+.
 
+- [Introduction](#introduction)
+- [Backstory](#backstory)
+- [Usage](#usage)
+- [Design](#design)
+- [Creature Comforts](#creature-comforts)
+  - [Bashful Hot Reloading](#bashful-hot-reloading)
+  - [Unrealised Ambitions](#unrealised-ambitions)
+
+# Introduction
+
 This is baaasically what it does.
 
 ``` shell
@@ -116,3 +126,79 @@ I like to write [Functional Programming style Bash](https://www.evalapply.org/po
 
 - `shite_page_data`, which is a Bash array of data presumed to be specific to the
   current page being processed
+
+# Creature Comforts
+
+Here be Yaks!
+
+## Bashful Hot Reloading
+
+Being entirely spoiled by Clojure/Lisp/Spreadsheet style insta-gratifying live
+interactive workflows, I want hot reload and hot navigate in shite-making too.
+
+But there does not seem to exist a standalone live web development server / tool
+that does not also want me to download half the known Internet as dependencies.
+A thing I *extremely* do *not* want to do.
+
+DuckSearch delivered Emacs impatient-mode, which is quite hot, but I don't want
+to hardwire this my Emacs. Luckily, it also delivered this exciting brainwave
+featuring 'inotify-tools' and 'xdotool':
+[github.com/traviscross/inotify-refresh](https://github.com/traviscross/inotify-refresh)
+
+Hot copy!
+
+Because what could be hotter than my computer slammin' that F5 key *for* me? As
+if it *knew* what I really wanted deep down in my heart.
+
+**Liveness criterion**
+
+`shite` hotreload uses streaming architecture.
+
+The afore-linked inotify-refresh script tries to *periodically* refresh a set of
+browser windows. We want to be very eager. Any edit action on our content files
+and/or static assets must insta-trigger hot reload/navigate actions in the browser
+tab that's displaying our shite.
+
+It's baaasically this:
+
+``` shell
+__shite_detect_changes ${watch_dir} 'create,modify,close_write,moved_to,delete' |
+    __shite_distinct_events |
+    __shite_xdo_cmd_gen ${window_id} ${base_url} |
+    __shite_xdo_cmd_exec
+```
+
+**Hot reload scenarios**
+
+We want to define distinct reload scenarios: Mutually exclusive, collectively
+exhaustive buckets into which we can map file events we want to monitor.
+
+If we do this, then we can model updates as a sort of write-ahead-log, punching
+events through an analysis pipeline, associate them with the exact-match scenario,
+and then finally cause the action. For example:
+
+Refresh current tab when
+- static asset create, modify, move, delete
+
+Go home when
+- current page deleted
+
+Navigate to content when
+- current page content modified
+- any content page moved or created or modified
+
+**Hot reload behaviour**
+
+Since we are making the computer emulate our own keyboard actions, it can mess
+with our personly actions. If we stick to writing our shite in our text editor,
+and let the computer do the hotreloady thing, we should remain non-annoyed.
+
+## Unrealised Ambitions
+
+Maybe some "Dev-ing/Drafting" time setup/Teardown scenario? Maybe a 'dev_server'
+function that we use to kick start a new shite writing session?
+
+- xdotool open a new tab in the default browser (say, firefox).
+- xdotool goto the home page of the shite based on config.
+- xdotool 'set_window --name' to a UUID for the life of the session.
+- xdotool close the tab when we kill the dev session
