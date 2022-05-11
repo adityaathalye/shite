@@ -179,13 +179,10 @@ __shite_xdo_cmd_gen() {
 # ##################################################
 
 __shite_xdo_cmd_exec() {
-    local cmd=$(
-        if [[ ${SHITE_DEBUG} == "debug" ]]
-        then "cat"
-        else "xdotool"
-        fi
-          )
-    stdbuf -oL grep -v '^$' | $cmd -
+    if [[ ${SHITE_DEBUG} == "debug" ]]
+    then cat -
+    else stdbuf -oL grep -v '^$' | xdotool -
+    fi
 }
 
 shite_hotreload() {
