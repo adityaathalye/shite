@@ -1,49 +1,62 @@
 #!/usr/bin/env bash
 
 # ##################################################
-# Functions to power the poor shite's hot reload :)
+# Functions to power this poor shite's hot reload
+#
+# USAGE
+#
+# source this file and call the shite_hotreload function with arguments for
+#
+#   shite_hotreload [WATCH DIR] [BROWSER TAB NAME] \
+#                   [OPTIONAL BROWSER NAME] \
+#                   [OPTIONAL BASE URL]
+#
+# It assumes Mozilla Firefox and file:// based navigation by default.
+#
+#
+# EXAMPLES
+#
+#   shite_hotreload "public" 'A site'
+#
+#   shite_hotreload "public" 'A site' "Google Chrome"
+#
+#   shite_hotreload "public" 'A site' "Google Chrome" "http://localhost:8080"
+#
+#
+# LOGIC
+#
+# - MONITOR files with inotifywait, and stream events as CSV records
+# - INTERPRET events and generate commands to feed to a command executor
+#   - "Content" (html) file changes require special handling
+#   - "Static" (css,js,img) file changes only ever trigger page reload
+# - EXECUTE the incoming commands in a streaming fashion
+# - TAP into the stream at any point, for debugging, with the logging utility
+#
+#
+# WARNINGS
+#
+# Beware of stdio buffering. Use stdbuf to control it.
+#
+# Some tools like grep and awk buffer their output and thus block downstream
+# actions. But we want instant reaction time. So buffers are bad for us.
+#
+# Luckily stdbuf is a general way to tune buffering behaviour. We can work
+# with line-buffered output streaming. e.g.:
+#
+#   stdbuf -oL grep something
+#
+# c.f https://www.perkin.org.uk/posts/how-to-fix-stdio-buffering.html
 # ##################################################
-# The brainwave to use 'inotify-tools' and 'xdotool' is pinched from
-# https://github.com/traviscross/inotify-refresh
-#
-# Because what could be hotter than hitting f5 for the target tab,
-# in the target browser?
-#
-# While inotify-refresh tries to _periodically_ refresh a set of browser, we
-# want to be more eager. We want page events to trigger refreshes and GOTOs.
-#
-# If this hot reload is not hot enough, there is Emacs impatient-mode.
-
-# "Dev-ing/Drafting" time setup/Teardown scenario:
-#
-# When we first start development (maybe a 'dev_server' function):
-# - xdotool open a new tab in the default browser (say, firefox).
-# - xdotool goto the home page of the shite based on config.
-# - xdotool 'set_window --name' to a UUID for the life of the session.
-# - xdotool close the tab when we kill the dev session
 
 
-# Hot reload scenarios:
-#
-# We want to define distinct reload scenarios: Mutually exclusive, collectively
-# exhaustive buckets into which we can map file events we want to monitor. If we
-# do this, then we can model updates as a write-ahead-log. Punch events through
-# an analysis pipeline and associate them with the exact-match scenario.
-#
-# Refresh current tab when
-# - static asset create, modify, move, delete
-#
-# Go home when
-# - current page deleted
-#
-# Navigate to content when
-# - current page content modified
-# - any content page moved or created or modified
+__shite_tap_stream() {
+    tee >(1>&2 cat -)
+}
 
-# Hot reload behaviour:
-# Since we are emulating user behaviour, we can race with the user, e.g. when
-# switching to the browser window. If the time gap is minimal, this should
-# not be too annoying.
+
+# ##################################################
+# FILE EVENTS
+# ##################################################
 
 __shite_detect_changes() {
     # Continuously monitor the target directory for file CRUD events
@@ -58,24 +71,26 @@ __shite_detect_changes() {
                 $([[ -n ${watch_events} ]] && printf "%s %s" "-e" ${watch_events})  \
                 ${watch_dir} |
         # INCLUDE FILES
-        # We have to grep, but a new version of inotifywait has an 'include'
-        # option, which should obviate grep. So says Stackoverflow. Also we
-        # must prevent grep stdio buffering, else things don't stream down-pipe.
-        # Bah. https://www.perkin.org.uk/posts/how-to-fix-stdio-buffering.html
+        # The 'include' filter of inotifywait V3.2+ will obviate this grep
         stdbuf -oL grep -E -e "(html|js|css)$"
 }
 
 __shite_distinct_events() {
     # Some editing actions can cause multiple inotify events of the same type for
     # the same file for a single edit action. e.g. Writing an edit via Vim causes
-    # the sequence CREATE, MODIFIED, MODIFIED.
+    # the sequence CREATE, MODIFIED, MODIFIED. Pulling up the helm minibuffer in
+    # Emacs causes a whole slew of events that are no-ops for us.
     #
     # We want to ensure we dispatch a hotreload action only on the "final result"
-    # of any single action on a file. For our purpose, this would be the last
-    # event of any contiguous sequence of inotify events on the same file.
+    # of any single action on a file. For us, this would be the last event of any
+    # contiguous sequence of desirable inotify events on the same file.
 
     stdbuf -oL awk 'BEGIN { FS = "," } {if(!seen[$0]++ && seen[$1]++) print}'
 }
+
+# ##################################################
+# INTERPRETER FOR FILE EVENTS
+# ##################################################
 
 __shite_xdo_cmd_browser_refresh() {
     local window_id=${1:?"Fail. We expect window ID to be set in scope."}
@@ -158,6 +173,11 @@ __shite_xdo_cmd_gen() {
     done
 }
 
+
+# ##################################################
+# COMMAND EXECUTOR
+# ##################################################
+
 __shite_xdo_cmd_exec() {
     local cmd=$(
         if [[ ${SHITE_DEBUG} == "debug" ]]
@@ -166,10 +186,6 @@ __shite_xdo_cmd_exec() {
         fi
           )
     stdbuf -oL grep -v '^$' | $cmd -
-}
-
-__shite_xdo_cmd_exec_debug_log() {
-    tee >(1>&2 cat -)
 }
 
 shite_hotreload() {
@@ -187,11 +203,16 @@ shite_hotreload() {
     __shite_detect_changes \
         ${watch_dir} 'create,modify,close_write,moved_to,delete' |
         __shite_distinct_events |
-        __shite_xdo_cmd_exec_debug_log |
+        __shite_tap_stream |
         __shite_xdo_cmd_gen ${window_id} ${base_url} |
-        __shite_xdo_cmd_exec_debug_log |
+        __shite_tap_stream |
         __shite_xdo_cmd_exec
 }
+
+
+# ##################################################
+# CONVENIENCE UTILITIES
+# ##################################################
 
 __shite_debug_run() {
     SHITE_DEBUG="debug" shite_hotreload \
