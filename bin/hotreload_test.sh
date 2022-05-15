@@ -13,11 +13,17 @@ __shite_test_actions() {
 
 __shite_test_events() {
     cat <<EOF
+1651991204,CREATE,/home/adi/src/github/adityaathalye/shite/content/,deleteme.org
 1651991204,CREATE,/home/adi/src/github/adityaathalye/shite/public/,deleteme.html
+1651991204,MODIFY,/home/adi/src/github/adityaathalye/shite/content/,deleteme.org
 1651991204,MODIFY,/home/adi/src/github/adityaathalye/shite/public/,deleteme.html
+1651991204,MODIFY,/home/adi/src/github/adityaathalye/shite/content/,deleteme.org
 1651991204,MODIFY,/home/adi/src/github/adityaathalye/shite/public/,deleteme.html
+1651991204,MOVED_FROM,/home/adi/src/github/adityaathalye/shite/content/,deleteme.org
 1651991204,MOVED_FROM,/home/adi/src/github/adityaathalye/shite/public/,deleteme.html
+1651991204,MOVED_TO,/home/adi/src/github/adityaathalye/shite/content/,deleteme2.org
 1651991204,MOVED_TO,/home/adi/src/github/adityaathalye/shite/public/,deleteme2.html
+1651991204,DELETE,/home/adi/src/github/adityaathalye/shite/content/,deleteme2.org
 1651991204,DELETE,/home/adi/src/github/adityaathalye/shite/public/,deleteme2.html
 1651991221,CREATE,/home/adi/src/github/adityaathalye/shite/public/,deleteme.html
 1651991221,MODIFY,/home/adi/src/github/adityaathalye/shite/public/,deleteme.html

@@ -72,8 +72,12 @@ __shite_detect_changes() {
                 ${watch_dir} |
         # INCLUDE FILES
         # The 'include' filter of inotifywait V3.2+ will obviate this grep
-        stdbuf -oL grep -E -e "(html|js|css)$"
+        stdbuf -oL grep -E -e "(org|md|json|html|css|js|jpg|jpeg|png|svg|pdf)$"
 }
+
+# ##################################################
+# EVENT FILTERS
+# ##################################################
 
 __shite_distinct_events() {
     # Some editing actions can cause multiple inotify events of the same type for
@@ -86,6 +90,47 @@ __shite_distinct_events() {
     # contiguous sequence of desirable inotify events on the same file.
 
     stdbuf -oL awk 'BEGIN { FS = "," } {if(!seen[$0]++ && seen[$1]++) print}'
+}
+
+__shite_drop_public_file_events() {
+    stdbuf -oL grep -v -E -e "shite\/public"
+}
+
+__shite_take_public_file_events() {
+    stdbuf -oL grep -E -e "shite\/public"
+}
+
+
+# ##################################################
+# PREPROCESS NON-PUBLIC FILES (CONTENT, STATIC etc.)
+# ##################################################
+
+__shite_preprocess_non_public_files() {
+    local content_type
+    local file_type
+    local prev_file_name
+
+    while IFS=',' read -r timestamp event_type dir_path file_name
+    do
+        # lift out relative dir paths to disambiguate content, static,
+        # public files, for appropriate processing
+        content_type="${dir_path##*shite/}"
+        file_type="${file_name#*\.}"
+
+        case "${event_type}:${content_type}" in
+            DELETE:content/* )
+                1>&2 echo "Caught ${event_type} for ${content_type} case. delete respective file from public"
+                ;;
+            MOVED_TO:content/* )
+                1>&2 echo "Caught ${event_type} for ${content_type} case. Copy over new file, and delete old file from public."
+                ;;
+            *:content/* )
+                1>&2 echo "Caught ${event_type} for ${content_type} case. Build and copy over content."
+                ;;
+        esac
+        # Remember the file for the next cycle
+        prev_file_name=${file_name}
+    done
 }
 
 # ##################################################
@@ -192,15 +237,23 @@ shite_hotreload() {
     local browser_name=${3:-"Mozilla Firefox"}
     local base_url=${4:-""}
 
-    # Lookup window ID
+    # LOOKUP WINDOW ID
     local window_id=$(xdotool search --onlyvisible --name "${tab_name}.*${browser_name}$")
 
-    # Run pipeline
-    # - Events of interest 'create,modify,close_write,moved_to,delete'
+    # RUN PIPELINE
+    # Watch all files we care about, across content, static, public,
+    # for events of interest: 'create,modify,close_write,moved_to,delete'
     __shite_detect_changes \
         ${watch_dir} 'create,modify,close_write,moved_to,delete' |
+        # Deduplicate file events
         __shite_distinct_events |
+        # Pre-process any change to non-public files, viz. content files like
+        # org or md, or static assets like js, or css.
+        tee >(__shite_drop_public_file_events |
+                  __shite_preprocess_non_public_files) |
         __shite_tap_stream |
+        # Perform hot-reload actions only against changes to public files
+        __shite_take_public_file_events |
         __shite_xdo_cmd_gen ${window_id} ${base_url} |
         __shite_tap_stream |
         __shite_xdo_cmd_exec
