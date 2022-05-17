@@ -102,44 +102,66 @@ __shite_distinct_events() {
     stdbuf -oL awk 'BEGIN { FS = "," } {if(!seen[$0]++ && seen[$1]++) print}'
 }
 
-__shite_drop_public_file_events() {
-    stdbuf -oL grep -v -E -e "shite\/public"
+__shite_select_file_events() {
+    local sub_dir=${1:?"Fail. We expect a sub-directory like content, static, public"}
+    stdbuf -oL grep -E -e "*.\/shite\/${sub_dir}"
 }
-
-__shite_take_public_file_events() {
-    stdbuf -oL grep -E -e "shite\/public"
-}
-
 
 # ##################################################
 # PREPROCESS NON-PUBLIC FILES (CONTENT, STATIC etc.)
 # ##################################################
 
-__shite_preprocess_non_public_files() {
-    local content_type
+__shite_proc_content_events() {
+    # Presumes we get files from the content directory (orgmode, md, etc.).
     local file_type
-    local prev_file_name
+    local content_path
+    local html_file_name
 
     while IFS=',' read -r timestamp event_type dir_path file_name
     do
-        # lift out relative dir paths to disambiguate content, static,
-        # public files, for appropriate processing
-        content_type="${dir_path##*shite/}"
+        # lift out file type, content path, file name etc.
+        # for appropriate processing
         file_type="${file_name#*\.}"
-
-        case "${event_type}:${content_type}" in
-            DELETE:content/* )
-                1>&2 echo "Caught ${event_type} for ${content_type} case. delete respective file from public"
+        case "${xevent_type}:${file_type}" in
+            DELETE|MOVED_FROM:* )
+                # map content sub-directory and file to public HTML file
+                rm -f "public/${dir_path##*shite/content/}/${file_name%\.*}.html"
                 ;;
-            MOVED_TO:content/* )
-                1>&2 echo "Caught ${event_type} for ${content_type} case. Copy over new file, and delete old file from public."
+            *:html )
+                printf "%s\n" "${dir_path}/${file_name}" |
+                    shite_build_public_html shite_proc_html_content
                 ;;
-            *:content/* )
-                1>&2 echo "Caught ${event_type} for ${content_type} case. Build and copy over content."
+            *:org )
+                printf "%s\n" "${dir_path}/${file_name}" |
+                    shite_build_public_html shite_proc_orgmode_content
+                ;;
+            *:md )
+                printf "%s\n" "${dir_path}/${file_name}" |
+                    shite_build_public_html shite_proc_markdown_content
                 ;;
         esac
         # Remember the file for the next cycle
         prev_file_name=${file_name}
+    done
+}
+
+__shite_proc_static_events() {
+    # Presumes we get files from the static directory (css, js, img etc.).
+    local static_subdir
+    local static_file
+
+    while IFS=',' read -r timestamp event_type dir_path file_name
+    do
+        static_subdir="${dir_path##*shite/static/}"
+        public_static_file="public/${static_subdir}${file_name}"
+        case "${xevent_type}" in
+            DELETE|MOVED_FROM )
+                rm -f "${public_static_file}"
+                ;;
+            * )
+                cp -f "${dir_path}/${file_name}" "${public_static_file}"
+                ;;
+        esac
     done
 }
 
@@ -257,16 +279,17 @@ shite_hotreload() {
         ${watch_dir} 'create,modify,close_write,moved_to,delete' |
         # Deduplicate file events
         __shite_distinct_events |
-        # Pre-process any change to non-public files, viz. content files like
-        # org or md, or static assets like js, or css.
-        tee >(__shite_drop_public_file_events |
-                  __shite_preprocess_non_public_files) |
-        __shite_tap_stream |
+        # Process any change to content files (org, md etc.)
+        tee >(__shite_select_file_events "content" |
+                  __shite_proc_content_events) |
+        # Process any change to static files (css, js, images etc.)
+        tee >(__shite_select_file_events "static" |
+                  __shite_proc_static_events) |
         # Perform hot-reload actions only against changes to public files
-        __shite_take_public_file_events |
-        __shite_xdo_cmd_gen ${window_id} ${base_url} |
-        __shite_tap_stream |
-        __shite_xdo_cmd_exec
+        tee >(__shite_select_file_events "public" |
+                  __shite_xdo_cmd_gen ${window_id} ${base_url} |
+                  __shite_tap_stream |
+                  __shite_xdo_cmd_exec)
 }
 
 
@@ -276,6 +299,6 @@ shite_hotreload() {
 
 __shite_debug_run() {
     SHITE_DEBUG="debug" shite_hotreload \
-               "./public" 'A static' \
+               "./" 'A static' \
                > /dev/null
 }
