@@ -89,7 +89,7 @@ __shite_detect_changes() {
 # EVENT FILTERS
 # ##################################################
 
-__shite_distinct_events() {
+__shite_events_dedupe() {
     # Some editing actions can cause multiple inotify events of the same type for
     # the same file for a single edit action. e.g. Writing an edit via Vim causes
     # the sequence CREATE, MODIFIED, MODIFIED. Pulling up the helm minibuffer in
@@ -278,7 +278,7 @@ shite_hotreload() {
     __shite_detect_changes \
         ${watch_dir} 'create,modify,close_write,moved_to,delete' |
         # Deduplicate file events
-        __shite_distinct_events |
+        __shite_events_dedupe |
         # Process any change to content files (org, md etc.)
         tee >(__shite_select_file_events "content" |
                   __shite_proc_content_events > /dev/null) |
@@ -287,6 +287,7 @@ shite_hotreload() {
                   __shite_proc_static_events > /dev/null) |
         # Perform hot-reload actions only against changes to public files
         tee >(__shite_select_file_events "public" |
+                  __shite_events_dedupe |
                   __shite_xdo_cmd_gen ${window_id} ${base_url} |
                   __shite_tap_stream |
                   __shite_xdo_cmd_exec)
