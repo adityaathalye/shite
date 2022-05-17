@@ -281,10 +281,10 @@ shite_hotreload() {
         __shite_distinct_events |
         # Process any change to content files (org, md etc.)
         tee >(__shite_select_file_events "content" |
-                  __shite_proc_content_events) |
+                  __shite_proc_content_events > /dev/null) |
         # Process any change to static files (css, js, images etc.)
         tee >(__shite_select_file_events "static" |
-                  __shite_proc_static_events) |
+                  __shite_proc_static_events > /dev/null) |
         # Perform hot-reload actions only against changes to public files
         tee >(__shite_select_file_events "public" |
                   __shite_xdo_cmd_gen ${window_id} ${base_url} |
