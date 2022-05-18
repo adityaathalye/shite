@@ -48,6 +48,16 @@
 # c.f https://www.perkin.org.uk/posts/how-to-fix-stdio-buffering.html
 # ##################################################
 
+__to_stderr() {
+    # Ref: I/O Redirection: http://tldp.org/LDP/abs/html/io-redirection.html
+    if [[ ${SHITE_DEBUG} == "debug" ]]
+    then 1>&2 printf "%s\n" "$(date --iso-8601=seconds) $@"
+    fi
+}
+
+__log_info() {
+    __to_stderr "$(echo "INFO $0 $@")"
+}
 
 __shite_tap_stream() {
     tee >(1>&2 cat -)
@@ -72,10 +82,14 @@ __shite_detect_changes() {
                 ${watch_dir} |
         # INCLUDE FILES
         # The 'include' filter of inotifywait V3.2+ will obviate this grep
-        stdbuf -oL grep -E -e "(html|js|css)$"
+        stdbuf -oL grep -E -e "(org|md|json|html|css|js|jpg|jpeg|png|svg|pdf)$"
 }
 
-__shite_distinct_events() {
+# ##################################################
+# EVENT FILTERS
+# ##################################################
+
+__shite_events_dedupe() {
     # Some editing actions can cause multiple inotify events of the same type for
     # the same file for a single edit action. e.g. Writing an edit via Vim causes
     # the sequence CREATE, MODIFIED, MODIFIED. Pulling up the helm minibuffer in
@@ -86,6 +100,69 @@ __shite_distinct_events() {
     # contiguous sequence of desirable inotify events on the same file.
 
     stdbuf -oL awk 'BEGIN { FS = "," } {if(!seen[$0]++ && seen[$1]++) print}'
+}
+
+__shite_select_file_events() {
+    local sub_dir=${1:?"Fail. We expect a sub-directory like content, static, public"}
+    stdbuf -oL grep -E -e "*.\/shite\/${sub_dir}"
+}
+
+# ##################################################
+# PREPROCESS NON-PUBLIC FILES (CONTENT, STATIC etc.)
+# ##################################################
+
+__shite_proc_content_events() {
+    # Presumes we get files from the content directory (orgmode, md, etc.).
+    local file_type
+    local content_path
+    local html_file_name
+
+    while IFS=',' read -r timestamp event_type dir_path file_name
+    do
+        # lift out file type, content path, file name etc.
+        # for appropriate processing
+        file_type="${file_name#*\.}"
+        case "${xevent_type}:${file_type}" in
+            DELETE|MOVED_FROM:* )
+                # map content sub-directory and file to public HTML file
+                rm -f "public/${dir_path##*shite/content/}/${file_name%\.*}.html"
+                ;;
+            *:html )
+                printf "%s\n" "${dir_path}/${file_name}" |
+                    shite_build_public_html shite_proc_html_content
+                ;;
+            *:org )
+                printf "%s\n" "${dir_path}/${file_name}" |
+                    shite_build_public_html shite_proc_orgmode_content
+                ;;
+            *:md )
+                printf "%s\n" "${dir_path}/${file_name}" |
+                    shite_build_public_html shite_proc_markdown_content
+                ;;
+        esac
+        # Remember the file for the next cycle
+        prev_file_name=${file_name}
+    done
+}
+
+__shite_proc_static_events() {
+    # Presumes we get files from the static directory (css, js, img etc.).
+    local static_subdir
+    local static_file
+
+    while IFS=',' read -r timestamp event_type dir_path file_name
+    do
+        static_subdir="${dir_path##*shite/static/}"
+        public_static_file="public/${static_subdir}${file_name}"
+        case "${xevent_type}" in
+            DELETE|MOVED_FROM )
+                rm -f "${public_static_file}"
+                ;;
+            * )
+                cp -f "${dir_path}/${file_name}" "${public_static_file}"
+                ;;
+        esac
+    done
 }
 
 # ##################################################
@@ -192,18 +269,28 @@ shite_hotreload() {
     local browser_name=${3:-"Mozilla Firefox"}
     local base_url=${4:-""}
 
-    # Lookup window ID
+    # LOOKUP WINDOW ID
     local window_id=$(xdotool search --onlyvisible --name "${tab_name}.*${browser_name}$")
 
-    # Run pipeline
-    # - Events of interest 'create,modify,close_write,moved_to,delete'
+    # RUN PIPELINE
+    # Watch all files we care about, across content, static, public,
+    # for events of interest: 'create,modify,close_write,moved_to,delete'
     __shite_detect_changes \
         ${watch_dir} 'create,modify,close_write,moved_to,delete' |
-        __shite_distinct_events |
-        __shite_tap_stream |
-        __shite_xdo_cmd_gen ${window_id} ${base_url} |
-        __shite_tap_stream |
-        __shite_xdo_cmd_exec
+        # Deduplicate file events
+        __shite_events_dedupe |
+        # Process any change to content files (org, md etc.)
+        tee >(__shite_select_file_events "content" |
+                  __shite_proc_content_events > /dev/null) |
+        # Process any change to static files (css, js, images etc.)
+        tee >(__shite_select_file_events "static" |
+                  __shite_proc_static_events > /dev/null) |
+        # Perform hot-reload actions only against changes to public files
+        tee >(__shite_select_file_events "public" |
+                  __shite_events_dedupe |
+                  __shite_xdo_cmd_gen ${window_id} ${base_url} |
+                  __shite_tap_stream |
+                  __shite_xdo_cmd_exec)
 }
 
 
@@ -213,6 +300,6 @@ shite_hotreload() {
 
 __shite_debug_run() {
     SHITE_DEBUG="debug" shite_hotreload \
-               "./public" 'A static' \
+               "./" 'A static' \
                > /dev/null
 }
