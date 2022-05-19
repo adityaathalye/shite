@@ -11,7 +11,7 @@
 # - cd to the root of this project
 #
 # - add the functions to your shell session
-#   $ source ./shite_utils.sh
+#   $ source ./bin/templating.sh
 #
 # - call individual functions to see what happens.
 #
@@ -195,6 +195,20 @@ shite_proc_orgmode_content() {
 #
 # ####################################################################
 
+# Set globally-relevant information that we inject into components,
+# and that we may also use to control site build behaviour.
+declare -A shite_global_data=(
+    [title]="A static shite from shell"
+    [author]="Yours Truly"
+    [description]="In which we work our way to world domination the hard way."
+    [keywords]="blog, world domination, being awesome"
+    [default_build_env]="dev"
+    [url_dev]="http://localhost:8080"
+    [url_prod]="https://example.com"
+    [publish_dir]="public"
+)
+
+
 shite_build_public_html() {
     # Given a list of content files, write well-formed HTML into the
     # designated public directory.
@@ -202,19 +216,6 @@ shite_build_public_html() {
     local content_proc_fn=${1:-"shite_drop_page_header_data"} # the least we can do
     local html_formatter_fn=${2:-"cat"} # could be `tidy -i` etc.
     local page_data_fn=${3:-"shite_get_page_header_data"} # default page-data convention
-
-    # Set globally-relevant information that we inject into components,
-    # and that we may also use to control site build behaviour.
-    local -A shite_global_data=(
-        [title]="A static shite from shell"
-        [author]="Yours Truly"
-        [description]="In which we work our way to world domination the hard way."
-        [keywords]="blog, world domination, being awesome"
-        [default_build_env]="dev"
-        [url_dev]="http://localhost:8080"
-        [url_prod]="https://example.com"
-        [publish_dir]="public"
-    )
 
     # Ensure global build parameters are set before processing anything.
     local build_env=${shite_build_env:-${shite_global_data[default_build_env]}}
