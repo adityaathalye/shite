@@ -272,6 +272,16 @@ shite_hotreload() {
     # LOOKUP WINDOW ID
     local window_id=$(xdotool search --onlyvisible --name "${tab_name}.*${browser_name}$")
 
+    SHITE_DEBUG="debug" __log_info \
+               $(printf "%s" "Hotreloadin' your shite now! " \
+                        "'{" \
+                        "\"watch_dir\": \"$(realpath ${watch_dir})\", "\
+                        "\"tab_name\": \"${tab_name}\", " \
+                        "\"browser_name\": \"${browser_name}\", " \
+                        "\"base_url\": \"${base_url}\", " \
+                        "\"window_id\": \"${window_id}\"" \
+                        "}'")
+
     # RUN PIPELINE
     # Watch all files we care about, across content, static, public,
     # for events of interest: 'create,modify,close_write,moved_to,delete'
@@ -288,18 +298,8 @@ shite_hotreload() {
         # Perform hot-reload actions only against changes to public files
         tee >(__shite_select_file_events "public" |
                   __shite_events_dedupe |
+                  __shite_tap_stream |
                   __shite_xdo_cmd_gen ${window_id} ${base_url} |
                   __shite_tap_stream |
                   __shite_xdo_cmd_exec)
-}
-
-
-# ##################################################
-# CONVENIENCE UTILITIES
-# ##################################################
-
-__shite_debug_run() {
-    SHITE_DEBUG="debug" shite_hotreload \
-               "./" 'A static' \
-               > /dev/null
 }
