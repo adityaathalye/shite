@@ -23,16 +23,16 @@
 #
 # Try calling a function at the terminal, context-free, e.g.:
 #
-#   shite_meta
+#   __shite_meta
 #
 # Now try calling it again with context set:
 #
 #   declare -A shite_global_data=(
 #     [title]="Foo" [author]="Bar" [description]="Baz" [keywords]="quxx, moo"
-#    ) && shite_meta && unset shite_global_data
+#    ) && __shite_meta && unset shite_global_data
 # ####################################################################
 
-shite_meta() {
+__shite_meta() {
     cat <<EOF
 <!-- Some basic hygiene meta-data -->
 <meta charset="utf-8">
@@ -44,13 +44,13 @@ shite_meta() {
 EOF
 }
 
-shite_links() {
+__shite_links() {
     cat <<EOF
 <link rel="stylesheet" href="css/style.css">
 EOF
 }
 
-shite_header() {
+__shite_header() {
     cat <<EOF
 <header id="site-header">
   <h1>${shite_global_data[title]} by ${shite_global_data[author]}</h1>
@@ -64,7 +64,7 @@ shite_header() {
 EOF
 }
 
-shite_footer() {
+__shite_footer() {
     cat <<EOF
 <footer>
 <hr>
@@ -102,16 +102,16 @@ shite_build_page() {
 <!DOCTYPE html>
 <html>
     <head>
-        $(shite_meta)
-        $(shite_links)
+        $(__shite_meta)
+        $(__shite_links)
         ${maybe_canonical_url}
     </head>
     <body ${maybe_page_id}>
-        $(shite_header)
+        $(__shite_header)
         <main>
           $(cat -)
         </main>
-        $(shite_footer)
+        $(__shite_footer)
     </body>
 </html>
 EOF
@@ -135,9 +135,9 @@ EOF
 #
 # Now we can do something like this in our shell session:
 #
-#   $ declare -A shite_page_data="$(shite_get_page_header_data ./sample/hello-data.html)"
+#   $ declare -A shite_page_data="$(__shite_get_page_header_data ./sample/hello-data.html)"
 #
-#   $ shite_build_page ./sample/hello-data.html shite_drop_page_header_data
+#   $ shite_build_page ./sample/hello-data.html __shite_drop_page_header_data
 #
 # Notice that the page_id we declared in hello-data.html gets injected
 # into the page. Rejoice a little!
@@ -147,7 +147,7 @@ EOF
 #
 # ####################################################################
 
-shite_get_page_header_data() {
+__shite_get_page_header_data() {
     local file_name=${1:?"Fail. We expect a valid file name."}
     # We can commandeer the HTML comment in the first line of a page,
     # to declare a Bash array of data specific to that page. This trick
@@ -155,24 +155,24 @@ shite_get_page_header_data() {
     sed -E "1s/(.*<\!--.*)(\(.*\))(\s+-->)$/\2/;1q" "${file_name}"
 }
 
-shite_drop_page_header_data() {
+__shite_drop_page_header_data() {
     # If the first line of a page is a comment, elide it, assuming
     # it contains page data relevant only for page build process.
     sed -E "1s/(.*<\!--.*)(\(.*\))(\s+-->)$//1"
 }
 
 shite_proc_html_content() {
-    shite_drop_page_header_data
+    __shite_drop_page_header_data
 }
 
 shite_proc_markdown_content() {
     # I already have pandoc, but you could use any other MD to HTML processor.
-    shite_drop_page_header_data | pandoc -f markdown -t html
+    __shite_drop_page_header_data | pandoc -f markdown -t html
 }
 
 shite_proc_orgmode_content() {
     # I already have pandoc, but you could use any other MD to HTML processor.
-    shite_drop_page_header_data | pandoc -f org -t html
+    __shite_drop_page_header_data | pandoc -f org -t html
 }
 
 # ####################################################################
@@ -213,9 +213,9 @@ shite_build_public_html() {
     # Given a list of content files, write well-formed HTML into the
     # designated public directory.
 
-    local content_proc_fn=${1:-"shite_drop_page_header_data"} # the least we can do
+    local content_proc_fn=${1:-"__shite_drop_page_header_data"} # the least we can do
     local html_formatter_fn=${2:-"cat"} # could be `tidy -i` etc.
-    local page_data_fn=${3:-"shite_get_page_header_data"} # default page-data convention
+    local page_data_fn=${3:-"__shite_get_page_header_data"} # default page-data convention
 
     # Ensure global build parameters are set before processing anything.
     local build_env=${shite_build_env:-${shite_global_data[default_build_env]}}
@@ -295,5 +295,5 @@ EOF
 shite_rebuild_all_html_static() {
     # Rebuild from scratch
     rm -r public/*
-    shite_build_all_html_static
+    __shite_drop_page_header_data
 }

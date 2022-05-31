@@ -100,7 +100,7 @@ Play! Type `shiTABTAB` to tab-complete utility functions. They are all prefixed
 Call the meta component generator context-free.
 
 ``` shell
-  shite_meta
+  __shite_meta
 ```
 
 Now try calling the same function again with context set, e.g.:
@@ -108,7 +108,7 @@ Now try calling the same function again with context set, e.g.:
 ``` shell
 declare -A shite_global_data=(
   [title]="Foo" [author]="Bar" [description]="Baz" [keywords]="quxx, moo"
-  ) && shite_meta && unset shite_global_data
+  ) && __shite_meta && unset shite_global_data
 ```
 
 # Design
