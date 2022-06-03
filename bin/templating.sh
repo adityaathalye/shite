@@ -123,12 +123,8 @@ EOF
 # ####################################################################
 
 shite_build_page() {
-    # Given a file having body content, and a function to translate it
-    # into HTML, return a fully formed page having the HTMLised content.
-    # The page builder doesn't assume anything about the type of file.
-    # We know the file type, and so we must supply the appropriate tool
-    # to process the content into HTML. If the content is already HTML,
-    # just pass `cat`!
+    # Wrap the given input, presumably main HTML content of a page,
+    # emit a fully formed HTML page.
 
     # We expect some outside process to set the `shite_page_data` array for us.
     local maybe_page_id=${shite_page_data[page_id]:+"id=\"${shite_page_data[page_id]}\""}
@@ -173,7 +169,7 @@ EOF
 #
 #   $ declare -A shite_page_data="$(__shite_get_page_header_data ./sample/hello-data.html)"
 #
-#   $ shite_build_page ./sample/hello-data.html __shite_drop_page_header_data
+#   $ cat sample/hello-data.html | __shite_drop_page_header_data | shite_build_page
 #
 # Notice that the page_id we declared in hello-data.html gets injected
 # into the page. Rejoice a little!
