@@ -75,6 +75,42 @@ EOF
 }
 
 
+__shite_blog_post() {
+    # Contract for data to feed into the blog
+    # ( declare -A shite_page_data=([title]=foo [author]=bar [date]=baz);
+    #   echo "BODY CONTENT" | __shite_blog_post; )
+    local title=${shite_page_data[title]:?"Fail. We expect title of the post."}
+    local subtitle=${shite_page_data[subtitle]}
+    local author=${shite_page_data[author]:?"Fail. We expect author."}
+    local latest_published=$(date -Iminutes)
+    local first_published=${shite_page_data[date]:?"Fail. We expect date like ${latest_published} (current date)."}
+
+    cat <<EOF
+<article id="blog_post" class="stack">
+  <header>
+    <div class="stack">
+      <h1 class="title">${title}</h1>
+      <p class="subtitle">${subtitle}</p>
+      <div class="cluster">
+        <span class="author">${author}</span>
+        <span class="date">${date}</span>
+        <span class="tags">${tags}</span>
+      </div>
+    </div>
+  </header>
+  <section class="stack">
+      $(cat -)
+  </section>
+  <footer>
+    <nav>
+      <span><sub>^ <a href="#blog_post">title</a></sub></span>
+      <span><sub>^ <a href="#site_header">menu</a></sub></span>
+    </nav>
+  </footer>
+</article>
+EOF
+}
+
 # ####################################################################
 # PAGE TEMPLATE AND BUILDER
 #
