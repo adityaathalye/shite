@@ -177,6 +177,9 @@ EOF
 # Notice that we can generally support content written as HTML, markdown,
 # org-mode, and probably other text formats too. Rejoice a little more!
 #
+# Lastly, as long as we have a way to convert orgmode or markdown etc.
+# into HTML (e.g. with pandoc), we are golden. Party!
+#
 # ####################################################################
 
 __shite_get_page_header_data() {
@@ -193,18 +196,23 @@ __shite_drop_page_header_data() {
     sed -E "1s/(.*<\!--.*)(\(.*\))(\s+-->)$//1"
 }
 
-shite_proc_html_content() {
-    __shite_drop_page_header_data
-}
+shite_proc_content() {
+    local content_type=${1:?"Fail. We expect content type like html, org, orgblog, md etc."}
 
-shite_proc_markdown_content() {
-    # I already have pandoc, but you could use any other MD to HTML processor.
-    __shite_drop_page_header_data | pandoc -f markdown -t html
-}
-
-shite_proc_orgmode_content() {
-    # I already have pandoc, but you could use any other MD to HTML processor.
-    __shite_drop_page_header_data | pandoc -f org -t html
+    __shite_drop_page_header_data | case ${content_type} in
+        html )
+            cat -
+            ;;
+        md )
+            pandoc -f markdown -t html
+            ;;
+        org )
+            pandoc -f org -t html
+            ;;
+        orgblog )
+            pandoc -f org -t html | __shite_blog_post
+            ;;
+    esac
 }
 
 # ####################################################################
