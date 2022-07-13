@@ -122,24 +122,32 @@ __shite_proc_content_events() {
         # lift out file type, content path, file name etc.
         # for appropriate processing
         file_type="${file_name#*\.}"
-        case "${xevent_type}:${file_type}" in
-            DELETE|MOVED_FROM:* )
-                # map content sub-directory and file to public HTML file
-                rm -f "public/${dir_path##*shite/content/}/${file_name%\.*}.html"
-                ;;
-            *:html )
-                printf "%s\n" "${dir_path}/${file_name}" |
-                    shite_build_public_html shite_proc_html_content
-                ;;
-            *:org )
-                printf "%s\n" "${dir_path}/${file_name}" |
-                    shite_build_public_html shite_proc_orgmode_content
-                ;;
-            *:md )
-                printf "%s\n" "${dir_path}/${file_name}" |
-                    shite_build_public_html shite_proc_markdown_content
-                ;;
-        esac
+
+        printf "%s\n" "${dir_path}/${file_name}" |
+            case "${xevent_type}:${file_type}:${dir_path}" in
+                DELETE|MOVED_FROM:*:* )
+                    # Ignore STDIN and clean up public HTML.
+                    # The variable substitution maps content sub-dir and file
+                    # to public HTML file.
+                    rm -f "public/${dir_path##*shite/content/}/${file_name%\.*}.html"
+                    ;;
+                *:html:* )
+                    shite_build_public_html \
+                        shite_proc_content html
+                    ;;
+                *:org:blog )
+                    shite_build_public_html \
+                        shite_proc_content orgblog
+                    ;;
+                *:org:* )
+                    shite_build_public_html \
+                        shite_proc_content org
+                    ;;
+                *:md:* )
+                    shite_build_public_html \
+                        shite_proc_content md
+                    ;;
+            esac
         # Remember the file for the next cycle
         prev_file_name=${file_name}
     done
@@ -272,6 +280,16 @@ shite_hotreload() {
     # LOOKUP WINDOW ID
     local window_id=$(xdotool search --onlyvisible --name "${tab_name}.*${browser_name}$")
 
+    SHITE_DEBUG="debug" __log_info \
+               $(printf "%s" "Hotreloadin' your shite now! " \
+                        "'{" \
+                        "\"watch_dir\": \"$(realpath ${watch_dir})\", "\
+                        "\"tab_name\": \"${tab_name}\", " \
+                        "\"browser_name\": \"${browser_name}\", " \
+                        "\"base_url\": \"${base_url}\", " \
+                        "\"window_id\": \"${window_id}\"" \
+                        "}'")
+
     # RUN PIPELINE
     # Watch all files we care about, across content, static, public,
     # for events of interest: 'create,modify,close_write,moved_to,delete'
@@ -288,18 +306,8 @@ shite_hotreload() {
         # Perform hot-reload actions only against changes to public files
         tee >(__shite_select_file_events "public" |
                   __shite_events_dedupe |
+                  __shite_tap_stream |
                   __shite_xdo_cmd_gen ${window_id} ${base_url} |
                   __shite_tap_stream |
                   __shite_xdo_cmd_exec)
-}
-
-
-# ##################################################
-# CONVENIENCE UTILITIES
-# ##################################################
-
-__shite_debug_run() {
-    SHITE_DEBUG="debug" shite_hotreload \
-               "./" 'A static' \
-               > /dev/null
 }

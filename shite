@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+source ./bin/templating.sh
+source ./bin/hotreload.sh
+
+SHITE_DEBUG=${1} shite_hotreload \
+           "./" "${shite_global_data[title]}" \
+           > /dev/null

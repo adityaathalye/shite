@@ -47,13 +47,28 @@ path of making this. It is being blogged about at:
 
 # Usage
 
+## Hot-reloaded workflow
+
+The hot-reloaded workflow expects that the website be open in a browser tab, and
+that the tab be visible. It won't work if the site is open but the tab is not
+active.
+
+First, open Mozilla Firefox and navigate to, say, the content/index.html page
+(file:///path/to/content/index.html).
+
+Open a new terminal session or tmux pane, and call the "main" script.
+``` shell
+./shite
+```
+
+## Manually invoked page builds
 In a new terminal session or tmux pane (i.e. a clean, throwaway environment):
 
 - cd to the root of this project
 
 - add the functions to your shell session
   ``` shell
-  source ./shite_utils.sh
+  source ./bin/templating.sh
   ```
 
 - call the convenience function to publish the whole site
@@ -85,7 +100,7 @@ Play! Type `shiTABTAB` to tab-complete utility functions. They are all prefixed
 Call the meta component generator context-free.
 
 ``` shell
-  shite_meta
+  __shite_meta
 ```
 
 Now try calling the same function again with context set, e.g.:
@@ -93,7 +108,7 @@ Now try calling the same function again with context set, e.g.:
 ``` shell
 declare -A shite_global_data=(
   [title]="Foo" [author]="Bar" [description]="Baz" [keywords]="quxx, moo"
-  ) && shite_meta && unset shite_global_data
+  ) && __shite_meta && unset shite_global_data
 ```
 
 # Design
