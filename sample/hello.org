@@ -1,10 +1,19 @@
-#+Pagedata: <!-- ([page_id]="hello-world-page") -->
-#+Title: Hello, world!
+# SHITE_META
+#+TITLE: This is a Title
+#+slug: this/is/a/slug
+#+DATE: Friday 26 August 2022 03:38:01 PM IST
+#+TAGS: foo BAR baz QUXX
+# SHITE_META
+#+more_org_metadata: but not processed as shite metadata
+#+still_more_org_metadata: and still not processed as shite metadata
 
-* Hello, world!
+* this is a heading
 
-How are you doing today?
+this is some orgmode content
 
-I'm here.
+#+TOC: headlines 1 local
 
-And I'm going to take you head-on...
+** this is a subheading
+- this is a point
+- this is another point
+- a third point
