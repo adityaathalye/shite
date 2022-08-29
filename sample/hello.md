@@ -1,7 +1,15 @@
-# Hello, world!
+---
+TITLE: This is a Title
+slug: this/is/a/slug
+DATE: Friday 26 August 2022 03:38:01 PM IST
+TAGS: foo BAR baz QUXX
+---
 
-How are you doing today?
+# this is a heading
 
-I'm here.
+this is some markdown content
 
-And I'm going to take you head-on...
+## this is a subheading
+  - this is a point
+  - this is another point
+  - a third point

@@ -1,27 +1,72 @@
 shite
 ---
 
-The little static site generator from shell. Assumes Bash 4.4+.
+The little hot-reloadin' static site generator from shell. Assumes Bash 4.4+.
+
+WARNING: Still under construction. Here be yaks!
+
+<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
+**Table of Contents**
 
 - [Introduction](#introduction)
-- [Backstory](#backstory)
+    - [Example](#example)
+    - [Dreams and desires](#dreams-and-desires)
+    - [Backstory](#backstory)
 - [Usage](#usage)
-- [Design](#design)
-- [Creature Comforts](#creature-comforts)
-  - [Bashful Hot Reloading](#bashful-hot-reloading)
-  - [Unrealised Ambitions](#unrealised-ambitions)
+    - [Hot-reloaded workflow](#hot-reloaded-workflow)
+    - [Manually invoked page builds](#manually-invoked-page-builds)
+- [Design and Internals](#design-and-internals)
+    - [File and URL naming scheme](#file-and-url-naming-scheme)
+    - [Code organisation](#code-organisation)
+    - [Calling the code](#calling-the-code)
+    - [Templating system](#templating-system)
+    - [Metadata and front matter system](#metadata-and-front-matter-system)
+        - [For orgmode content](#for-orgmode-content)
+        - [For markdown content](#for-markdown-content)
+        - [For html content](#for-html-content)
+    - [Creature Comforts](#creature-comforts)
+        - [Bashful Hot Reloading](#bashful-hot-reloading)
+        - [Unrealised Ambitions](#unrealised-ambitions)
+- [Contributing](#contributing)
+
+<!-- markdown-toc end -->
 
 # Introduction
 
-This is baaasically what it does.
+Well, `shite` aims to make websites.
+
+It exists because one whistles silly tunes and shaves yaks. It will not surprise
+a Perl/PHP gentleperson hacker from the last century.
+
+This is baaasically what it does (ref: the `shite_publish` function).
 
 ``` shell
-cat ${body_content_file} |
-    ${content_proc_fn} |
-    shite_build_page  |
+cat "${watch_dir}/sources/${sub_dir}/${file_name}" |
+    __shite_compile_source_to_html ${file_type} |
+    __shite_wrap_content_html ${content_type} |
+    __shite_wrap_page_html |
     ${html_formatter_fn} |
-    tee "${shite_global_data[publish_dir]}/${html_output_file_name}"
+    tee "${watch_dir}/public/${slug}.html"
+
 ```
+
+- It publishes content from org-mode files.
+- And html, and markdown.
+- It hot-builds.
+- It hot-reloads.
+- It does neither if you disdain creature comforts.
+- It is quite small.
+- It is Bash-ful.
+- I _like_ it.
+
+Before you get too exshited, may I warn you that the MIT license means I don't
+have to give a shite if this little shite maker fails to make your shite work.
+[Contributing](#contributing) is replete with more warnings.
+
+And last but not least, I hereby decree that all texsht herein be read in Sean
+Connery voish.
+
+## Example
 
 The demo shite looks like this:
 
@@ -29,19 +74,40 @@ The demo shite looks like this:
 | ----------------------------------------------------------- | ----------------------------------------------------------- | -----------------------------------------------------------   |
 | ![Index page](sample/demo-screenshots/shite-demo-index.png) | ![About page](sample/demo-screenshots/shite-demo-about.png) | ![Resume page](sample/demo-screenshots/shite-demo-resume.png) |
 
-Before you get too exshited, may I warn you that the MIT license means I don't
-have to give a shite if this little shite maker fails to make your shite work.
+But it could look like anything, if one writes one's own plain-ol' HTML and CSS.
 
-Nothing here will surprise a Perl/PHP gentleperson hacker from the last century.
+## Dreams and desires
 
-Also, I hereby decree that all texsht herein be read in Sean Connery voish.
+In my `shite` dreams, I desire...
 
-# Backstory
+- Above all, to keep it (the "business logic") _small_. Small enough to cache,
+  debug, and refactor in my head.
+
+- To _extremely_ avoid toolchains and build dependencies. No gems / npms / venvs
+  / what-have-yous. Thus, Bash is the language, because Bash is everywhere. And
+  standard packages like `pandoc` or `tidy`, when one needs _specific_ advanced
+  functionality.
+
+- Dependency-free templating with plain-ol' HTML set in good ol' heredocs.
+
+- Simple metadata system, content namespacing, static asset organisation etc.
+
+- To construct it from small, composable, purely functional, Unix-tool-like
+  parts, because I like that sort of stuff a lot. Thus, `shite` has become a
+  a wee system of pipelined workflows driven by streams of file events.
+
+- To give myself a seamless REPL-like edit-save-build-preview workflow.
+  - Hot-build page processing (compile + build on save.)
+  - Javascript-free browser hot-reloading. It works. It's terrible. It's awesome!
+  - TODO: Potentially also extend the same mechanism to hot-deploy, on git push
+    to a private repo on my own VPS somewhere. Maybe.
+
+## Backstory
 
 I accidentally restarted blogging after a long haitus. Before I could get words
 into the cloud, I muddled about with "modern" Static Site Generators. Because
 WordPress is so last century (or so I told myself). Then I got annoyed by the
-SSG Jamstack bespoke templating building etc. magic. Now I am going down the dark
+SSG Jamstack bespoke templating building etc. magic. Now I am on the dark
 path of making this. It is being blogged about at:
 [shite: static sites from shell: part 1/2](https://www.evalapply.org/posts/shite-the-static-sites-from-shell-part-1/)
 
@@ -58,95 +124,225 @@ First, open Mozilla Firefox and navigate to, say, the content/index.html page
 
 Open a new terminal session or tmux pane, and call the "main" script.
 ``` shell
-./shite
+./shite.sh
 ```
 
 ## Manually invoked page builds
-In a new terminal session or tmux pane (i.e. a clean, throwaway environment):
 
-- cd to the root of this project
+In a clean new terminal session:
 
-- add the functions to your shell session
-  ``` shell
-  source ./bin/templating.sh
+- CD to the root of this project
+- Source the dev utility code into the environment. This will bring in all the
+  business logic, templates, as well as dev utility functions.
+  ```bash
+  source ./bin/utils_dev.sh
   ```
-
-- call the convenience function to publish the whole site
+- Hit `shitTABTAB` or `__shiTABTAB` at the command line for autocompletions.
+- Call the convenience function to publish the whole site
   ``` shell
   shite_build_all_html_static
   ```
-
-- open the public directory in your file browser, open index.html and click
+- Open the public directory in your file browser, open index.html and click
   away (assuming nothing broke of course).
 
-See how the workhorse functions ... erm ... workhorse:
+# Design and Internals
 
-- build the site with the available content
-  ``` shell
-  find content/ -type f -name *.html | shite_build_public_html > /dev/null
-  ```
+`shite` is quite Unixy inside. Or so I'd like to think.
 
-- OR, if you have an html pretty-printer like `tidy`, then:
-  ``` shell
-  find content/ -type f -name *.html |
-      shite_build_public_html \
-          shite_proc_html_content \
-          shite_tidy_html > /dev/null
-  ```
+Code is functional programming-style Bash. Everything is a function. Most
+functions are pure functions---little Unix tools in themselves. Most logic
+is pipeline-oriented. This works surprisingly well, because
+[Shell ain't a bad place to FP](https://www.evalapply.org/posts/shell-aint-a-bad-place-to-fp-part-1-doug-mcilroys-pipeline/).
 
-Play! Type `shiTABTAB` to tab-complete utility functions. They are all prefixed
-`shite_`. Try calling any of them, for example:
+I also wanted a live interactive REPL-like experience when writing with `shite`,
+because I like working in live/interactive runtimes like Clojure and Emacs.
 
-Call the meta component generator context-free.
+So, `shite` has become this fully reactive event-driven system capable of hot
+build-and-reload-on-save.
 
-``` shell
-  __shite_meta
+## File and URL naming scheme
+
+There are three main directory namespaces:
+
+- `sources` housing the "source" content, such as blog posts written in orgmode,
+  as well as CSS, Javascript, and other static assets.
+- `public` target for the compiled / built artefacts
+- `bin` for the shite-building code
+
+The URL naming scheme follows sub-directory structure under `sources`, and is
+replicated as-is under the `pubilic` directory structure. Since this is a bog
+standard URL namespacing scheme, it also, applies directly to published content.
+Like so:
+
+``` text
+file:///absolute/path/to/shite/posts/slug/index.html
+
+http://localhost:8080/posts/slug/index.html
+
+https://your-domain-name.com/posts/slug/index.html
 ```
 
-Now try calling the same function again with context set, e.g.:
+## Code organisation
 
-``` shell
-declare -A shite_global_data=(
-  [title]="Foo" [author]="Bar" [description]="Baz" [keywords]="quxx, moo"
-  ) && __shite_meta && unset shite_global_data
+All "public" functions are namespaced as `shite_the_func_name`. All "private"
+functions are namespaced as `__shite_the_func_name`.
+
+Functions exist to:
+
+  - define common page fragments (meta, header, footer etc.)
+  - compose full pages from components, metadata, and body content
+  - assemble the site... build and publish sources into public targets
+  - detect and process event streams to drive various site building features
+    site builds, and browser hot reloading
+  - react to processed events and drive hot compile of pages, hot build of site,
+    and browser hot reload / navigation
+  - provide convenience utilities for manual builds, local development
+
+## Calling the code
+
+In a clean new terminal session:
+
+  - CD to the root of this project
+  - Source the dev utility code into the environment. This will bring in all the
+    business logic, templates, as well as dev utility functions.
+    ```bash
+    source ./bin/utils_dev.sh
+    ```
+  - Hit `shitTABTAB` or `__shiTABTAB` at the command line for autocompletions.
+  - Enter `type -a func_name` to print the function's definition and read its API.
+  - Set `shite_global_data` and `shite_page_data` as needed.
+  - Call functions at the command line. Call them individually, and/or composed
+    with other functions to test / exercise parts of the system.
+
+## Templating system
+
+Templates exist for page fragments (like header, footer, navigation), and for
+full page definitions (like the default page template). These are written as
+plain HTML wrapped in heredocs. `./bin/templates.sh` provides these.
+
+Templates are filled-in with variable data from different sources:
+  - Bash associative arrays: `shite_global_data` contains site-wide metadata,
+    and `shite_page_data` contains page-specific metadata. Some outside process
+    must pre-set these arrays prior to processing any page.
+  - stdin: to inject content into the templates that are wrappers for content.
+  - function calls: to expand fragments like HTML metadata, links etc.
+
+For example, a full page may be constructed as follows:
+
+```shell
+cat ./sample/hello.md |
+    pandoc -f markdown -t html |
+    cat <<EOF
+    <!DOCTYPE html>
+    <html>
+        <head>
+            $(shite_template_common_meta)
+            $(shite_template_common_links)
+            ${shite_page_data[canonical_url]}
+        </head>
+        <body ${shite_page_data[page_id]}>
+            $(shite_template_common_header)
+            <main>
+              $(cat -)
+            </main>
+            $(shite_template_common_footer)
+        </body>
+    </html>
+EOF
 ```
 
-# Design
+## Metadata and front matter system
 
-The implementation is in Bash because Bash is everywhere and one goal is to avoid
-dependencies as far as possible. If I manage to stop yak shaving, I hope to enjoy
-the result for years and years with no breaking changes.
+`shite`'s metadata system is defined as key-value pairs. Keys name the metadata
+items, and would be associated with whatever value of that type. Examples below.
 
-## FP FTW
+As noted earlier, run-time metadata is carried in the environment by the
+associative arrays `shite_global_data` and `shite_page_data`. These maybe be
+populated by direct construction, as well as updated from external sources.
 
-I like to write [Functional Programming style Bash](https://www.evalapply.org/posts/shell-aint-a-bad-place-to-fp-part-1-doug-mcilroys-pipeline/).
+Each page may specify its own metadata in "front matter" at the top of the page.
+This will be used in addition page metadata derived from other sources.
 
-## Functions exist for
+`shite` expects us to write front matter using syntax that is compatible with
+the given content type, as follows.
 
-- Common component templates (meta, header, footer etc.)
+### For orgmode content
 
-- Page templates for single pages, to compose components and body content
+Use comment lines `# SHITE_META` to demarcate the org-style metadata that `shite`
+should also parse as page-specific metadata.
 
-- Site assembly, to compose multiple pages together
+```org
+# SHITE_META
+#+title: This is a Title
+#+slug: this/is/a/slug
+#+date: Friday 26 August 2022 03:38:01 PM IST
+#+tags: foo bar baz quxx
+# SHITE_META
+#+more_org_metadata: but not processed as shite metadata
+#+still_more_org_metadata: and still not processed as shite metadata
 
+* this is a top level heading
 
-## Run-time Variables include
+this is some orgmode content
 
-- `shite_build_env`, which represents the build target (e.g. 'prod' or 'dev')
-  This choice can control build steps as well as content/metadata injected.
-  Default is 'dev'.
+#+TOC: headlines 1 local
 
-- `shite_global_data`, which is a Bash array of globally-relevant values like
-  site title, site author name etc.
+** this is a sub heading
+   - this is a point
+   - this is another point
+   - a third point
+```
 
-- `shite_page_data`, which is a Bash array of data presumed to be specific to the
-  current page being processed
+### For markdown content
 
-# Creature Comforts
+Write Jekyll-style YAML front matter, boxed between `---` separators.
+
+``` markdown
+---
+TITLE: This is a Title
+slug: this/is/a/slug
+DATE: Friday 26 August 2022 03:38:01 PM IST
+TAGS: foo BAR baz QUXX
+---
+
+# this is a heading
+
+this is some markdown content
+
+## this is a subheading
+  - this is a point
+  - this is another point
+  - a third point
+```
+
+### For html content
+
+We can simply use standard `<meta>` tags, that obey this convention:
+`<meta name="KEY" content="value">`.
+
+``` html
+<meta name="TITLE" content="This is a Title">
+<meta name="slug" content="this/is/a/slug">
+<meta name="DATE" content="Friday 26 August 2022 03:38:01 PM IST">
+<meta name="TAGS" content="foo BAR baz QUXX">
+
+<h1>This is a heading</h1>
+<p>This is some text</p>
+<h2>This is a subheading</h2>
+<p>
+  <ul>
+    <li>This is a point</li>
+    <li>This is another point.</li>
+    <li>This is a third point.</li>
+  </ul>
+</p>
+```
+
+## Creature Comforts
 
 Here be Yaks!
 
-## Bashful Hot Reloading
+### Bashful Hot Reloading
 
 Being entirely spoiled by Clojure/Lisp/Spreadsheet style insta-gratifying live
 interactive workflows, I want hot reload and hot navigate in shite-making too.
@@ -208,7 +404,7 @@ Since we are making the computer emulate our own keyboard actions, it can mess
 with our personly actions. If we stick to writing our shite in our text editor,
 and let the computer do the hotreloady thing, we should remain non-annoyed.
 
-## Unrealised Ambitions
+### Unrealised Ambitions
 
 Maybe some "Dev-ing/Drafting" time setup/Teardown scenario? Maybe a 'dev_server'
 function that we use to kick start a new shite writing session?
@@ -217,3 +413,25 @@ function that we use to kick start a new shite writing session?
 - xdotool goto the home page of the shite based on config.
 - xdotool 'set_window --name' to a UUID for the life of the session.
 - xdotool close the tab when we kill the dev session
+
+# Contributing
+
+If you got all the way down here, and _still_ want to contribute...
+
+Why?
+
+Why in the name of all that is holy and good, would you want to? Is it not
+blindingly obvious that this is the work of a goofball? Haven't you heard that
+Bash is Not Even A Real Programming Language? And isn't it face-slappingly
+obvious that your PRs will languish eternally, and your comments will fall into
+a nameless void?
+
+Yes, sending patches is a terrible idea.
+
+_But_ please email me your hopes and dreams about your shite maker! I read email
+at my firstname dot lastname at gmail.
+
+Together we can whistle silly tunes, and co-yak-shave our respective yaks, in
+our own special ways.
+
+May The Source be with us.

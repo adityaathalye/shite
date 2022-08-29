@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # ####################################################################
-# Functions to make a shite from shell.
+# FUNCTIONS TO BUILD OUR SHITE PAGES
 # ####################################################################
 #
 # USAGE:
@@ -10,198 +10,112 @@
 #
 # - cd to the root of this project
 #
-# - add the functions to your shell session
+# - add the templates and templating functions to your shell session
+#   $ source ./bin/templates.sh
 #   $ source ./bin/templating.sh
 #
 # - call individual functions to see what happens.
 #
-# ====================================================================
-
-
-# ####################################################################
-# COMMON COMPONENT TEMPLATES
+# CONTENT FILES CONVENTIONS AND PROCESSING:
 #
-# Try calling a function at the terminal, context-free, e.g.:
+# Content matter can be in orgmode, markdown, or plain html formats.
 #
-#   __shite_meta
+# Each page may specify its own metadata. This will be used in addition
+# to global (site-wide) metadata, to fill out templates and/or control page
+# processing. Page-specific metadata should be written in syntax that is
+# standard for that kind of content.
 #
-# Now try calling it again with context set:
+#   $ declare -A shite_page_data="$(__shite_get_page_front_matter ./sample/hello-data.html)"
 #
-#   declare -A shite_global_data=(
-#     [title]="Foo" [author]="Bar" [description]="Baz" [keywords]="quxx, moo"
-#    ) && __shite_meta && unset shite_global_data
-# ####################################################################
-
-__shite_meta() {
-    cat <<EOF
-<!-- Some basic hygiene meta-data -->
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${shite_global_data[title]}</title>
-<meta name="author" content="${shite_global_data[author]}">
-<meta name="description" content="${shite_global_data[description]}">
-<meta name="keywords" content="${shite_global_data[keywords]}">
-EOF
-}
-
-__shite_links() {
-    cat <<EOF
-<link rel="stylesheet" href="css/style.css">
-EOF
-}
-
-__shite_header() {
-    cat <<EOF
-<header id="site-header">
-  <h1>${shite_global_data[title]} by ${shite_global_data[author]}</h1>
-  <nav>
-      <span><a href="index.html">Blog</a></span>
-      <span><a href="about.html">About</a></span>
-      <span><a href="resume.html">Resume</a></span>
-  </nav>
-  <hr>
-</header>
-EOF
-}
-
-__shite_footer() {
-    cat <<EOF
-<footer>
-<hr>
-<p>Copyright, ${shite_global_data[author]} $(date +%Y).</p>
-<p>All content is MIT licensed, except where specified otherwise.</p>
-</footer>
-EOF
-}
-
-
-__shite_blog_post() {
-    # Contract for data to feed into the blog
-    # ( declare -A shite_page_data=([title]=foo [author]=bar [date]=baz);
-    #   echo "BODY CONTENT" | __shite_blog_post; )
-    local title=${shite_page_data[title]:?"Fail. We expect title of the post."}
-    local subtitle=${shite_page_data[subtitle]}
-    local author=${shite_page_data[author]:?"Fail. We expect author."}
-    local latest_published=$(date -Iminutes)
-    local first_published=${shite_page_data[date]:?"Fail. We expect date like ${latest_published} (current date)."}
-
-    cat <<EOF
-<article id="blog_post" class="stack">
-  <header>
-    <div class="stack">
-      <h1 class="title">${title}</h1>
-      <p class="subtitle">${subtitle}</p>
-      <div class="cluster">
-        <span class="author">${author}</span>
-        <span class="date">${date}</span>
-        <span class="tags">${tags}</span>
-      </div>
-    </div>
-  </header>
-  <section class="stack">
-      $(cat -)
-  </section>
-  <footer>
-    <nav>
-      <span><sub>^ <a href="#blog_post">title</a></sub></span>
-      <span><sub>^ <a href="#site_header">menu</a></sub></span>
-    </nav>
-  </footer>
-</article>
-EOF
-}
-
-# ####################################################################
-# PAGE TEMPLATE AND BUILDER
-#
-# Try these invocations with the sample files
-#
-# $ cat ./sample/hello.html | shite_build_page
-#
-# $ cat ./sample/hello.md | pandoc -f markdown -t html | shite_build_page
+#   $ cat sample/hello-data.html |
+#       __shite_drop_page_front_matter |
+#       shite_templates_common_default_page
 #
 # ####################################################################
 
-shite_build_page() {
-    # Wrap the given input, presumably main HTML content of a page,
-    # emit a fully formed HTML page.
+__shite_get_page_front_matter() {
+    # Parse "front matter" of content documents and return a stream of
+    # Key,Value CSV pairs. These can be further processed into shite_page_data
+    # array or translated to HTML metadata.
+    #
+    # We want our parsed keys to always be lowercase and obey snake_case. Values
+    # can be any case.
 
-    # We expect some outside process to set the `shite_page_data` array for us.
-    local maybe_page_id=${shite_page_data[page_id]:+"id=\"${shite_page_data[page_id]}\""}
-    local maybe_canonical_url=${shite_page_data[canonical_url]:+"<link rel=\"canonical\" href=\"${shite_page_data[canonical_url]}\">"}
-
-    cat <<EOF
-<!DOCTYPE html>
-<html>
-    <head>
-        $(__shite_meta)
-        $(__shite_links)
-        ${maybe_canonical_url}
-    </head>
-    <body ${maybe_page_id}>
-        $(__shite_header)
-        <main>
-          $(cat -)
-        </main>
-        $(__shite_footer)
-    </body>
-</html>
-EOF
-}
-
-
-# ####################################################################
-# CONVENTIONS AND UTILITIES TO PROCESS CONTENT FILES
-#
-# Suppose the first line of a page is an HTML comment, having page data?
-#
-# Suppose we literally write down an associative array in Bash? Like so:
-#
-#   <!-- ([page_id]="hello-world-page") -->
-#   <h1>Hello, world!</h1>
-#   <p>How are you doing today?</p>
-#   <p>I'm here.</p>
-#   <p>And I'm going to take you head-on...</p>
-#
-# Suppose you suppress your horror, and just play along for a bit? :D
-#
-# Now we can do something like this in our shell session:
-#
-#   $ declare -A shite_page_data="$(__shite_get_page_header_data ./sample/hello-data.html)"
-#
-#   $ cat sample/hello-data.html | __shite_drop_page_header_data | shite_build_page
-#
-# Notice that the page_id we declared in hello-data.html gets injected
-# into the page. Rejoice a little!
-#
-# Notice that we can generally support content written as HTML, markdown,
-# org-mode, and probably other text formats too. Rejoice a little more!
-#
-# Lastly, as long as we have a way to convert orgmode or markdown etc.
-# into HTML (e.g. with pandoc), we are golden. Party!
-#
-# ####################################################################
-
-__shite_get_page_header_data() {
-    local file_name=${1:?"Fail. We expect a valid file name."}
-    # We can commandeer the HTML comment in the first line of a page,
-    # to declare a Bash array of data specific to that page. This trick
-    # works for plain HTML, markdown, and orgmode files.
-    sed -E "1s/(.*<\!--.*)(\(.*\))(\s+-->)$/\2/;1q" "${file_name}"
-}
-
-__shite_drop_page_header_data() {
-    # If the first line of a page is a comment, elide it, assuming
-    # it contains page data relevant only for page build process.
-    sed -E "1s/(.*<\!--.*)(\(.*\))(\s+-->)$//1"
-}
-
-shite_proc_content() {
-    local content_type=${1:?"Fail. We expect content type like html, org, orgblog, md etc."}
-
-    __shite_drop_page_header_data | case ${content_type} in
+    # NOTE: We expect front matter based metadata definitions to be compatible
+    # with the given content type.
+    #
+    # For html content, we can simply use <meta> tags. Whereas, for org and
+    # markdown, we define metadata between some well-defined /begin,end/ pair
+    # of markers. Given these markers, we can use sed-based multiline processing
+    # techniques to parse only the text between the markers.
+    # cf. https://unix.stackexchange.com/a/78479
+    #
+    # The -n flag is required to prevent pattern space printing. This ensures:
+    # a) metadata only between the begin/end markers is streamed out,
+    # b) only properly demarcated values are set in the array, and
+    # c) we don't accidentally set empty keys, which begets errors:
+    #   `-bash: shite_page_data[${key}]: bad array subscript`
+    #
+    # We also use GNU sed extensions `I` to match key tokens regardless of
+    # case, but we then convert all those to lowercase using '\L'token'\E'.
+    local file_type=${1:?"Fail. We expect file type of the content."}
+    case ${file_type} in
+        org )
+            # Multiline processing of org-style header/preamble syntax, boxed
+            # between begin/end markers we have defined. We use org-mode's own
+            # comment line syntax to write the begin/end markers.
+            # cf. https://orgmode.org/guide/Comment-Lines.html
+            sed -n -E \
+                -e '/^\#\s+shite_meta/I,/^\#\s+shite_meta/I{/\#\s+shite_meta.*/Id; s/^\#\+(\w+)\:\s+(.*)/\L\1\E,\2/Ip}'
+        ;;
+        md )
+            # Multiline processing of Jekyll-style YAML front matter, boxed
+            # between `---` separators.
+            sed -n -E \
+                -e '/^\-{3,}/,/^\-{3,}/{/^\-{3,}.*/d; s/^(\w+)\:\s+(.*)/\L\1\E,\2/Ip}'
+        ;;
         html )
-            cat -
+            # Use HTML meta tags and parse them, according to this convention:
+            #    <meta name="KEY" content="VALUE">
+            # cf. https://developer.mozilla.org/en-US/docs/Learn/HTML/Introduction_to_HTML/The_head_metadata_in_HTML
+            sed -n -E \
+                -e 's;^\s?<meta\s+name="?(\w+)"?\s+content="(.*)">;\L\1\E,\2;Ip'
+        ;;
+    esac
+}
+
+__shite_set_page_data() {
+    # We always set data afresh, because it must be page-specific.
+    unset shite_page_data
+    declare -Agx shite_page_data
+
+    local file_type=${1:?"Fail. We expect file type of the content."}
+    local file_path=${2:?"Fail. We expect full path to the file."}
+    local optional_metadata_csv_file=${3}
+
+    # We use input redirection to set values in the *current* environment.
+    # One may be tempted to pipeline front matter CSV into this function,
+    # but that causes the data to be set in a subshell, which of course,
+    # does not mutate the outside environment.
+    while IFS=',' read -r key val
+    do 1>&2 printf "%s\n" "KEY: ${key}, VAL: ${val}"
+       shite_page_data[${key}]="${val}"
+    done < <(cat ${file_path} |
+                 # Lift page-specific frontmatter metatdata
+                 __shite_get_page_front_matter ${file_type} |
+                 # Inject additional page-specific metadata
+                 cat - ${optional_metadata_csv_file}
+            )
+}
+
+__shite_compile_source_to_html() {
+    # If content has front matter metadata, it is presumed to be
+    # in a format that the content
+    local file_type=${1:?"Fail. We expect file type of content like html, org, md etc."}
+
+    case ${file_type} in
+        html )
+            pandoc -f html -t html
             ;;
         md )
             pandoc -f markdown -t html
@@ -209,10 +123,25 @@ shite_proc_content() {
         org )
             pandoc -f org -t html
             ;;
-        orgblog )
-            pandoc -f org -t html | __shite_blog_post
-            ;;
     esac
+}
+
+__shite_wrap_content_html() {
+    local content_type=${1:?"Fail. We expect content_type such as blog, index, static, or generic."}
+
+    case ${content_type} in
+        generic )
+            cat -
+            ;;
+        blog )
+            shite_template_posts_article
+    esac
+}
+
+__shite_wrap_page_html() {
+    # Given well-formed body HTML content, punch it into the appropriate
+    # page template, to emit a complete, well-formed page.
+    shite_template_common_default_page
 }
 
 # ####################################################################
@@ -222,12 +151,12 @@ shite_proc_content() {
 #
 # Try building the sample pages.
 #
-#   $ ls sample/hello*.html | shite_build_public_html > /dev/null
+#   $ ls sample/hello*.html | shite_publish > /dev/null
 #
 # Also try building some detailed content, mapping to the pages linked
 # in the top navigation.
 #
-#   $ ls content/*.html | shite_build_public_html > /dev/null
+#   $ ls content/*.html | shite_publish > /dev/null
 #
 # Note how this function knows the global data as well as infers / adds
 # page-specific data that only it knows at build time, e.g. constructing
@@ -235,105 +164,48 @@ shite_proc_content() {
 #
 # ####################################################################
 
-# Set globally-relevant information that we inject into components,
-# and that we may also use to control site build behaviour.
-declare -A shite_global_data=(
-    [title]="A static shite from shell"
-    [author]="Yours Truly"
-    [description]="In which we work our way to world domination the hard way."
-    [keywords]="blog, world domination, being awesome"
-    [default_build_env]="dev"
-    [url_dev]="http://localhost:8080"
-    [url_prod]="https://example.com"
-    [publish_dir]="public"
-)
+shite_publish() {
+    # Analyse events and dispatch appropriate content processing actions.
+    # e.g. Punch orgmode blog content through its content processor,
+    # or garbage collect a static file from public (published) targety, if its
+    # source file is deleted or renamed (moved).
+    while IFS=',' read -r timestamp event_type watch_dir sub_dir file_name file_type content_type
+    do
+        # Set page-specific data into page context, that we can infer only at
+        # the time of building the page. The page builder function depends on
+        # us doing so before calling it.
+        local slug="${sub_dir}/${file_name%\.*}"
 
+        __shite_set_page_data \
+            ${file_type} \
+            "${watch_dir}/sources/${sub_dir}/${file_name}" \
+            <(cat <<<"canonical_url,${shite_global_data[base_url]}/${slug}.html")
 
-shite_build_public_html() {
-    # Given a list of content files, write well-formed HTML into the
-    # designated public directory.
-
-    local content_proc_fn=${1:-"__shite_drop_page_header_data"} # the least we can do
-    local html_formatter_fn=${2:-"cat"} # could be `tidy -i` etc.
-    local page_data_fn=${3:-"__shite_get_page_header_data"} # default page-data convention
-
-    # Ensure global build parameters are set before processing anything.
-    local build_env=${shite_build_env:-${shite_global_data[default_build_env]}}
-
-    # Process pages one by one.
-    while read body_content_file
-    do  # Ensure page-specific data is set before processing.
-        # The page builder function depends on us doing so before calling it.
-        local -A shite_page_data="$(${page_data_fn} ${body_content_file})"
-        local slug=$(basename ${body_content_file} | sed -E "s;(.*)(\..*)$;\1;")
-        local html_output_file_name="${slug}.html"
-
-        # Inject page-specific data into page context, that we can infer or set
-        # only at the time of building the page.
-        shite_page_data+=(
-            [slug]="${slug}"
-            [canonical_url]="${shite_global_data[url_${build_env}]}/${html_output_file_name}"
-        )
-
-        # Build page and tee it into the public directory, namespaced by the slug
-        cat ${body_content_file} |
-            ${content_proc_fn} |
-            # We have only one page builder today, but
-            # we could have a variable number tomorrow.
-            shite_build_page  |
-            ${html_formatter_fn} |
-            tee "${shite_global_data[publish_dir]}/${html_output_file_name}"
+        case "${event_type}:${file_type}:${content_type}" in
+            DELETE|MOVED_FROM:*:generic )
+                # GC public files corresponding to dead content files
+                rm -f "${watch_dir}/public/${slug}.html"
+                ;;
+            *:html|org|md:generic|blog )
+                # Proc known types of content files, e.g. compile org blog
+                # to HTML, and write it to the public directory
+                cat "${watch_dir}/sources/${sub_dir}/${file_name}" |
+                    __shite_compile_source_to_html ${file_type} |
+                    __shite_wrap_content_html ${content_type} |
+                    __shite_wrap_page_html |
+                    ${html_formatter_fn} |
+                    tee "${watch_dir}/public/${slug}.html"
+                ;;
+            DELETE|MOVED_FROM:*:static )
+                # GC dead static files
+                rm -f "${watch_dir}/public/${sub_dir}/${file_name}"
+                ;;
+            *:*:static )
+                # Overwrite public versions of any modified static files
+                cp -f \
+                   "${watch_dir}/sources/${sub_dir}/${file_name}" \
+                   "${watch_dir}/public/${sub_dir}/${file_name}"
+                ;;
+        esac
     done
-}
-
-
-# ####################################################################
-# SITE PUBLISHING
-#
-# Convenience functions to remind us how to create the full site, and
-# publish it to the public directory.
-#
-# ####################################################################
-
-shite_tidy_html() {
-    tidy -q -i
-}
-
-shite_build_public_static() {
-    cp -fr ./static/* ./public
-}
-
-shite_build_all_html_static() {
-    mkdir -p public # ensure the public dir. exists
-
-    shite_build_public_static
-
-    find content/ -type f -name *.html |
-        shite_build_public_html \
-            shite_proc_html_content \
-            shite_tidy_html > /dev/null
-
-    find content/ -type f -name *.md |
-        shite_build_public_html \
-            shite_proc_markdown_content \
-            shite_tidy_html > /dev/null
-
-    find content/ -type f -name *.org |
-        shite_build_public_html \
-            shite_proc_orgmode_content \
-            shite_tidy_html > /dev/null
-
-    # Write informational log to stderr
-    (
-        1>&2 cat <<EOF
-Built and published HTML pages and static files to public/ directory.
-cd into it, open index.html and enjoy your website.
-EOF
-    )
-}
-
-shite_rebuild_all_html_static() {
-    # Rebuild from scratch
-    rm -r public/*
-    __shite_drop_page_header_data
 }
