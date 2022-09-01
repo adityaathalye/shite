@@ -8,6 +8,7 @@ WARNING: Still under construction. Here be yaks!
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
 
+- [shite](#shite)
 - [Introduction](#introduction)
     - [Example](#example)
     - [Dreams and desires](#dreams-and-desires)
@@ -24,9 +25,12 @@ WARNING: Still under construction. Here be yaks!
         - [For orgmode content](#for-orgmode-content)
         - [For markdown content](#for-markdown-content)
         - [For html content](#for-html-content)
-    - [Creature Comforts](#creature-comforts)
-        - [Bashful Hot Reloading](#bashful-hot-reloading)
-        - [Unrealised Ambitions](#unrealised-ambitions)
+    - [Bashful Hot Reloading Sans Javascript](#bashful-hot-reloading-sans-javascript)
+        - [The event system](#the-event-system)
+        - [Liveness criterion](#liveness-criterion)
+        - [Hot reload scenarios](#hot-reload-scenarios)
+        - [Hot reload behaviour](#hot-reload-behaviour)
+    - [Unrealised Ambitions](#unrealised-ambitions)
 - [Contributing](#contributing)
 
 <!-- markdown-toc end -->
@@ -35,8 +39,12 @@ WARNING: Still under construction. Here be yaks!
 
 Well, `shite` aims to make websites.
 
-It exists because one whistles silly tunes and shaves yaks. It will not surprise
-a Perl/PHP gentleperson hacker from the last century.
+- It is a wee publishing system made of pipelined workflows, optionally driven
+  by streams of file events (for the hotreloadin' bits).
+
+- It will not surprise a Perl/PHP gentleperson hacker from the last century.
+
+- It exists because one whistles silly tunes and shaves yaks.
 
 This is baaasically what it does (ref: the `shite_publish` function).
 
@@ -53,9 +61,19 @@ cat "${watch_dir}/sources/${sub_dir}/${file_name}" |
 - It publishes content from org-mode files.
 - And html, and markdown.
 - It hot-builds.
-- It hot-reloads.
+- It hot-reloads (no Javascript).
 - It does neither if you disdain creature comforts.
 - It is quite small.
+  ```shell
+  # The complete "business logic" is 200-is lines as of this comment,
+  # counted as all lines except comments and blank lines.
+  grep -E -v "\s?\#|^$" \
+      bin/events.sh \
+      bin/hotreload.sh \
+      bin/templating.sh \
+      bin/utils.sh |
+     wc -l
+  ```
 - It is Bash-ful.
 - I _like_ it.
 
@@ -93,8 +111,7 @@ In my `shite` dreams, I desire...
 - Simple metadata system, content namespacing, static asset organisation etc.
 
 - To construct it from small, composable, purely functional, Unix-tool-like
-  parts, because I like that sort of stuff a lot. Thus, `shite` has become a
-  a wee system of pipelined workflows driven by streams of file events.
+  parts, because I like that sort of stuff a lot.
 
 - To give myself a seamless REPL-like edit-save-build-preview workflow.
   - Hot-build page processing (compile + build on save.)
@@ -115,9 +132,9 @@ path of making this. It is being blogged about at:
 
 ## Hot-reloaded workflow
 
-The hot-reloaded workflow expects that the website be open in a browser tab, and
-that the tab be visible. It won't work if the site is open but the tab is not
-active.
+The hot-reloaded workflow expects the website to be open in a browser tab, and
+that the site's tab be visible. It won't work if the site is open but the tab is
+not active.
 
 First, open Mozilla Firefox and navigate to, say, the content/index.html page
 (file:///path/to/content/index.html).
@@ -338,18 +355,16 @@ We can simply use standard `<meta>` tags, that obey this convention:
 </p>
 ```
 
-## Creature Comforts
+## Bashful Hot Reloading Sans Javascript
 
 Here be Yaks!
-
-### Bashful Hot Reloading
 
 Being entirely spoiled by Clojure/Lisp/Spreadsheet style insta-gratifying live
 interactive workflows, I want hot reload and hot navigate in shite-making too.
 
 But there does not seem to exist a standalone live web development server / tool
 that does not also want me to download half the known Internet as dependencies.
-A thing I *extremely* do *not* want to do.
+As I said before, a thing I *extremely* do *not* want to do.
 
 DuckSearch delivered Emacs impatient-mode, which is quite hot, but I don't want
 to hardwire this my Emacs. Luckily, it also delivered this exciting brainwave
@@ -361,25 +376,46 @@ Hot copy!
 Because what could be hotter than my computer slammin' that F5 key *for* me? As
 if it *knew* what I really wanted deep down in my heart.
 
-**Liveness criterion**
+### The event system
 
-`shite` hotreload uses streaming architecture.
+The event subsystem is orthogonal to everything else, and composes with the rest
+of the system.
 
-The afore-linked inotify-refresh script tries to *periodically* refresh a set of
-browser windows. We want to be very eager. Any edit action on our content files
-and/or static assets must insta-trigger hot reload/navigate actions in the browser
-tab that's displaying our shite.
+The design is bog standard streaming architecture, viz. watch for file system
+events, then filter, deduplicate, analyse, and route them (tee) to different
+event processors. Currently there are just two such processors; one to compile
+and publish the page or asset associated with the event, another to hot reload
+the browser (or hot navigate) depending on the same event.
 
-It's baaasically this:
+Baaasically this:
 
 ``` shell
+# detect file events
 __shite_detect_changes ${watch_dir} 'create,modify,close_write,moved_to,delete' |
-    __shite_distinct_events |
-    __shite_xdo_cmd_gen ${window_id} ${base_url} |
-    __shite_xdo_cmd_exec
+    __shite_events_gen_csv ${watch_dir} |
+    # hot-compile-and-publish content, HTML, static, etc.
+    tee >(shite_publish > /dev/null) |
+    # browser hot-reload
+    tee >(__shite_xdo_cmd_public_events ${window_id} ${base_url} |
+              __shite_xdo_cmd_exec)
 ```
 
-**Hot reload scenarios**
+Events are simply a stream of CSV records structured like this:
+
+``` shell
+unix_epoch_seconds,event_type,base_dir,sub_dir,file_name,file_type,content_type`
+```
+
+We use different parts of the event record to cause different kinds of actions.
+
+### Liveness criterion
+
+The afore-linked inotify-refresh script tries to *periodically* refresh a set of
+browser windows. We, however, want to be *very* eager. Any edit action on our
+content files and/or static assets must insta-trigger hot reload/navigate actions
+in the browser tab that's displaying our shite.
+
+### Hot reload scenarios
 
 We want to define distinct reload scenarios: Mutually exclusive, collectively
 exhaustive buckets into which we can map file events we want to monitor.
@@ -398,13 +434,13 @@ Navigate to content when
 - current page content modified
 - any content page moved or created or modified
 
-**Hot reload behaviour**
+### Hot reload behaviour
 
 Since we are making the computer emulate our own keyboard actions, it can mess
 with our personly actions. If we stick to writing our shite in our text editor,
 and let the computer do the hotreloady thing, we should remain non-annoyed.
 
-### Unrealised Ambitions
+## Unrealised Ambitions
 
 Maybe some "Dev-ing/Drafting" time setup/Teardown scenario? Maybe a 'dev_server'
 function that we use to kick start a new shite writing session?

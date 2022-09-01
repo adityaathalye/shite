@@ -4,32 +4,33 @@
 # TEMPLATES AS HEREDOCS
 # ####################################################################
 #
-# We expect some outside process to set page-level data and global data
-# for us, in arrays `shite_page_data`, and `shite_global_data`
+# Because, why not?
 #
-# Source the functions, set the data, and call them per usual. E.g.:
+# We expect some outside process to set page-level data and global data
+# for us, in arrays `shite_page_data`, and `shite_global_data`. So set
+# that data before calling individual functions. e.g.
 #
 # ( declare -A shite_page_data=([title]=foo [author]=bar [date]=baz);
 #   echo "BODY CONTENT" | shite_template_posts_article; )
 
-
 # ####################################################################
-# DEFAULT PAGE TEMPLATE
+# WHOLE-PAGE TEMPLATES
 # ####################################################################
+#
+# Define heredocs that describe well-formed HTML pages, and fill them out
+# using other page fragments / components, global/local data, and (presumably
+# well-formed) HTML content received at stdin.
+#
+# e.g. Set global, page-local data, and call these (from the project root dir):
+#
+#   cat ./sample/hello.html |
+#     shite_template_common_default_page
+#
+#   cat ./sample/hello.md |
+#     pandoc -f markdown -t html |
+#     shite_template_common_default_page
 
 shite_template_common_default_page() {
-    # Wrap the given input, presumably main HTML content of a page,
-    # emit a fully formed HTML page.
-    #
-    # Try these invocations with the sample files (invoke from project root)
-    #
-    #   cat ./sample/hello.html |
-    #     shite_template_common_default_page
-    #
-    #   cat ./sample/hello.md |
-    #     pandoc -f markdown -t html |
-    #     shite_template_common_default_page
-    #
     local maybe_page_id=${shite_page_data[page_id]:+"id=\"${shite_page_data[page_id]}\""}
     local maybe_canonical_url=${shite_page_data[canonical_url]:+"<link rel=\"canonical\" href=\"${shite_page_data[canonical_url]}\">"}
 

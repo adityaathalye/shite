@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # ##################################################
-# Functions to power this poor shite's hot reload
+# Functions to drive browser hot reload.
 #
 # USAGE
 #
@@ -25,12 +25,11 @@
 #
 # LOGIC
 #
-# - MONITOR files with inotifywait, and stream events as CSV records
+# Given a stream of event records, in shite's "canonical" CSV record structure:
 # - INTERPRET events and generate commands to feed to a command executor
 #   - "Content" (html) file changes require special handling
 #   - "Static" (css,js,img) file changes only ever trigger page reload
 # - EXECUTE the incoming commands in a streaming fashion
-# - TAP into the stream at any point, for debugging, with the logging utility
 #
 #
 # WARNINGS
@@ -38,7 +37,7 @@
 # Beware of stdio buffering. Use stdbuf to control it.
 #
 # Some tools like grep and awk buffer their output and thus block downstream
-# actions. But we want instant reaction time. So buffers are bad for us.
+# actions. But we want instant reaction time. So those buffers are bad for us.
 #
 # Luckily stdbuf is a general way to tune buffering behaviour. We can work
 # with line-buffered output streaming. e.g.:
@@ -73,9 +72,22 @@ __shite_xdo_cmd_goto_url() {
 }
 
 __shite_xdo_cmd_public_events() {
-    # When we see events for files under the `public` target directory,
-    # generate xdotool commands using information like event type, file type,
-    # and how the file has changed (updated, deleted, moved etc.).
+    # Consume the shite event stream and generate xdotool commands to drive
+    # browser navigation, based on information like event type, file type,
+    # and how the public file has changed (updated, deleted, moved etc.).
+    #
+    # The browser should react only to changes in the `public` directory,
+    # so we select only those events.
+    #
+    # This interpreter:
+    #
+    # - Ignores events for non-public files
+    # - Generates special commands depending on type of modifications to HTML
+    #   "content" pages
+    # - Emits a catch-all page reload command for events for non-"content"
+    #   files. i.e. "Reload page" is the only sane thing to do when, say,
+    #   some CSS or JS or image changes.
+    #
     local window_id=${1:?"Fail. We expect a window ID."}
     local base_url=${2}
     local file_status
@@ -90,13 +102,13 @@ __shite_xdo_cmd_public_events() {
             fi
                    )
 
-        # First catch "content" pages, which require special casing.
-        # At last, catch all non-content pages and do the only sane
-        # thing for anything done to those pages; viz. reload the site.
         case "${sub_dir}:${event_type}:${file_type}:${file_status}" in
+            # SKIP NON-PUBLIC EVENTS
+            # We care only about events on `public` files. This first case gates
+            # all following cases. It will immediately drop any shite event that
+            # is for a non-public file.
             [!.public.]*:*:*:* )
-                # Gate events to process.
-                # Skip event immediately when NOT for a `public` file.
+            # DO NOTHING.
             ;;
             # RELOAD
             # - When any content file is modified
@@ -151,6 +163,12 @@ __shite_xdo_cmd_exec() {
 }
 
 shite_hotreload() {
+    # React to various file events, hot-build-and-publish `sources` to `public`,
+    # and then hot-reload (navigate) the browser.
+    #
+    # Browser navigation will work only when the site's tab is currently active.
+    # Hot build / publish works whether or not the tab is active.
+
     # Maybe improve with getopts later
     local watch_dir=${1:?"Fail. Please specify a directory to watch"}
     local tab_name=${2:?"Fail. We want to target a single specific tab only."}
@@ -171,8 +189,9 @@ shite_hotreload() {
                         "}'")
 
     # RUN PIPELINE
-    # Watch all files we care about, across content, static, public,
-    # for events of interest: 'create,modify,close_write,moved_to,delete'
+    # Watch all files we care about, across sources (org, md, CSS, JS etc.), and
+    # public (published HTML, CSS, JS etc.), for events of interest, viz.:
+    # 'create,modify,close_write,moved_to,delete'
     __shite_detect_changes \
         ${watch_dir} 'create,modify,close_write,moved_to,delete' |
         # Construct events records as a CSV (consider JSON, if jq isn't too expensive)

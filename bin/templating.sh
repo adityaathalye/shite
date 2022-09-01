@@ -25,11 +25,9 @@
 # processing. Page-specific metadata should be written in syntax that is
 # standard for that kind of content.
 #
-#   $ declare -A shite_page_data="$(__shite_get_page_front_matter ./sample/hello-data.html)"
+#   $ declare -A shite_page_data="$(__shite_get_page_front_matter ./sample/hello.html)"
 #
-#   $ cat sample/hello-data.html |
-#       __shite_drop_page_front_matter |
-#       shite_templates_common_default_page
+#   $ cat ./sample/hello.html |  shite_templates_common_default_page
 #
 # ####################################################################
 
@@ -40,15 +38,19 @@ __shite_get_page_front_matter() {
     #
     # We want our parsed keys to always be lowercase and obey snake_case. Values
     # can be any case.
-
-    # NOTE: We expect front matter based metadata definitions to be compatible
-    # with the given content type.
+    #
+    # NOTE: Metadata syntax.
+    #
+    # We expect front matter based metadata definitions to be compatible with
+    # the given content type.
     #
     # For html content, we can simply use <meta> tags. Whereas, for org and
     # markdown, we define metadata between some well-defined /begin,end/ pair
     # of markers. Given these markers, we can use sed-based multiline processing
     # techniques to parse only the text between the markers.
     # cf. https://unix.stackexchange.com/a/78479
+    #
+    # NOTE: `sed` flags.
     #
     # The -n flag is required to prevent pattern space printing. This ensures:
     # a) metadata only between the begin/end markers is streamed out,
@@ -93,10 +95,10 @@ __shite_set_page_data() {
     local file_path=${2:?"Fail. We expect full path to the file."}
     local optional_metadata_csv_file=${3}
 
-    # We use input redirection to set values in the *current* environment.
-    # One may be tempted to pipeline front matter CSV into this function,
-    # but that causes the data to be set in a subshell, which of course,
-    # does not mutate the outside environment.
+    # NOTE: We use input redirection to set values in the *current* environment.
+    # One may be tempted to pipeline front matter CSV into this function, but
+    # that causes the data to be set in a subshell, which of course, does not
+    # mutate the outside environment.
     while IFS=',' read -r key val
     do 1>&2 printf "%s\n" "KEY: ${key}, VAL: ${val}"
        shite_page_data[${key}]="${val}"
@@ -109,8 +111,8 @@ __shite_set_page_data() {
 }
 
 __shite_compile_source_to_html() {
-    # If content has front matter metadata, it is presumed to be
-    # in a format that the content
+    # If content has front matter metadata, it is presumed to be in a format
+    # that the content compiler can safely process and elide or ignore.
     local file_type=${1:?"Fail. We expect file type of content like html, org, md etc."}
 
     case ${file_type} in
@@ -149,19 +151,9 @@ __shite_wrap_page_html() {
 #
 # By convention we write all processed HTML into the "public" folder.
 #
-# Try building the sample pages.
-#
-#   $ ls sample/hello*.html | shite_publish > /dev/null
-#
-# Also try building some detailed content, mapping to the pages linked
-# in the top navigation.
-#
-#   $ ls content/*.html | shite_publish > /dev/null
-#
-# Note how this function knows the global data as well as infers / adds
-# page-specific data that only it knows at build time, e.g. constructing
-# the canonical URL.
-#
+# This function references global data, and injects page-specific data
+# that it gets from events (e.g. URL info) and/or metadata from page
+# front matter.
 # ####################################################################
 
 shite_publish() {

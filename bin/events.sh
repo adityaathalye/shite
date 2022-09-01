@@ -2,11 +2,20 @@
 
 # ##################################################
 # FILE EVENTS
+#
+# Events are structured as a CSV:
+#
+# unix_epoch_seconds,event_type,base_dir,sub_dir,file_name,file_type,content_type
+#
 # ##################################################
 
 __shite_detect_changes() {
-    # Continuously monitor the target directory for file CRUD events
-    # Emit a CSV record UNIX_EPOCH_SECONDS,EVENT_TYPE,WATCHED_DIR,FILE_NAME
+    # Monitor a target directory for file CRUD events and emit a structured
+    # record for each event of interest. Emit a CSV record of the form:
+    #
+    # UNIX_EPOCH_SECONDS,EVENT_TYPE,WATCHED_DIR,FILE_NAME
+    #
+    # Downstream, we massage this CSV into shite's canonical CSV record.
     local watch_dir="$(realpath -e ${1:-$(pwd)})"
     local watch_events=${2}
 
@@ -23,12 +32,14 @@ __shite_detect_changes() {
 
 __shite_events_gen_csv() {
     local base_dir="$(realpath -e ${1:-$(pwd)})"
-    # Given a stream of file events, emit a rich CSV record of event info,
+    # Given a raw stream of file events, emit a rich CSV record of event info,
     # having fields:
     #
     # UNIX_EPOCH_SECONDS,EVENT_TYPE,BASE_DIR,SUB_DIR,FILE_NAME,FILE_TYPE,CONTENT_TYPE
     #
-    # We perform parsing and analysis to ease event stream processing downstream.
+    # We analyse events and enrich them with data that will ease dispatch of
+    # various actions downstream. For example:
+    #
     # - Split the full watched_dir path into base_dir and sub_dir parts
     # - Enrich file and content type for fine-grained dispatch of file actions
     # - etc.
