@@ -49,10 +49,10 @@ Well, `shite` aims to make websites.
 This is baaasically what it does (ref: the `shite_publish` function).
 
 ``` shell
-cat "${watch_dir}/sources/${sub_dir}/${file_name}" |
-    __shite_compile_source_to_html ${file_type} |
-    __shite_wrap_content_html ${content_type} |
-    __shite_wrap_page_html |
+cat "${watch_dir}/sources/${url_slug}/${file_name}" |
+    __shite_templating_compile_source_to_html ${file_type} |
+    __shite_templating_wrap_content_html ${content_type} |
+    __shite_templating_wrap_page_html |
     ${html_formatter_fn} |
     tee "${watch_dir}/public/${slug}.html"
 
@@ -396,14 +396,14 @@ __shite_detect_changes ${watch_dir} 'create,modify,close_write,moved_to,delete' 
     # hot-compile-and-publish content, HTML, static, etc.
     tee >(shite_publish > /dev/null) |
     # browser hot-reload
-    tee >(__shite_xdo_cmd_public_events ${window_id} ${base_url} |
-              __shite_xdo_cmd_exec)
+    tee >(__shite_hot_cmd_public_events ${window_id} ${base_url} |
+              __shite_hot_cmd_exec)
 ```
 
 Events are simply a stream of CSV records structured like this:
 
 ``` shell
-unix_epoch_seconds,event_type,base_dir,sub_dir,file_name,file_type,content_type`
+unix_epoch_seconds,event_type,base_dir,url_slug,file_name,file_type,content_type`
 ```
 
 We use different parts of the event record to cause different kinds of actions.

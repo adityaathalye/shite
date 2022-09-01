@@ -28,7 +28,7 @@ this is some orgmode content
 - this is another point
 - a third point
 EOF
-__shite_get_page_front_matter org
+__shite_templating_get_page_front_matter org
 
 
 # markdown metada parsing:
@@ -54,7 +54,7 @@ this is some markdown content
   - this is another point
   - a third point
 EOF
-__shite_get_page_front_matter md
+__shite_templating_get_page_front_matter md
 
 
 # html metadata parsing:
@@ -77,4 +77,4 @@ cat <<'EOF' |
   </ul>
 </p>
 EOF
-__shite_get_page_front_matter html
+__shite_templating_get_page_front_matter html

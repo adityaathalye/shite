@@ -25,13 +25,13 @@
 # processing. Page-specific metadata should be written in syntax that is
 # standard for that kind of content.
 #
-#   $ declare -A shite_page_data="$(__shite_get_page_front_matter ./sample/hello.html)"
+#   $ declare -A shite_page_data="$(__shite_templating_get_page_front_matter ./sample/hello.html)"
 #
 #   $ cat ./sample/hello.html |  shite_templates_common_default_page
 #
 # ####################################################################
 
-__shite_get_page_front_matter() {
+__shite_templating_get_page_front_matter() {
     # Parse "front matter" of content documents and return a stream of
     # Key,Value CSV pairs. These can be further processed into shite_page_data
     # array or translated to HTML metadata.
@@ -86,7 +86,7 @@ __shite_get_page_front_matter() {
     esac
 }
 
-__shite_set_page_data() {
+__shite_templating_set_page_data() {
     # We always set data afresh, because it must be page-specific.
     unset shite_page_data
     declare -Agx shite_page_data
@@ -104,13 +104,13 @@ __shite_set_page_data() {
        shite_page_data[${key}]="${val}"
     done < <(cat ${file_path} |
                  # Lift page-specific frontmatter metatdata
-                 __shite_get_page_front_matter ${file_type} |
+                 __shite_templating_get_page_front_matter ${file_type} |
                  # Inject additional page-specific metadata
                  cat - ${optional_metadata_csv_file}
             )
 }
 
-__shite_compile_source_to_html() {
+__shite_templating_compile_source_to_html() {
     # If content has front matter metadata, it is presumed to be in a format
     # that the content compiler can safely process and elide or ignore.
     local file_type=${1:?"Fail. We expect file type of content like html, org, md etc."}
@@ -128,7 +128,7 @@ __shite_compile_source_to_html() {
     esac
 }
 
-__shite_wrap_content_html() {
+__shite_templating_wrap_content_html() {
     local content_type=${1:?"Fail. We expect content_type such as blog, index, static, or generic."}
 
     case ${content_type} in
@@ -140,7 +140,7 @@ __shite_wrap_content_html() {
     esac
 }
 
-__shite_wrap_page_html() {
+__shite_templating_wrap_page_html() {
     # Given well-formed body HTML content, punch it into the appropriate
     # page template, to emit a complete, well-formed page.
     shite_template_common_default_page
@@ -161,16 +161,16 @@ shite_publish() {
     # e.g. Punch orgmode blog content through its content processor,
     # or garbage collect a static file from public (published) targety, if its
     # source file is deleted or renamed (moved).
-    while IFS=',' read -r timestamp event_type watch_dir sub_dir file_name file_type content_type
+    while IFS=',' read -r timestamp event_type watch_dir url_slug file_name file_type content_type
     do
         # Set page-specific data into page context, that we can infer only at
         # the time of building the page. The page builder function depends on
         # us doing so before calling it.
-        local slug="${sub_dir}/${file_name%\.*}"
+        local slug="${url_slug}/${file_name%\.*}"
 
-        __shite_set_page_data \
+        __shite_templating_set_page_data \
             ${file_type} \
-            "${watch_dir}/sources/${sub_dir}/${file_name}" \
+            "${watch_dir}/sources/${url_slug}/${file_name}" \
             <(cat <<<"canonical_url,${shite_global_data[base_url]}/${slug}.html")
 
         case "${event_type}:${file_type}:${content_type}" in
@@ -181,22 +181,22 @@ shite_publish() {
             *:html|org|md:generic|blog )
                 # Proc known types of content files, e.g. compile org blog
                 # to HTML, and write it to the public directory
-                cat "${watch_dir}/sources/${sub_dir}/${file_name}" |
-                    __shite_compile_source_to_html ${file_type} |
-                    __shite_wrap_content_html ${content_type} |
-                    __shite_wrap_page_html |
+                cat "${watch_dir}/sources/${url_slug}/${file_name}" |
+                    __shite_templating_compile_source_to_html ${file_type} |
+                    __shite_templating_wrap_content_html ${content_type} |
+                    __shite_templating_wrap_page_html |
                     ${html_formatter_fn} |
                     tee "${watch_dir}/public/${slug}.html"
                 ;;
             DELETE|MOVED_FROM:*:static )
                 # GC dead static files
-                rm -f "${watch_dir}/public/${sub_dir}/${file_name}"
+                rm -f "${watch_dir}/public/${url_slug}/${file_name}"
                 ;;
             *:*:static )
                 # Overwrite public versions of any modified static files
                 cp -f \
-                   "${watch_dir}/sources/${sub_dir}/${file_name}" \
-                   "${watch_dir}/public/${sub_dir}/${file_name}"
+                   "${watch_dir}/sources/${url_slug}/${file_name}" \
+                   "${watch_dir}/public/${url_slug}/${file_name}"
                 ;;
         esac
     done

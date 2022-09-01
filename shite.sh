@@ -16,7 +16,7 @@ source ./bin/hotreload.sh
         [keywords]="blog, world domination, being awesome"
     )
 
-    shite_hotreload \
+    shite_hot_build_reload \
         "./" \
         "${shite_global_data[title]}" \
         ${browser_name} \

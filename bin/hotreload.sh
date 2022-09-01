@@ -5,9 +5,9 @@
 #
 # USAGE
 #
-# source this file and call the shite_hotreload function with arguments for
+# source this file and call the shite_hot_build_reload function with arguments for
 #
-#   shite_hotreload [WATCH DIR] [BROWSER TAB NAME] \
+#   shite_hot_build_reload [WATCH DIR] [BROWSER TAB NAME] \
 #                   [OPTIONAL BROWSER NAME] \
 #                   [OPTIONAL BASE URL]
 #
@@ -16,11 +16,11 @@
 #
 # EXAMPLES
 #
-#   shite_hotreload "public" 'A site'
+#   shite_hot_build_reload "public" 'A site'
 #
-#   shite_hotreload "public" 'A site' "Google Chrome"
+#   shite_hot_build_reload "public" 'A site' "Google Chrome"
 #
-#   shite_hotreload "public" 'A site' "Google Chrome" "http://localhost:8080"
+#   shite_hot_build_reload "public" 'A site' "Google Chrome" "http://localhost:8080"
 #
 #
 # LOGIC
@@ -54,14 +54,14 @@ source ./bin/events.sh
 # BROWSER COMMAND INTERPRETER FOR FILE EVENTS
 # ##################################################
 
-__shite_xdo_cmd_browser_refresh() {
+__shite_hot_cmd_browser_refresh() {
     local window_id=${1:?"Fail. We expect window ID to be set in scope."}
 
     printf "%s\n" \
            "key --window ${window_id} --clearmodifiers 'F5'"
 }
 
-__shite_xdo_cmd_goto_url() {
+__shite_hot_cmd_goto_url() {
     local window_id=${1}
     local url=${2}
 
@@ -71,7 +71,7 @@ __shite_xdo_cmd_goto_url() {
            "key --window ${window_id} --clearmodifiers 'Return'"
 }
 
-__shite_xdo_cmd_public_events() {
+__shite_hot_cmd_public_events() {
     # Consume the shite event stream and generate xdotool commands to drive
     # browser navigation, based on information like event type, file type,
     # and how the public file has changed (updated, deleted, moved etc.).
@@ -93,7 +93,7 @@ __shite_xdo_cmd_public_events() {
     local file_status
     local prev_file_name
 
-    while IFS=',' read -r timestamp event_type watch_dir sub_dir file_name file_type content_type
+    while IFS=',' read -r timestamp event_type watch_dir url_slug file_name file_type content_type
     do
         file_status=$(
             if [[ ${file_name} == ${prev_file_name} ]]
@@ -102,7 +102,7 @@ __shite_xdo_cmd_public_events() {
             fi
                    )
 
-        case "${sub_dir}:${event_type}:${file_type}:${file_status}" in
+        case "${url_slug}:${event_type}:${file_type}:${file_status}" in
             # SKIP NON-PUBLIC EVENTS
             # We care only about events on `public` files. This first case gates
             # all following cases. It will immediately drop any shite event that
@@ -117,7 +117,7 @@ __shite_xdo_cmd_public_events() {
             *:MODIFY:html:SAMEFILE ) ;& # catch vim edits
             *:CLOSE_WRITE:CLOSE:html:SAMEFILE ) ;& # catch emacs edits
             *:DELETE:html:NEWFILE )
-                __shite_xdo_cmd_browser_refresh ${window_id}
+                __shite_hot_cmd_browser_refresh ${window_id}
                 ;;
             # GOTO - NAVIGATE
             # - Newly-created content file, or
@@ -126,21 +126,21 @@ __shite_xdo_cmd_public_events() {
             *:CLOSE_WRITE:CLOSE:html:NEWFILE ) ;& # emacs new file
             *:CREATE:html:* ) ;&
             *:MOVED_TO:html:* )
-                __shite_xdo_cmd_goto_url \
+                __shite_hot_cmd_goto_url \
                     ${window_id} \
-                    "${base_url}/${sub_dir}/${file_name}"
+                    "${base_url}/${url_slug}/${file_name}"
                 ;;
             # GOTO - FALLBACK
             # - home page when the current content file is deleted
             *:DELETE:html:SAMEFILE )
-                __shite_xdo_cmd_goto_url \
+                __shite_hot_cmd_goto_url \
                     ${window_id} \
                     "${base_url}/index.html"
                 ;;
             # RELOAD page for any action on non-content pages,
             # presumably static assets.
             * )
-                __shite_xdo_cmd_browser_refresh ${window_id}
+                __shite_hot_cmd_browser_refresh ${window_id}
                 ;;
         esac
 
@@ -154,7 +154,7 @@ __shite_xdo_cmd_public_events() {
 # COMMAND EXECUTOR
 # ##################################################
 
-__shite_xdo_cmd_exec() {
+__shite_hot_cmd_exec() {
     # In debug mode, only show the actions, don't do them.
     if [[ ${SHITE_DEBUG} == "debug" ]]
     then cat -
@@ -162,7 +162,7 @@ __shite_xdo_cmd_exec() {
     fi
 }
 
-shite_hotreload() {
+shite_hot_build_reload() {
     # React to various file events, hot-build-and-publish `sources` to `public`,
     # and then hot-reload (navigate) the browser.
     #
@@ -192,7 +192,7 @@ shite_hotreload() {
     # Watch all files we care about, across sources (org, md, CSS, JS etc.), and
     # public (published HTML, CSS, JS etc.), for events of interest, viz.:
     # 'create,modify,close_write,moved_to,delete'
-    __shite_detect_changes \
+    __shite_events_detect_changes \
         ${watch_dir} 'create,modify,close_write,moved_to,delete' |
         # Construct events records as a CSV (consider JSON, if jq isn't too expensive)
         __shite_events_gen_csv ${watch_dir} |
@@ -202,7 +202,7 @@ shite_hotreload() {
         # and CRUD corresponding files in the public directory
         tee >(__tap_stream | shite_publish) |
         # Perform hot-reload actions only against changes to public files
-        tee >(__shite_xdo_cmd_public_events ${window_id} ${base_url} |
+        tee >(__shite_hot_cmd_public_events ${window_id} ${base_url} |
                   __tap_stream |
-                  __shite_xdo_cmd_exec)
+                  __shite_hot_cmd_exec)
 }
