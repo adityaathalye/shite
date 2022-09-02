@@ -89,7 +89,7 @@ __shite_hot_cmd_public_events() {
     #   some CSS or JS or image changes.
     #
     local window_id=${1:?"Fail. We expect a window ID."}
-    local base_url=${2}
+    local base_url=${2:?"Fail. We expect a base url."}
     local file_status
     local prev_file_name
 
@@ -200,7 +200,8 @@ shite_hot_build_reload() {
         __shite_events_dedupe |
         # Process changes to non-public files (static, pages, posts etc.)
         # and CRUD corresponding files in the public directory
-        tee >(__tap_stream | shite_publish) |
+        tee >(__tap_stream |
+                  shite_publish ${base_url} > /dev/null) |
         # Perform hot-reload actions only against changes to public files
         tee >(__shite_hot_cmd_public_events ${window_id} ${base_url} |
                   __tap_stream |

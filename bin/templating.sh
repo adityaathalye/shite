@@ -100,8 +100,7 @@ __shite_templating_set_page_data() {
     # that causes the data to be set in a subshell, which of course, does not
     # mutate the outside environment.
     while IFS=',' read -r key val
-    do 1>&2 printf "%s\n" "KEY: ${key}, VAL: ${val}"
-       shite_page_data[${key}]="${val}"
+    do shite_page_data[${key}]="${val}"
     done < <(cat ${file_path} |
                  # Lift page-specific frontmatter metatdata
                  __shite_templating_get_page_front_matter ${file_type} |
@@ -157,6 +156,7 @@ __shite_templating_wrap_page_html() {
 # ####################################################################
 
 shite_publish() {
+    local base_url=${1:?"Fail. We expect base url."}
     # Analyse events and dispatch appropriate content processing actions.
     # e.g. Punch orgmode blog content through its content processor,
     # or garbage collect a static file from public (published) targety, if its
@@ -171,7 +171,7 @@ shite_publish() {
         __shite_templating_set_page_data \
             ${file_type} \
             "${watch_dir}/sources/${url_slug}/${file_name}" \
-            <(cat <<<"canonical_url,${shite_global_data[base_url]}/${slug}.html")
+            <(cat <<<"canonical_url,${base_url}/${slug}.html")
 
         case "${event_type}:${file_type}:${content_type}" in
             DELETE|MOVED_FROM:*:generic )
