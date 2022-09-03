@@ -174,21 +174,22 @@ shite_publish() {
             <(cat <<<"canonical_url,${base_url}/${slug}.html")
 
         case "${event_type}:${file_type}:${content_type}" in
-            DELETE|MOVED_FROM:*:generic )
+            DELETE:*:generic|MOVED_FROM:*:generic )
                 # GC public files corresponding to dead content files
                 rm -f "${watch_dir}/public/${slug}.html"
                 ;;
-            *:html|org|md:generic|blog )
+            *:*:generic ) ;&
+            *:*:blog ) ;&
+            *:html:*|*:org:*|*:md:* )
                 # Proc known types of content files, e.g. compile org blog
                 # to HTML, and write it to the public directory
                 cat "${watch_dir}/sources/${url_slug}/${file_name}" |
                     __shite_templating_compile_source_to_html ${file_type} |
                     __shite_templating_wrap_content_html ${content_type} |
-                    __shite_templating_wrap_page_html |
-                    ${html_formatter_fn} |
-                    tee "${watch_dir}/public/${slug}.html"
+                    __shite_templating_wrap_page_html \
+                        > "${watch_dir}/public/${slug}.html"
                 ;;
-            DELETE|MOVED_FROM:*:static )
+            DELETE:*:static|MOVED_FROM:*:static )
                 # GC dead static files
                 rm -f "${watch_dir}/public/${url_slug}/${file_name}"
                 ;;
@@ -197,6 +198,9 @@ shite_publish() {
                 cp -f \
                    "${watch_dir}/sources/${url_slug}/${file_name}" \
                    "${watch_dir}/public/${url_slug}/${file_name}"
+                ;;
+            * )
+                SHITE_DEBUG="debug" __log_info "shite_publish does not handle the given event."
                 ;;
         esac
     done
