@@ -50,7 +50,7 @@ __shite_events_gen_csv() {
         -e "s;(.*),(${base_dir})\/sources\/(.*)\/,(.*);\1,\2,\3,\4;"  \
         -e "s;.*\.(.*)$;\0,\1;" \
         -e 's;.*,static\/.*;\0,static;' \
-        -e 's;.*,content\/posts\/.*;\0,blog;' \
+        -e 's;.*,posts\/.*;\0,blog;' \
         -e '/static|blog$/{p ; d}' \
         -e 's;.*;\0,generic;'
 }
