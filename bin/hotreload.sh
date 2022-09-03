@@ -207,5 +207,7 @@ shite_hot_build_reload() {
         # Perform hot-reload actions only against changes to public files
         tee >(__shite_hot_cmd_public_events ${window_id} ${base_url} |
                   __tap_stream |
-                  __shite_hot_cmd_exec)
+                  # to ensure only event record propogates, swallow any stdout
+                  # emitted by command execution
+                  __shite_hot_cmd_exec > /dev/null)
 }
