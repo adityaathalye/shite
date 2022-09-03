@@ -5,7 +5,11 @@
 #
 # USAGE
 #
-# source this file and call the shite_hot_build_reload function with arguments for
+# Source these files and call the shite_hot_build_reload function:
+#
+#   source ./bin/utils.sh
+#   source ./bin/events.sh
+#   source ./bin/hotreload.sh
 #
 #   shite_hot_build_reload [WATCH DIR] [BROWSER TAB NAME] \
 #                   [OPTIONAL BROWSER NAME] \
@@ -47,8 +51,6 @@
 # c.f https://www.perkin.org.uk/posts/how-to-fix-stdio-buffering.html
 # ##################################################
 
-source ./bin/utils.sh
-source ./bin/events.sh
 
 # ##################################################
 # BROWSER COMMAND INTERPRETER FOR FILE EVENTS
