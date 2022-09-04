@@ -16,6 +16,7 @@ WARNING: Still under construction. Here be yaks!
 - [Usage](#usage)
     - [Hot-reloaded workflow](#hot-reloaded-workflow)
     - [Manually invoked page builds](#manually-invoked-page-builds)
+    - [Debug flags](#debug-flags)
 - [Design and Internals](#design-and-internals)
     - [File and URL naming scheme](#file-and-url-naming-scheme)
     - [Code organisation](#code-organisation)
@@ -161,6 +162,15 @@ In a clean new terminal session:
   ```
 - Open the public directory in your file browser, open index.html and click
   away (assuming nothing broke of course).
+
+## Debug flags
+
+These flags alter the behaviour of the system.
+
+- Setting `SHITE_DEBUG` to "debug" will suppress browser hotreload. Commands
+  will be generated, but streamed to stdout instead of being executed.
+- Setting `SHITE_DEBUG_TEMPLATES` to "debug" will cause templates to be sourced
+  first, before publishing any templated source content.
 
 # Design and Internals
 

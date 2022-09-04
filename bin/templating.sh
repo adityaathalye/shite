@@ -184,6 +184,11 @@ shite_publish_sources() {
                 *:*:generic ) ;&
                 *:*:blog ) ;&
                 *:html:*|*:org:*|*:md:* )
+                    # Handy trick to modify templates, without having to restart
+                    # our process each time we change template functions.
+                    if [[ ${SHITE_DEBUG_TEMPLATES} == "debug" ]]
+                    then source "${watch_dir}/bin/templates.sh"
+                    fi
                     # Proc known types of content files, e.g. compile org blog
                     # to HTML, and write it to the public directory
                     cat "${watch_dir}/sources/${url_slug}" |
