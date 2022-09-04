@@ -208,7 +208,7 @@ shite_publish_sources() {
                        "${watch_dir}/public/${url_slug}"
                     ;;
                 * )
-                    SHITE_DEBUG="debug" __log_info "shite_publish_sources does not handle the given event."
+                    __log_info "shite_publish_sources does not handle the given event."
                     ;;
             esac
         done

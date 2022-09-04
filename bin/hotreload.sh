@@ -176,8 +176,7 @@ shite_hot_build_reload() {
     # LOOKUP WINDOW ID
     local window_id=$(xdotool search --onlyvisible --name "${tab_name}.*${browser_name}$")
 
-    SHITE_DEBUG="debug" __log_info \
-               $(printf "%s" "Hotreloadin' your shite now! " \
+    __log_info $(printf "%s" "Hotreloadin' your shite now! " \
                         "'{" \
                         "\"watch_dir\": \"$(realpath ${watch_dir})\", "\
                         "\"tab_name\": \"${tab_name}\", " \

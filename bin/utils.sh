@@ -2,9 +2,7 @@
 
 __to_stderr() {
     # Ref: I/O Redirection: http://tldp.org/LDP/abs/html/io-redirection.html
-    if [[ ${SHITE_DEBUG} == "debug" ]]
-    then 1>&2 printf "%s\n" "$(date --iso-8601=seconds) $@"
-    fi
+    1>&2 printf "%s\n" "$(date --iso-8601=seconds) $@"
 }
 
 __log_info() {
