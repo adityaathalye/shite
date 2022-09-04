@@ -25,7 +25,7 @@
     browser_name=${1:-"Mozilla Firefox"}
     base_url=${2:-"file://$(pwd)/public"}
     SHITE_DEBUG="nodebug"
-    SHITE_DEBUG_TEMPLATES="nodebug"
+    SHITE_DEBUG_TEMPLATES="debug"
 
     # Set globally-relevant information that we inject into components,
     # and that we may also use to control site build behaviour.
@@ -33,10 +33,11 @@
     # index.org (and/or index.html) at
     # the root of `sources`, using our little metadata parser from templating.sh
     declare -A shite_global_data=(
-        [title]="A static shite from shell"
-        [author]="Yours Truly"
-        [description]="In which we work our way to world domination the hard way."
-        [keywords]="blog, world domination, being awesome"
+        [title]="eval/apply is real magic."
+        [title_icon]="(λx.(x x) λx.(x x))"
+        [author]="Aditya Athalye"
+        [description]="Evaling and Applying forever."
+        [keywords]="systems thinking,functional programming,architecture,software design,technology leadership,devops,clojure"
         [base_url]="${base_url}"
     )
 

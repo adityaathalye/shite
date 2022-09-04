@@ -36,18 +36,20 @@ shite_template_common_default_page() {
 
     cat <<EOF
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
         $(shite_template_common_meta)
         $(shite_template_common_links)
         ${maybe_canonical_url}
     </head>
     <body ${maybe_page_id}>
-        $(shite_template_common_header)
-        <main>
-          $(cat -)
-        </main>
-        $(shite_template_common_footer)
+      <div id="the-very-top" class="stack center box">
+          $(shite_template_common_header)
+          <main>
+            $(cat -)
+          </main>
+          $(shite_template_common_footer)
+      </div>
     </body>
 </html>
 EOF
@@ -59,6 +61,7 @@ shite_template_common_meta() {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${shite_global_data[title]}</title>
+<base href="${shite_global_data[base_url]}/./">
 <meta name="author" content="${shite_global_data[author]}">
 <meta name="description" content="${shite_global_data[description]}">
 <meta name="keywords" content="${shite_global_data[keywords]}">
@@ -67,20 +70,31 @@ EOF
 
 shite_template_common_links() {
     cat <<EOF
-<link rel="stylesheet" type="text/css" href="${shite_global_data[base_url]}/static/css/style.css">
+<link rel="stylesheet" type="text/css" href="static/css/style.css">
 EOF
 }
 
 shite_template_common_header() {
     cat <<EOF
 <header id="site-header">
-  <h1>${shite_global_data[title]} by ${shite_global_data[author]}</h1>
-  <nav>
-      <span><a href="index.html">Blog</a></span>
-      <span><a href="about.html">About</a></span>
-      <span><a href="resume.html">Resume</a></span>
-  </nav>
-  <hr>
+  <div class="box invert stack">
+    <div class="with-sidebar site-header">
+      <a class="box icon" href="index.html">
+        <img src="static/img/220px-Lisplogo.png" alt="eval/apply" />
+      </a>
+      <div class="stack">
+        <div class="site-header">${shite_global_data[title]}</div>
+        <nav class="cluster site-header site-header:nav-items">
+           <a href="https://github.com/adityaathalye">who did this?</a>
+           <a href="posts/hello/index.html">why?</a>
+           <a href="index.html">how it's going</a>
+           <a href="index.xml">occasional RSS feed</a>
+           <a href="#footer">occasional newsletter</a>
+        </nav>
+      </div>
+    </div>
+  </div>
+  $(shite_template_common_horizontal_rule)
 </header>
 EOF
 }
@@ -88,10 +102,16 @@ EOF
 shite_template_common_footer() {
     cat <<EOF
 <footer>
-<hr>
+$(shite_template_common_horizontal_rule)
 <p>Copyright, ${shite_global_data[author]} $(date +%Y).</p>
 <p>All content is MIT licensed, except where specified otherwise.</p>
 </footer>
+EOF
+}
+
+shite_template_common_horizontal_rule() {
+    cat <<EOF
+<div><hr/></div>
 EOF
 }
 
@@ -111,13 +131,14 @@ cat <<EOF
   <header>
     <div class="stack">
       <h1 class="title">${title}</h1>
-      <p class="subtitle">${subtitle}</p>
+      <i>${subtitle}</i>
       <div class="cluster">
-        <span class="author">${author}</span>
-        <span class="date">Published: ${first_published}</span>
-        <span class="date">Updated: ${latest_published}</span>
-        <span class="tags">${tags}</span>
+        <span class="author"><sub><b>By: ${author}</b></sub></span>
+        <span class="date"><sub>Published: ${first_published}, </sub></span>
+        <span class="date"><sub>Updated: ${latest_published}, </sub></span>
+        <span class="tags"><sub>Tags: ${shite_page_data[tags]}</sub></span>
       </div>
+      $(shite_template_common_horizontal_rule)
     </div>
   </header>
   <section class="stack">

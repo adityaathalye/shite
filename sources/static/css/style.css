@@ -1,37 +1,264 @@
+/* --------------------------------------------------
+ * DESIGN NOTES
+ * --------------------------------------------------
+ * Use the "Every Layout" system!
+ * cf. https://every-layout.dev/
+ */
+
+/* --------------------------------------------------
+/* TYPEFACE DECLARATIONS
+* -------------------------------------------------- */
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code&family=Gentium+Book+Plus:ital,wght@0,400;0,700;1,400&family=Oswald:wght@200&display=swap');
+
 :root {
-  color: #1a2639;
-  background-color: #f0ece2;
-  font-family: sans-serif;
+    /* --------------------------------------------------
+     * MEASURE: Basis for all proportions.
+     * -------------------------------------------------- */
+    --measure: 72ch;            /* Max character width of a line. */
+
+    /* --------------------------------------------------
+     * MODULAR SCALE: Measures for rows and columns.
+     *
+     * - Rows: baseline + 3 larger and 3 smaller heights should suffice.
+     *
+     * - Columns: intended to support 1, 2, and 3 column fluid layouts,
+     *   for small, medium, wide wide screen layouts respectively. E.g.
+     *   prose may occupy 3 narrow columns on a widescreen monitor, but
+     *   on a smartphones, it may get a single full-width column.
+     * -------------------------------------------------- */
+
+    /* Proportion for modular grid. */
+    --ratio: 1.5;
+
+    /* Scale measure map to height and width of square cell */
+    --scale-xxxxs: calc(var(--scale-xxxs) / var(--ratio));
+    --scale-xxxs: calc(var(--scale-xxs) / var(--ratio));
+    --scale-xxs: calc(var(--scale-xs) / var(--ratio));
+    --scale-xs: calc(var(--scale-s) / var(--ratio));
+    --scale-s: calc(var(--scale-base) / var(--ratio));
+    --scale-base: 1rem;         /* Set baseline grid. */
+    --scale-l: calc(var(--scale-base) * var(--ratio));
+    --scale-xl: calc(var(--scale-l) * var(--ratio));
+    --scale-xxl: calc(var(--scale-xl) * var(--ratio));
+    --scale-xxxl: calc(var(--scale-xxl) * var(--ratio));
+
+    /* Aliases for column widths */
+    --col-w-full-bleed: calc(var(--measure) * var(--ratio));
+    --col-w-full: var(--measure);
+    --col-w-midi: calc(var(--col-w-full) / var(--ratio));
+    --col-w-half: calc(var(--col-w-full) / 2);
+    --col-w-narrow: calc(var(--col-w-midi) / var(--ratio));
+    --col-w-quarter: calc(var(--col-w-full) / 4);
+    --col-w-eighth: calc(var(--col-w-full) / 8);
+
+    /* --------------------------------------------------
+     * FONTS: Standard fonts, faces, and sane fallbacks.
+     * -------------------------------------------------- */
+    /* Typesetting defaults.
+     *
+     * We really like to pair a narrow, tall sans-serif with a gentle serif.
+     * Oswald (tall sans-serif) for titles and headings pairs pleasingly with
+     * Gentium Book Plus (serif) for prose. And Fira Code composes nicely with
+     * those two.
+     *
+     * Also we rely on the so-called "system font stack" as a fallback to our
+     * preferred fonts. c.f. https://systemfontstack.com/
+     */
+    --headings-font-family: 'Oswald', -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif;
+    --body-prose-family: 'Gentium Book Plus', Iowan Old Style, Apple Garamond, Baskerville, Times New Roman, Droid Serif, Times, Source Serif Pro, serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, serif;
+    --body-code-family: 'Fira Code', Menlo, Consolas, Monaco, Liberation Mono, Lucida Console, monospace;
+    line-height: var(--scale-l);
+    font-size: var(--scale-l);
+
+    /* --------------------------------------------------
+     * EMBELLISHMENTS: borders, colours etc.
+     * --------------------------------------------------*/
+    --color-light: #f0ece2;
+    --color-mid: #dfd3c3;
+    --color-dark: #1a2639;
+    --color-background: var(--color-light);
+    --color-links: var(--color-dark);
+    --color-masthead:  #ef9f2c;
+
+    color: var(--color-dark);
+    background-color: var(--color-background);
 }
-/* Find all the fancily named colours at:
-            https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#Color_keywords */
+
+* {
+  max-width: var(--col-w-full-bleed);
+}
+
+html,
+body,
+div,
+header,
+main,
+input,
+button {
+  font-family: var(--body-prose-family);
+  font-size: var(--scale-base);
+  font-weight: normal;
+  font-style: normal;
+  max-width: none;
+}
+
 body {
-  /* Default background colour for all content inside the page body. */
-  background-color: lightyellow;
-  /* Constrain body width. */
-  max-width: 72ch;
-  /* Prevent content from sticking to inside edges of body. */
-  padding: 1.5rem;
-  /* Position body in the middle of the screen. */
-  margin-top: 1.5rem;
+  margin: var(--scale-xxs);
+}
+
+main {
+  margin: var(--scale-s);
+}
+
+footer {
+  font-family: var(--headings-font-family);
+  font-weight: bold;
+  font-size: var(--scale-base);
+  line-height: var(--scale-base);
+}
+
+pre {
+  padding: var(--scale-s);
+  border-radius: var(--scale-xxxxs);
+  background-color: var(--color-mid);
+  font-size: var(--scale-s);
+  line-height: var(--scale-base);
+}
+
+code {
+  font-family: var(--body-code-family);
+}
+
+a {
+  color: var(--color-links);
+  text-underline-offset: var(--scale-xxxs);
+}
+
+h1,h2,h3,h4 {
+  /* font-family: 'Oswald', sans-serif; */
+  font-family: var(--headings-font-family);
+}
+
+h1 {
+  font-size: var(--scale-xl);
+  line-height: var(--scale-xl);
+}
+
+h2 {
+  font-size: var(--scale-l);
+  line-height: var(--scale-l);
+  font-weight: bold;
+  font-style: italic;
+}
+
+h3 {
+  font-size: var(--scale-base);
+  font-style: italic;
+}
+
+nav {
+  flex-wrap: wrap;
+  gap: var(--space, var(--scale-base));
+  justify-content: flex-start;
+  align-items: center;
+}
+
+/* --------------------------------------------------
+ * GENERAL-PURPOSE COMPOSABLE LAYOUTS
+ * --------------------------------------------------
+ * High-level structural building blocs of the content layout.
+ */
+
+.center {
+  box-sizing: content-box;
   margin-left: auto;
   margin-right: auto;
+  max-width: var(--col-w-full);
 }
-a {
-  color: darkred;
+
+.box {
+  padding: var(--scale-s);
+  border-radius: var(--scale-xxxxs);
 }
-nav {
+
+.box * {
+  color: inherit;
+}
+
+.box.invert {
+  background-color: var(--color-mid);
+}
+
+.box.invert.thin {
+  padding: none;
+  border: none;
+  max-height: var(--scale-xxxs);
+}
+
+.cluster {
   display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: var(--space, var(--scale-base));
+  justify-content: flex-start;
+  align-items: center;
 }
-#index-page {
-  background-color: lightyellow;
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
-#about-page {
-  background-color: azure;
+
+.stack > * {
+  margin-top: 0;
+  margin-bottom: 0;
 }
-#resume-page {
-  background-color: whitesmoke;
+
+.stack > * + * {
+  margin-top: var(--scale-base);
+}
+
+.with-sidebar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--scale-base);
+  max-width: var(--col-w-full);
+}
+
+.with-sidebar > :first-child {
+  flex-basis: 0;
+  flex-grow: 6;
+}
+
+.with-sidebar > :last-child {
+  flex-basis: 0;
+  flex-grow: 3;
+
+}
+
+/* --------------------------------------------------
+ * SPECIAL CASE STYLES
+ * --------------------------------------------------
+ * To specify content styles in a _very targeted_ way, for the exact elements
+ * we care about. i.e. as close to the "bottom" of the CSS cascade as can be.
+ */
+
+.box.icon,
+.box.icon img {
+  color: var(--color-dark);
+  background-color: var(--color-masthead);
+  max-width: var(--scale-xxxl);
+}
+
+.site-header {
+  font-family: var(--headings-font-family);
+  font-size: var(--scale-xl);
+  line-height: var(--scale-xl);
+}
+
+.site-header\:nav-items * {
+  font-family: var(--headings-font-family);
+  font-size: var(--scale-base);
+  line-height: var(--scale-base);
+  background-color: var(--color-masthead);
 }
