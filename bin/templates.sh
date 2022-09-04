@@ -61,7 +61,7 @@ shite_template_common_meta() {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${shite_global_data[title]}</title>
-<base href="${shite_global_data[base_url]}/./">
+<!-- <base href="${shite_global_data[base_url]}/./">  -->
 <meta name="author" content="${shite_global_data[author]}">
 <meta name="description" content="${shite_global_data[description]}">
 <meta name="keywords" content="${shite_global_data[keywords]}">
@@ -80,13 +80,13 @@ shite_template_common_header() {
   <div class="box invert stack">
     <div class="with-sidebar site-header">
       <a class="box icon" href="index.html">
-        <img src="static/img/220px-Lisplogo.png" alt="eval/apply" />
+        <img src="${shite_global_data[base_url]}/static/img/220px-Lisplogo.png" alt="eval/apply" />
       </a>
       <div class="stack">
         <div class="site-header">${shite_global_data[title]}</div>
         <nav class="cluster site-header site-header:nav-items">
            <a href="https://github.com/adityaathalye">who did this?</a>
-           <a href="posts/hello/index.html">why?</a>
+           <a href="${shite_global_data[base_url]}/posts/hello-world/index.html">why?</a>
            <a href="index.html">how it's going</a>
            <a href="index.xml">occasional RSS feed</a>
            <a href="#footer">occasional newsletter</a>
@@ -94,7 +94,6 @@ shite_template_common_header() {
       </div>
     </div>
   </div>
-  $(shite_template_common_horizontal_rule)
 </header>
 EOF
 }
@@ -102,16 +101,18 @@ EOF
 shite_template_common_footer() {
     cat <<EOF
 <footer>
-$(shite_template_common_horizontal_rule)
+<hr>
+<div class="box invert footer">
 <p>Copyright, ${shite_global_data[author]} $(date +%Y).</p>
 <p>All content is MIT licensed, except where specified otherwise.</p>
+</div>
 </footer>
 EOF
 }
 
 shite_template_common_horizontal_rule() {
     cat <<EOF
-<div><hr/></div>
+<hr/>
 EOF
 }
 
@@ -119,35 +120,47 @@ EOF
 # BLOG POST TEMPLATES
 # ####################################################################
 
+__shite_template_posts_article_toc_items() {
+    sed -n -E -e 's;<(h[[:digit:]]).*\s+id="(.*)".*>(.*)</h[[:digit:]]>;<span class="heading:\1"><a href="#\2">\3<\\a></span>;p;'
+}
+
+shite_template_posts_article_toc() {
+    cat <<EOF
+<nav class="table-of-contents">
+     $(cat - | __shite_template_posts_article_toc_items)
+</nav>
+EOF
+}
+
 shite_template_posts_article() {
 local title=${shite_page_data[title]:?"Fail. We expect title of the post."}
-local subtitle=${shite_page_data[subtitle]}
+local summary=${shite_page_data[summary]}
 local author=${shite_page_data[author]:?"Fail. We expect author."}
-local latest_published=$(date -Iminutes)
+local latest_published=$(date -Idate)
 local first_published=${shite_page_data[date]:?"Fail. We expect date like ${latest_published} (current date)."}
 
 cat <<EOF
-<article id="blog_post" class="stack">
+<article id="blog-post" class="stack">
   <header>
     <div class="stack">
-      <h1 class="title">${title}</h1>
-      <i>${subtitle}</i>
-      <div class="cluster">
-        <span class="author"><sub><b>By: ${author}</b></sub></span>
-        <span class="date"><sub>Published: ${first_published}, </sub></span>
-        <span class="date"><sub>Updated: ${latest_published}, </sub></span>
-        <span class="tags"><sub>Tags: ${shite_page_data[tags]}</sub></span>
+      <div class="title">${title}</div>
+      <div class="summary">${summary}</div>
+      <div class="cluster post-meta">
+        <span class="author">By: ${author}</span>
+        <span class="date">Published: ${first_published}</span>
+        <span class="date">Updated: ${latest_published}</span>
+        <span class="tags">Tags: ${shite_page_data[tags]}</span>
       </div>
-      $(shite_template_common_horizontal_rule)
+      <hr>
     </div>
   </header>
   <section class="stack">
       $(cat -)
   </section>
-  <footer>
+  <footer class="footer">
     <nav>
-      <span><sub>^ <a href="#blog_post">title</a></sub></span>
-      <span><sub>^ <a href="#site_header">menu</a></sub></span>
+      <span>^ <a href="#blog-post" rel="bookmark">title</a></span>
+      <span>^ <a href="#site-header" rel="bookmark">menu</a></span>
     </nav>
   </footer>
 </article>

@@ -33,7 +33,7 @@
     # index.org (and/or index.html) at
     # the root of `sources`, using our little metadata parser from templating.sh
     declare -A shite_global_data=(
-        [title]="eval/apply is real magic."
+        [title]="Eval / Apply is pure magic"
         [title_icon]="(λx.(x x) λx.(x x))"
         [author]="Aditya Athalye"
         [description]="Evaling and Applying forever."
