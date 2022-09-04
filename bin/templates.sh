@@ -114,7 +114,8 @@ cat <<EOF
       <p class="subtitle">${subtitle}</p>
       <div class="cluster">
         <span class="author">${author}</span>
-        <span class="date">${date}</span>
+        <span class="date">Published: ${first_published}</span>
+        <span class="date">Updated: ${latest_published}</span>
         <span class="tags">${tags}</span>
       </div>
     </div>
