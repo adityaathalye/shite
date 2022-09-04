@@ -164,43 +164,43 @@ shite_publish_sources() {
     local base_url=${1:?"Fail. We expect base url."}
 
     __shite_events_select_sources |
-        while IFS=',' read -r timestamp event_type watch_dir sub_dir url_slug file_name file_type content_type
+        while IFS=',' read -r timestamp event_type watch_dir sub_dir url_slug file_type content_type
         do
             # Set page-specific data into page context, that we can infer only at
             # the time of building the page. The page builder function depends on
             # us doing so before calling it.
-            local slug="${url_slug}/${file_name%\.*}"
+            local html_url_slug="${url_slug%\.*}.html"
 
             __shite_templating_set_page_data \
                 ${file_type} \
-                "${watch_dir}/sources/${url_slug}/${file_name}" \
-                <(cat <<<"canonical_url,${base_url}/${slug}.html")
+                "${watch_dir}/sources/${url_slug}" \
+                <(cat <<<"canonical_url,${base_url}/${html_url_slug}")
 
             case "${event_type}:${file_type}:${content_type}" in
                 DELETE:*:generic|MOVED_FROM:*:generic )
                     # GC public files corresponding to dead content files
-                    rm -f "${watch_dir}/public/${slug}.html"
+                    rm -f "${watch_dir}/public/${html_url_slug}"
                     ;;
                 *:*:generic ) ;&
                 *:*:blog ) ;&
                 *:html:*|*:org:*|*:md:* )
                     # Proc known types of content files, e.g. compile org blog
                     # to HTML, and write it to the public directory
-                    cat "${watch_dir}/sources/${url_slug}/${file_name}" |
+                    cat "${watch_dir}/sources/${url_slug}" |
                         __shite_templating_compile_source_to_html ${file_type} |
                         __shite_templating_wrap_content_html ${content_type} |
                         __shite_templating_wrap_page_html \
-                            > "${watch_dir}/public/${slug}.html"
+                            > "${watch_dir}/public/${html_url_slug}"
                     ;;
                 DELETE:*:static|MOVED_FROM:*:static )
                     # GC dead static files
-                    rm -f "${watch_dir}/public/${url_slug}/${file_name}"
+                    rm -f "${watch_dir}/public/${url_slug}"
                     ;;
                 *:*:static )
                     # Overwrite public versions of any modified static files
                     cp -f \
-                       "${watch_dir}/sources/${url_slug}/${file_name}" \
-                       "${watch_dir}/public/${url_slug}/${file_name}"
+                       "${watch_dir}/sources/${url_slug}" \
+                       "${watch_dir}/public/${url_slug}"
                     ;;
                 * )
                     SHITE_DEBUG="debug" __log_info "shite_publish_sources does not handle the given event."

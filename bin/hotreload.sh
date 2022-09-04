@@ -92,45 +92,45 @@ __shite_hot_cmd_public_events() {
     #
     local window_id=${1:?"Fail. We expect a window ID."}
     local base_url=${2:?"Fail. We expect a base url."}
-    local file_status
-    local prev_file_name
+    local url_status
+    local prev_url_slug
 
     # Process events only for `public` files.
     __shite_events_select_public |
         # Generate commands for browser hot reload / navigate.
-        while IFS=',' read -r timestamp event_type watch_dir sub_dir url_slug file_name file_type content_type
+        while IFS=',' read -r timestamp event_type watch_dir sub_dir url_slug file_type content_type
         do
-            file_status=$(
-                if [[ ${file_name} == ${prev_file_name} ]]
-                then printf "%s" "SAMEFILE"
-                else printf "%s" "NEWFILE"
+            url_status=$(
+                if [[ ${url_slug} == ${prev_url_slug} ]]
+                then printf "%s" "SAMEURL"
+                else printf "%s" "NEWURL"
                 fi
                        )
 
-            case "${event_type}:${file_type}:${file_status}" in
+            case "${event_type}:${file_type}:${url_status}" in
                 # RELOAD
                 # - When any content file is modified
                 # - When any non-current content file is deleted
                 #   (because that may affect the current page)
-                MODIFY:html:SAMEFILE ) ;& # catch vim edits
-                CLOSE_WRITE:CLOSE:html:SAMEFILE ) ;& # catch emacs edits
-                DELETE:html:NEWFILE )
+                MODIFY:html:SAMEURL ) ;& # catch vim edits
+                CLOSE_WRITE:CLOSE:html:SAMEURL ) ;& # catch emacs edits
+                DELETE:html:NEWURL )
                     __shite_hot_cmd_browser_refresh ${window_id}
                     ;;
                 # GOTO - NAVIGATE
                 # - Newly-created content file, or
                 # - Moved/renamed content file
-                MODIFY:html:NEWFILE ) ;& # vim new file
-                CLOSE_WRITE:CLOSE:html:NEWFILE ) ;& # emacs new file
+                MODIFY:html:NEWURL ) ;& # vim new file
+                CLOSE_WRITE:CLOSE:html:NEWURL ) ;& # emacs new file
                 CREATE:html:* ) ;&
                 MOVED_TO:html:* )
                     __shite_hot_cmd_goto_url \
                         ${window_id} \
-                        "${base_url}/${url_slug}/${file_name}"
+                        "${base_url}/${url_slug}"
                     ;;
                 # GOTO - FALLBACK
                 # - home page when the current content file is deleted
-                DELETE:html:SAMEFILE )
+                DELETE:html:SAMEURL )
                     __shite_hot_cmd_goto_url \
                         ${window_id} \
                         "${base_url}/index.html"
@@ -143,7 +143,7 @@ __shite_hot_cmd_public_events() {
             esac
 
             # Remember the file for the next cycle
-            prev_file_name=${file_name}
+            prev_url_slug=${url_slug}
         done
 }
 

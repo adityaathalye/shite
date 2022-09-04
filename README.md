@@ -49,7 +49,7 @@ Well, `shite` aims to make websites.
 This is baaasically what it does (ref: the `shite_publish_sources` function).
 
 ``` shell
-cat "${watch_dir}/sources/${url_slug}/${file_name}" |
+cat "${watch_dir}/sources/${url_slug}" |
     __shite_templating_compile_source_to_html ${file_type} |
     __shite_templating_wrap_content_html ${content_type} |
     __shite_templating_wrap_page_html |
@@ -403,7 +403,7 @@ __shite_detect_changes ${watch_dir} 'create,modify,close_write,moved_to,delete' 
 Events are simply a stream of CSV records structured like this:
 
 ``` shell
-unix_epoch_seconds,event_type,base_dir,sub_dir,url_slug,file_name,file_type,content_type`
+unix_epoch_seconds,event_type,base_dir,sub_dir,url_slug,file_type,content_type`
 ```
 
 We use different parts of the event record to cause different kinds of actions.

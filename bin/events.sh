@@ -5,7 +5,7 @@
 #
 # Events are structured as a CSV:
 #
-# unix_epoch_seconds,event_type,base_dir,sub_dir,url_slug,file_name,file_type,content_type
+# unix_epoch_seconds,event_type,base_dir,sub_dir,url_slug,file_type,content_type
 #
 # ##################################################
 
@@ -35,7 +35,7 @@ __shite_events_gen_csv() {
     # Given a raw stream of file events, emit a rich CSV record of event info,
     # having fields:
     #
-    # UNIX_EPOCH_SECONDS,EVENT_TYPE,BASE_DIR,SUB_DIR,URL_SLUG,FILE_NAME,FILE_TYPE,CONTENT_TYPE
+    # UNIX_EPOCH_SECONDS,EVENT_TYPE,BASE_DIR,SUB_DIR,URL_SLUG,FILE_TYPE,CONTENT_TYPE
     #
     # We analyse events and enrich them with data that will ease dispatch of
     # various actions downstream. For example:
@@ -47,7 +47,7 @@ __shite_events_gen_csv() {
     # NOTE: we strip trailing slashes from BASE_DIR, and URL_SLUG paths, so that
     # we can join them back with slashes interposed, when needed.
     sed -u -E \
-        -e "s;(.*),(${base_dir})\/(sources|public)\/(.*)\/,(.*);\1,\2,\3,\4,\5;"  \
+        -e "s;(.*),(${base_dir})\/(sources|public)\/(.*\/?),(.*);\1,\2,\3,\4\5;"  \
         -e "s;.*\.(.*)$;\0,\1;" \
         -e 's;.*,static\/.*;\0,static;' \
         -e 's;.*,posts\/.*;\0,blog;' \
