@@ -12,9 +12,20 @@
     source ./bin/events.sh
     source ./bin/hotreload.sh
 
-    # Orient for local editing and publishing in my preferred browser.
-    declare -r browser_name=${1:-"Mozilla Firefox"}
-    declare -r base_url=${2:-"file://$(pwd)"}
+    # Check for various requirements and dependencies
+    __ensure_min_bash_version "4.4"
+    # Events and streaming
+    __ensure_deps "inotifywait" "stdbuf"
+    # Events and Content Processing
+    __ensure_deps "gawk" "pandoc" "tidy"
+    # GUI / Browser actions
+    __ensure_deps "xdotool" "xdg-open"
+
+    # Cue shite for everyday local editing and publishing
+    browser_name=${1:-"Mozilla Firefox"}
+    base_url=${2:-"file://$(pwd)/public"}
+    SHITE_DEBUG="nodebug"
+    SHITE_DEBUG_TEMPLATES="nodebug"
 
     # Set globally-relevant information that we inject into components,
     # and that we may also use to control site build behaviour.
@@ -26,13 +37,17 @@
         [author]="Yours Truly"
         [description]="In which we work our way to world domination the hard way."
         [keywords]="blog, world domination, being awesome"
+        [base_url]="${base_url}"
     )
+
+    # Helpfully open a tab in the specified browser
+    ( xdg-open "${base_url}/index.html" & )
 
     # Oh yeah!
     shite_hot_build_reload \
-        "./" \
+        "$(pwd)" \
         "${shite_global_data[title]}" \
-        ${browser_name} \
-        ${base_url} \
+        "${browser_name}" \
+        "${base_url}" \
         > /dev/null
 )
