@@ -95,60 +95,56 @@ __shite_hot_cmd_public_events() {
     local file_status
     local prev_file_name
 
-    while IFS=',' read -r timestamp event_type watch_dir url_slug file_name file_type content_type
-    do
-        file_status=$(
-            if [[ ${file_name} == ${prev_file_name} ]]
-            then printf "%s" "SAMEFILE"
-            else printf "%s" "NEWFILE"
-            fi
-                   )
+    # Process events only for `public` files.
+    __shite_events_select_public |
+        # Generate commands for browser hot reload / navigate.
+        while IFS=',' read -r timestamp event_type watch_dir sub_dir url_slug file_name file_type content_type
+        do
+            file_status=$(
+                if [[ ${file_name} == ${prev_file_name} ]]
+                then printf "%s" "SAMEFILE"
+                else printf "%s" "NEWFILE"
+                fi
+                       )
 
-        case "${url_slug}:${event_type}:${file_type}:${file_status}" in
-            # SKIP NON-PUBLIC EVENTS
-            # We care only about events on `public` files. This first case gates
-            # all following cases. It will immediately drop any shite event that
-            # is for a non-public file.
-            [!.public.]*:*:*:* )
-            # DO NOTHING.
-            ;;
-            # RELOAD
-            # - When any content file is modified
-            # - When any non-current content file is deleted
-            #   (because that may affect the current page)
-            *:MODIFY:html:SAMEFILE ) ;& # catch vim edits
-            *:CLOSE_WRITE:CLOSE:html:SAMEFILE ) ;& # catch emacs edits
-            *:DELETE:html:NEWFILE )
-                __shite_hot_cmd_browser_refresh ${window_id}
-                ;;
-            # GOTO - NAVIGATE
-            # - Newly-created content file, or
-            # - Moved/renamed content file
-            *:MODIFY:html:NEWFILE ) ;& # vim new file
-            *:CLOSE_WRITE:CLOSE:html:NEWFILE ) ;& # emacs new file
-            *:CREATE:html:* ) ;&
-            *:MOVED_TO:html:* )
-                __shite_hot_cmd_goto_url \
-                    ${window_id} \
-                    "${base_url}/${url_slug}/${file_name}"
-                ;;
-            # GOTO - FALLBACK
-            # - home page when the current content file is deleted
-            *:DELETE:html:SAMEFILE )
-                __shite_hot_cmd_goto_url \
-                    ${window_id} \
-                    "${base_url}/index.html"
-                ;;
-            # RELOAD page for any action on non-content pages,
-            # presumably static assets.
-            * )
-                __shite_hot_cmd_browser_refresh ${window_id}
-                ;;
-        esac
+            case "${event_type}:${file_type}:${file_status}" in
+                # RELOAD
+                # - When any content file is modified
+                # - When any non-current content file is deleted
+                #   (because that may affect the current page)
+                MODIFY:html:SAMEFILE ) ;& # catch vim edits
+                CLOSE_WRITE:CLOSE:html:SAMEFILE ) ;& # catch emacs edits
+                DELETE:html:NEWFILE )
+                    __shite_hot_cmd_browser_refresh ${window_id}
+                    ;;
+                # GOTO - NAVIGATE
+                # - Newly-created content file, or
+                # - Moved/renamed content file
+                MODIFY:html:NEWFILE ) ;& # vim new file
+                CLOSE_WRITE:CLOSE:html:NEWFILE ) ;& # emacs new file
+                CREATE:html:* ) ;&
+                MOVED_TO:html:* )
+                    __shite_hot_cmd_goto_url \
+                        ${window_id} \
+                        "${base_url}/${url_slug}/${file_name}"
+                    ;;
+                # GOTO - FALLBACK
+                # - home page when the current content file is deleted
+                DELETE:html:SAMEFILE )
+                    __shite_hot_cmd_goto_url \
+                        ${window_id} \
+                        "${base_url}/index.html"
+                    ;;
+                # RELOAD page for any action on non-content pages,
+                # presumably static assets.
+                * )
+                    __shite_hot_cmd_browser_refresh ${window_id}
+                    ;;
+            esac
 
-        # Remember the file for the next cycle
-        prev_file_name=${file_name}
-    done
+            # Remember the file for the next cycle
+            prev_file_name=${file_name}
+        done
 }
 
 
@@ -203,9 +199,11 @@ shite_hot_build_reload() {
         # Process changes to non-public files (static, pages, posts etc.)
         # and CRUD corresponding files in the public directory
         tee >(__tap_stream |
-                  shite_publish ${base_url} > /dev/null) |
+                  shite_publish_sources ${base_url:?"Fail. Base URL not set."} > /dev/null) |
         # Perform hot-reload actions only against changes to public files
-        tee >(__shite_hot_cmd_public_events ${window_id} ${base_url} |
+        tee >(__shite_hot_cmd_public_events \
+                  ${window_id:?"Fail. Window ID not set."} \
+                  ${base_url:?"Fail. Base URL not set."} |
                   __tap_stream |
                   # to ensure only event record propogates, swallow any stdout
                   # emitted by command execution
