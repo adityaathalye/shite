@@ -67,7 +67,7 @@ EOF
 
 shite_template_common_links() {
     cat <<EOF
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" type="text/css" href="${shite_global_data[base_url]}/static/css/style.css">
 EOF
 }
 

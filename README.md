@@ -16,6 +16,7 @@ WARNING: Still under construction. Here be yaks!
 - [Usage](#usage)
     - [Hot-reloaded workflow](#hot-reloaded-workflow)
     - [Manually invoked page builds](#manually-invoked-page-builds)
+    - [Debug flags](#debug-flags)
 - [Design and Internals](#design-and-internals)
     - [File and URL naming scheme](#file-and-url-naming-scheme)
     - [Code organisation](#code-organisation)
@@ -46,10 +47,10 @@ Well, `shite` aims to make websites.
 
 - It exists because one whistles silly tunes and shaves yaks.
 
-This is baaasically what it does (ref: the `shite_publish` function).
+This is baaasically what it does (ref: the `shite_publish_sources` function).
 
 ``` shell
-cat "${watch_dir}/sources/${url_slug}/${file_name}" |
+cat "${watch_dir}/sources/${url_slug}" |
     __shite_templating_compile_source_to_html ${file_type} |
     __shite_templating_wrap_content_html ${content_type} |
     __shite_templating_wrap_page_html |
@@ -161,6 +162,15 @@ In a clean new terminal session:
   ```
 - Open the public directory in your file browser, open index.html and click
   away (assuming nothing broke of course).
+
+## Debug flags
+
+These flags alter the behaviour of the system.
+
+- Setting `SHITE_DEBUG` to "debug" will suppress browser hotreload. Commands
+  will be generated, but streamed to stdout instead of being executed.
+- Setting `SHITE_DEBUG_TEMPLATES` to "debug" will cause templates to be sourced
+  first, before publishing any templated source content.
 
 # Design and Internals
 
@@ -394,7 +404,7 @@ Baaasically this:
 __shite_detect_changes ${watch_dir} 'create,modify,close_write,moved_to,delete' |
     __shite_events_gen_csv ${watch_dir} |
     # hot-compile-and-publish content, HTML, static, etc.
-    tee >(shite_publish > /dev/null) |
+    tee >(shite_publish_sources > /dev/null) |
     # browser hot-reload
     tee >(__shite_hot_cmd_public_events ${window_id} ${base_url} |
               __shite_hot_cmd_exec)
@@ -403,7 +413,7 @@ __shite_detect_changes ${watch_dir} 'create,modify,close_write,moved_to,delete' 
 Events are simply a stream of CSV records structured like this:
 
 ``` shell
-unix_epoch_seconds,event_type,base_dir,url_slug,file_name,file_type,content_type`
+unix_epoch_seconds,event_type,base_dir,sub_dir,url_slug,file_type,content_type`
 ```
 
 We use different parts of the event record to cause different kinds of actions.
