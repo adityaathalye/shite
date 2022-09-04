@@ -2,6 +2,9 @@
 
 # Do it all in a subshell so we don't pollute the existing teminal session.
 (
+    # Ensure extglob is set, for enhanced Pattern Matching (see Bash manual).
+    shopt -s extglob
+
     # Bring in all the functions.
     source ./bin/utils.sh
     source ./bin/templates.sh
