@@ -156,8 +156,15 @@ __shite_hot_cmd_exec() {
     # In debug mode, only show the actions, don't do them.
     if [[ ${SHITE_DEBUG} == "debug" ]]
     then cat -
-    else stdbuf -oL grep -v '^$' | xdotool -
+    else stdbuf -oL grep -v '^$' | __tap_stream | xdotool -
     fi
+}
+
+shite_hot_browser_reload() {
+    local browser_window_id=${1:?"Fail. Window ID not set."}
+    local base_url=${base_url:?"Fail. Base URL not set."}
+    __shite_hot_cmd_public_events ${browser_window_id} ${base_url} |
+        __shite_hot_cmd_exec
 }
 
 shite_hot_build_reload() {
@@ -169,12 +176,11 @@ shite_hot_build_reload() {
 
     # Maybe improve with getopts later
     local watch_dir=${1:?"Fail. Please specify a directory to watch"}
-    local tab_name=${2:?"Fail. We want to target a single specific tab only."}
-    local browser_name=${3:?"Fail. We expect a browser name like \"Mozilla Firefox\"."}
-    local base_url=${4:?"Fail. We expect a base URL like `file://`"}
+    local browser_name=${2:?"Fail. We expect a browser name like \"Mozilla Firefox\"."}
+    local base_url=${3:?"Fail. We expect a base URL like `file://`"}
 
     # LOOKUP WINDOW ID
-    local window_id=$(xdotool search --onlyvisible --name "${tab_name}.*${browser_name}$")
+    local window_id=$(xdotool search --onlyvisible --name ".*${browser_name}$")
 
     __log_info $(printf "%s" "Hotreloadin' your shite now! " \
                         "'{" \
@@ -189,22 +195,11 @@ shite_hot_build_reload() {
     # Watch all files we care about, across sources (org, md, CSS, JS etc.), and
     # public (published HTML, CSS, JS etc.), for events of interest, viz.:
     # 'create,modify,close_write,moved_to,delete'
-    __shite_events_detect_changes \
-        ${watch_dir} 'create,modify,close_write,moved_to,delete' |
-        # Construct events records as a CSV (consider JSON, if jq isn't too expensive)
-        __shite_events_gen_csv ${watch_dir} |
-        # Deduplicate file events
-        __shite_events_dedupe |
-        # Process changes to non-public files (static, pages, posts etc.)
-        # and CRUD corresponding files in the public directory
-        tee >(__tap_stream |
-                  shite_publish_sources ${base_url:?"Fail. Base URL not set."} > /dev/null) |
+    shite_events_stream ${watch_dir} 'create,modify,close_write,moved_to,delete' |
+        # Copy events stream to stderr for observability and debugging
+        __tap_stream |
+        # React to source events and CRUD public files
+        tee >(shite_templating_publish_sources ${base_url} > /dev/null) |
         # Perform hot-reload actions only against changes to public files
-        tee >(__shite_hot_cmd_public_events \
-                  ${window_id:?"Fail. Window ID not set."} \
-                  ${base_url:?"Fail. Base URL not set."} |
-                  __tap_stream |
-                  # to ensure only event record propogates, swallow any stdout
-                  # emitted by command execution
-                  __shite_hot_cmd_exec > /dev/null)
+        tee >(shite_hot_browser_reload ${window_id} ${base_url})
 }

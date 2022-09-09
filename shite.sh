@@ -47,7 +47,6 @@
     # Oh yeah!
     shite_hot_build_reload \
         "$(pwd)" \
-        "${shite_global_data[title]}" \
         "${browser_name}" \
         "${base_url}" \
         > /dev/null

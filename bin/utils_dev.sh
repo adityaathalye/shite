@@ -5,6 +5,8 @@
 # Convenience functions to remind us how to create the full site, and
 # publish it to the public directory.
 #
+# TODO: Fix this whole namespace. It has fallen to ruin from disuse.
+#
 # ####################################################################
 
 source ./bin/utils.sh
@@ -40,17 +42,17 @@ shite_devutil_build_all_html_static() {
     __shite_build_public_static
 
     find content/ -type f -name *.html |
-        shite_publish_sources \
+        shite_templating_publish_sources \
             shite_proc_html_content \
             __shite_tidy_html > /dev/null
 
     find content/ -type f -name *.md |
-        shite_publish_sources \
+        shite_templating_publish_sources \
             shite_proc_markdown_content \
             __shite_tidy_html > /dev/null
 
     find content/ -type f -name *.org |
-        shite_publish_sources \
+        shite_templating_publish_sources \
             shite_proc_orgmode_content \
             __shite_tidy_html > /dev/null
 

@@ -54,7 +54,7 @@ Well, `shite` aims to make websites.
 
 - It exists because one whistles silly tunes and shaves yaks.
 
-This is baaasically what it does (ref: the `shite_publish_sources` function).
+This is baaasically what it does (ref: the `shite_templating_publish_sources` function).
 
 ``` shell
 cat "${watch_dir}/sources/${url_slug}" |
@@ -437,7 +437,7 @@ Baaasically this:
 __shite_detect_changes ${watch_dir} 'create,modify,close_write,moved_to,delete' |
     __shite_events_gen_csv ${watch_dir} |
     # hot-compile-and-publish content, HTML, static, etc.
-    tee >(shite_publish_sources > /dev/null) |
+    tee >(shite_templating_publish_sources > /dev/null) |
     # browser hot-reload
     tee >(__shite_hot_cmd_public_events ${window_id} ${base_url} |
               __shite_hot_cmd_exec)

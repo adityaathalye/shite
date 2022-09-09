@@ -155,7 +155,7 @@ __shite_templating_wrap_page_html() {
 # front matter.
 # ####################################################################
 
-shite_publish_sources() {
+shite_templating_publish_sources() {
     # Analyse events and dispatch appropriate content processing actions.
     # e.g. Punch orgmode blog content through its content processor,
     # or garbage collect a static file from public (published) targety, if its
@@ -208,7 +208,7 @@ shite_publish_sources() {
                        "${watch_dir}/public/${url_slug}"
                     ;;
                 * )
-                    __log_info "shite_publish_sources does not handle the given event."
+                    __log_info "shite_templating_publish_sources does not handle the given event."
                     ;;
             esac
         done

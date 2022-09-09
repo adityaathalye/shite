@@ -79,3 +79,20 @@ __shite_events_select_sources() {
 __shite_events_select_public() {
     stdbuf -oL grep -E -e ".*,public,.*"
 }
+
+# ##################################################
+# THE EVENT STREAM
+# ##################################################
+
+shite_events_stream() {
+    # Watch all relevant files in the given directory, for the given events.
+    local watch_dir=${1:?"Fail. Please specify a directory to watch"}
+    local watched_events=${2:-'create,modify,close_write,moved_to,delete'}
+
+    __shite_events_detect_changes \
+        ${watch_dir} ${watched_events} |
+        # Construct events records as a CSV (consider JSON, if jq isn't too expensive)
+        __shite_events_gen_csv ${watch_dir} |
+        # Deduplicate file events
+        __shite_events_dedupe
+}
