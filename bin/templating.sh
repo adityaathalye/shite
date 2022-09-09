@@ -181,14 +181,17 @@ shite_templating_publish_sources() {
                     # GC public files corresponding to dead content files
                     rm -f "${watch_dir}/public/${html_url_slug}"
                     ;;
-                *:*:generic ) ;&
-                *:*:blog ) ;&
-                *:html:*|*:org:*|*:md:* )
+                *:html:generic|*:org:generic|*:md:generic ) ;&
+                *:html:blog|*:org:blog|*:md:blog )
                     # Handy trick to modify templates, without having to restart
                     # our process each time we change template functions.
                     if [[ ${SHITE_DEBUG_TEMPLATES} == "debug" ]]
                     then source "${watch_dir}/bin/templates.sh"
                     fi
+
+                    # Idempotent. Make the slug directory IFF it does not exist.
+                    mkdir -p "${watch_dir}/public/${url_slug}"
+
                     # Proc known types of content files, e.g. compile org blog
                     # to HTML, and write it to the public directory
                     cat "${watch_dir}/sources/${url_slug}" |
@@ -197,13 +200,18 @@ shite_templating_publish_sources() {
                         __shite_templating_wrap_page_html \
                             > "${watch_dir}/public/${html_url_slug}"
                     ;;
+                *:jpg:generic|*:jpeg:generic|*:png:generic|*:svg:generic ) ;&
+                *:jpg:blog|*:jpeg:blog|*:png:blog|*:svg:blog )
+                    cp -u "${watch_dir}/sources/${url_slug}" "${watch_dir}/public/${url_slug}"
+                 ;;
                 DELETE:*:static|MOVED_FROM:*:static )
                     # GC dead static files
                     rm -f "${watch_dir}/public/${url_slug}"
                     ;;
                 *:*:static )
-                    # Overwrite public versions of any modified static files
-                    cp -f \
+                    # Overwrite public versions of any modified static files, or
+                    # create it if it does not exist.
+                    cp -u \
                        "${watch_dir}/sources/${url_slug}" \
                        "${watch_dir}/public/${url_slug}"
                     ;;
