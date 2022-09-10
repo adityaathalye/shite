@@ -42,7 +42,7 @@
     )
 
     # Helpfully open a tab in the specified browser
-    ( xdg-open "${base_url}/index.html" & )
+    ( firefox --new-tab "${base_url}/index.html" & )
 
     # Oh yeah!
     shite_hot_build_reload \
