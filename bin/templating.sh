@@ -169,7 +169,11 @@ shite_templating_publish_sources() {
             # Set page-specific data into page context, that we can infer only at
             # the time of building the page. The page builder function depends on
             # us doing so before calling it.
+
+            # transform content url_slug -to-> html file name
             local html_url_slug="${url_slug%\.*}.html"
+            # transform content url_slug -to-> directory root for the html content
+            local html_url_slug_root="$(dirname ${url_slug})"
 
             __shite_templating_set_page_data \
                 ${file_type} \
@@ -178,8 +182,18 @@ shite_templating_publish_sources() {
 
             case "${event_type}:${file_type}:${content_type}" in
                 DELETE:*:generic|MOVED_FROM:*:generic )
-                    # GC public files corresponding to dead content files
+                    # GC the specific resource
                     rm -f "${watch_dir}/public/${html_url_slug}"
+                    # GC the content's base dir too, IFF it becomes empty
+                    # NOTE: `find` is sensitive to sequence of expressions. RTFM
+                    # to make sure it is used correctly here.
+                    find "$(dirname "${watch_dir}/public/${html_url_slug_root:-'.'}")" \
+                         -depth -type d -empty -delete
+                    # TODO: Instead of deleting the directory, write an index.html
+                    # as an HTML redirect page. In the <head>, put something like...
+                    # <meta http-equiv="refresh" content="5; URL=new/fully-qualified/url" />
+                    # And in the body, some message like...
+                    # <p>Page moved! Redirecting you in 5s. Hurried? Click here.</p>
                     ;;
                 *:html:generic|*:org:generic|*:md:generic ) ;&
                 *:html:blog|*:org:blog|*:md:blog )
@@ -189,8 +203,8 @@ shite_templating_publish_sources() {
                     then source "${watch_dir}/bin/templates.sh"
                     fi
 
-                    # Idempotent. Make the slug directory IFF it does not exist.
-                    mkdir -p "${watch_dir}/public/${url_slug}"
+                    # Idempotent. Make the slug's root directory IFF it does not exist.
+                    mkdir -p "${watch_dir}/public/${html_url_slug_root}"
 
                     # Proc known types of content files, e.g. compile org blog
                     # to HTML, and write it to the public directory
