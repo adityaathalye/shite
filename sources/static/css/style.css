@@ -150,15 +150,15 @@ hr {
 }
 
 h1 {
-  font-weight: normal;
-  font-size: var(--scale-xl);
+  font-size: var(--scale-l);
   line-height: var(--scale-xl);
 }
 
 h2 {
   font-weight: normal;
+  font-style: italic;
   font-size: var(--scale-l);
-  line-height: var(--scale-l);
+  line-height: var(--scale-xl);
 }
 
 h3 {
@@ -171,7 +171,6 @@ nav {
   flex-wrap: wrap;
   gap: var(--space, var(--scale-base));
   justify-content: flex-start;
-  align-items: center;
 }
 
 img {
@@ -291,6 +290,32 @@ figcaption {
   font-size: var(--scale-xl);
   line-height: var(--scale-xxl);
 }
+
+.table-of-contents {
+  font-family: var(--headings-font-family);
+  line-height: var(--scale-base);
+}
+
+.toc-heading\:h1 {
+  font-size: var(--scale-base);
+  line-height: var(--scale-base);
+  font-weight: bold;
+}
+
+.toc-heading\:h2 {
+  font-weight: bold;
+  font-size: var(--scale-s);
+  line-height: var(--scale-s);
+  padding-left: var(--scale-base);
+}
+
+.toc-heading\:h3 {
+  font-style: italic;
+  font-size: var(--scale-s);
+  line-height: var(--scale-s);
+  padding-left: var(--scale-l);
+}
+
 
 .summary {
   font-style: italic;

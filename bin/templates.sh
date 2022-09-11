@@ -124,14 +124,29 @@ EOF
 # ####################################################################
 
 __shite_template_posts_article_toc_items() {
-    sed -n -E -e 's;<(h[[:digit:]]).*\s+id="(.*)".*>(.*)</h[[:digit:]]>;<span class="heading:\1"><a href="#\2">\3<\\a></span>;p;'
+    # NOTE: the `sed` regex matcher is greedy, and there is no way to alter that.
+    #
+    sed -n -E -e 's;<(h[[:digit:]]).*\s+id="([[:graph:]]+)">([[:print:]]+)<\/h[[:digit:]]>;<a href="#\2" class="toc-heading:\1">\3<\/a>;p';
 }
 
-shite_template_posts_article_toc() {
-    cat <<EOF
-<nav class="table-of-contents">
-     $(cat - | __shite_template_posts_article_toc_items)
-</nav>
+__shite_template_posts_article_prepend_toc() {
+    trap "rm -f shite_toc" 0 HUP TERM PIPE INT
+    mkfifo shite_toc
+
+    tee >(__shite_template_posts_article_toc_items >shite_toc) |
+        cat <<EOF
+<div class="stack table-of-contents">
+  <details class="box invert stack">
+  <summary>
+    <strong>Contents</strong>
+  </summary>
+  <nav class="stack">
+    $(cat shite_toc)
+  </nav>
+  </details>
+</div>
+<hr>
+  $(cat -)
 EOF
 }
 
@@ -141,6 +156,7 @@ local summary=${shite_page_data[summary]}
 local author=${shite_page_data[author]:?"Fail. We expect author."}
 local latest_published=$(date -Idate)
 local first_published=${shite_page_data[date]:?"Fail. We expect date like ${latest_published} (current date)."}
+local include_toc=${shite_page_data[include_toc]:-"no"}
 
 cat <<EOF
 <article id="blog-post" class="stack">
@@ -158,7 +174,12 @@ cat <<EOF
     </div>
   </header>
   <section class="stack">
-      $(cat -)
+      $(if [[ ${include_toc} == "yes" ]]
+        then
+          __shite_template_posts_article_prepend_toc
+        else
+          cat -
+        fi)
   </section>
   <footer class="footer">
     <nav>
