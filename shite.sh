@@ -10,6 +10,7 @@
     source ./bin/templates.sh
     source ./bin/templating.sh
     source ./bin/events.sh
+    source ./bin/metadata.sh
     source ./bin/hotreload.sh
 
     # Check for various requirements and dependencies
@@ -34,7 +35,7 @@
     # the root of `sources`, using our little metadata parser from templating.sh
     declare -A shite_global_data=(
         [title]="Eval / Apply is pure magic"
-        [title_icon]="(λx.(x x) λx.(x x))"
+        [title_icon]="static/img/220px-Lisplogo.png"
         [author]="Aditya Athalye"
         [description]="Evaling and Applying forever."
         [keywords]="systems thinking,functional programming,architecture,software design,technology leadership,devops,clojure"

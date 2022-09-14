@@ -91,9 +91,9 @@ __shite_templating_set_page_data() {
     unset shite_page_data
     declare -Agx shite_page_data
 
-    local file_type=${1:?"Fail. We expect file type of the content."}
-    local file_path=${2:?"Fail. We expect full path to the file."}
-    local optional_metadata_csv_file=${3}
+    local file_path=${1:?"Fail. We expect full path to the file."}
+    local file_type=${file_path##*\.} # Remove up to last period, geedily from left
+    local optional_metadata_csv_file=${2}
 
     # NOTE: We use input redirection to set values in the *current* environment.
     # One may be tempted to pipeline front matter CSV into this function, but
@@ -129,6 +129,8 @@ __shite_templating_compile_source_to_html() {
 
 __shite_templating_wrap_content_html() {
     local content_type=${1:?"Fail. We expect content_type such as blog, index, static, or generic."}
+    local watch_dir=${2:?"Fail. We expect watch directory."}
+    local posts_meta_file=${3:-"${watch_dir}/posts_meta.csv"}
 
     case ${content_type} in
         generic )
@@ -136,6 +138,13 @@ __shite_templating_wrap_content_html() {
             ;;
         blog )
             shite_template_posts_article
+            ;;
+        rootindex )
+            shite_template_indices_append_tags_posts ${posts_meta_file}
+            ;;
+        * )
+            __log_info "__shite_templating_wrap_content_html does not handle the given event."
+            ;;
     esac
 }
 
@@ -176,7 +185,6 @@ shite_templating_publish_sources() {
             local html_url_slug_root="$(dirname ${url_slug})"
 
             __shite_templating_set_page_data \
-                ${file_type} \
                 "${watch_dir}/sources/${url_slug}" \
                 <(cat <<<"canonical_url,${base_url}/${html_url_slug}")
 
@@ -196,7 +204,8 @@ shite_templating_publish_sources() {
                     # <p>Page moved! Redirecting you in 5s. Hurried? Click here.</p>
                     ;;
                 *:html:generic|*:org:generic|*:md:generic ) ;&
-                *:html:blog|*:org:blog|*:md:blog )
+                *:html:blog|*:org:blog|*:md:blog ) ;&
+                *:org:rootindex )
                     # Handy trick to modify templates, without having to restart
                     # our process each time we change template functions.
                     if [[ ${SHITE_DEBUG_TEMPLATES} == "debug" ]]
@@ -210,14 +219,39 @@ shite_templating_publish_sources() {
                     # to HTML, and write it to the public directory
                     cat "${watch_dir}/sources/${url_slug}" |
                         __shite_templating_compile_source_to_html ${file_type} |
-                        __shite_templating_wrap_content_html ${content_type} |
+                        __shite_templating_wrap_content_html ${content_type} ${watch_dir} |
                         __shite_templating_wrap_page_html \
                             > "${watch_dir}/public/${html_url_slug}"
+
+                    # We want rootindex page updates to also mean "please hot-build
+                    # other site-wide stuff like tags indices, RSS feed etc."
+                    if [[ "${file_type}:${content_type}" == "org:rootindex" ]]
+                    then local posts_meta_file="${watch_dir}/posts_meta.csv"
+
+                         # PER TAG index pages of posts
+                         cut -d, -f3 ${posts_meta_file} |
+                             tr ' ' '\n' | grep -v "^$" | sort -u |
+                             while read -r tag_name
+                             do local tag_dir="${watch_dir}/public/tags/${tag_name}"
+
+                                mkdir -p "${tag_dir}"
+
+                                shite_template_indices_tag_page_index \
+                                    ${tag_name} ${posts_meta_file} |
+                                    __shite_templating_wrap_page_html \
+                                        > "${tag_dir}/index.html"
+                             done
+
+                         # ALL TAGS root index page of posts
+                         shite_template_indices_tags_root_index ${posts_meta_file} |
+                             __shite_templating_wrap_page_html \
+                                 > "${watch_dir}/public/tags/index.html"
+                    fi
                     ;;
                 *:jpg:generic|*:jpeg:generic|*:png:generic|*:svg:generic ) ;&
                 *:jpg:blog|*:jpeg:blog|*:png:blog|*:svg:blog )
                     cp -u "${watch_dir}/sources/${url_slug}" "${watch_dir}/public/${url_slug}"
-                 ;;
+                    ;;
                 DELETE:*:static|MOVED_FROM:*:static )
                     # GC dead static files
                     rm -f "${watch_dir}/public/${url_slug}"

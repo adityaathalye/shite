@@ -95,13 +95,17 @@ __shite_hot_cmd_public_events() {
     local url_status
     local prev_url_slug
 
-    # Process events only for `public` files.
+    # Process events only for relevant `public` files.
     __shite_events_select_public |
+        __shite_events_drop_public_noisy_events |
         # Generate commands for browser hot reload / navigate.
         while IFS=',' read -r timestamp event_type watch_dir sub_dir url_slug file_type content_type
         do
+            # TODO: Find a cleaner alternative. This stateful logic messes up
+            # occasionally, especially when I also click about the site manually.
+            # It's not annoying UX-wise, just annoying that the bug exists.
             url_status=$(
-                if [[ ${url_slug} == ${prev_url_slug} ]]
+                if [[ "${url_slug}" == "${prev_url_slug}" ]]
                 then printf "%s" "SAMEURL"
                 else printf "%s" "NEWURL"
                 fi
@@ -201,5 +205,7 @@ shite_hot_build_reload() {
         # React to source events and CRUD public files
         tee >(shite_templating_publish_sources ${base_url} > /dev/null) |
         # Perform hot-reload actions only against changes to public files
-        tee >(shite_hot_browser_reload ${window_id} ${base_url})
+        tee >(shite_hot_browser_reload ${window_id} ${base_url}) |
+        # Trigger rebuilds of metadata indices
+        tee >(shite_metadata_rebuild_indices)
 }

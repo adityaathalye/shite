@@ -49,9 +49,10 @@ __shite_events_gen_csv() {
     sed -u -E \
         -e "s;(.*),(${base_dir})\/(sources|public)\/(.*\/?),(.*);\1,\2,\3,\4\5;"  \
         -e "s;.*\.(.*)$;\0,\1;" \
+        -e "s;.*,sources,index.org,.*;\0,rootindex;"\
         -e 's;.*,static\/.*;\0,static;' \
         -e 's;.*,posts\/.*;\0,blog;' \
-        -e '/static|blog$/{p ; d}' \
+        -e '/static|blog|rootindex$/{p ; d}' \
         -e 's;.*;\0,generic;'
 }
 
@@ -79,6 +80,12 @@ __shite_events_select_sources() {
 __shite_events_select_public() {
     stdbuf -oL grep -E -e ".*,public,.*"
 }
+
+__shite_events_drop_public_noisy_events() {
+    # to suppress noisy events, like when tags are bulk-updated
+    stdbuf -oL grep -E -v -e ".*,public,tags/.*,.*"
+}
+
 
 # ##################################################
 # THE EVENT STREAM

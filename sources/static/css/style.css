@@ -31,6 +31,7 @@
     --ratio: 1.5;
 
     /* Scale measure map to height and width of square cell */
+    --scale-xxxxxs: calc(var(--scale-xxxxs) / var(--ratio));
     --scale-xxxxs: calc(var(--scale-xxxs) / var(--ratio));
     --scale-xxxs: calc(var(--scale-xxs) / var(--ratio));
     --scale-xxs: calc(var(--scale-xs) / var(--ratio));
@@ -119,15 +120,17 @@ footer {
 }
 
 pre {
-  margin: var(--scale-s);
+  padding: var(--scale-s);
+  border-radius: var(--scale-xxxxs);
+  background-color: var(--color-light);
 }
 
 code {
   color: var(--color-code) !important;
   font-size: var(--scale-s);
+  line-height: var(--scale-s);
   font-family: var(--body-code-family);
   font-weight: bold;
-  line-height: var(--scale-xxxs);
 }
 
 blockquote {
@@ -239,7 +242,8 @@ figcaption {
   margin-top: var(--scale-base);
 }
 
-.with-sidebar {
+.with-sidebar,
+.with-sidebar-narrow {
   display: flex;
   flex-wrap: wrap;
   gap: var(--scale-base);
@@ -254,6 +258,17 @@ figcaption {
 .with-sidebar > :last-child {
   flex-basis: 0;
   flex-grow: 3;
+
+}
+
+.with-sidebar-narrow > :first-child {
+  flex-basis: 0;
+  flex-grow: 2;
+}
+
+.with-sidebar-narrow > :last-child {
+  flex-basis: 0;
+  flex-grow: 7;
 
 }
 
@@ -316,7 +331,6 @@ figcaption {
   padding-left: var(--scale-l);
 }
 
-
 .summary {
   font-style: italic;
 }
@@ -328,6 +342,54 @@ figcaption {
   font-weight: bold;
 }
 
+.tag-index-items {
+  font-family: var(--headings-font-family);
+  font-size: var(--scale-base);
+}
+
+a.tag-index-item {
+  background-color: var(--color-masthead);
+  text-underline-offset: var(--scale-xs);
+}
+
+.tag-index-item\:count {
+  font-size: var(--scale-xs);
+  font-weight: bold;
+  background-color: var(--color-dark);
+  color: var(--color-light);
+  line-height: var(--scale-base);
+  padding: var(--scale-xxxxxs);
+}
+
+.post-index-item * {
+  font-family: var(--headings-font-family);
+  font-size: var(--scale-base);
+}
+
+.post-index-item\:date {
+  font-size: var(--scale-s);
+  line-height: var(--scale-xxl);
+  font-weight: bold;
+  color: var(--color-dark);
+}
+
+.post-index-item\:title {
+  font-size: var(--scale-l);
+  line-height: var(--scale-xl);
+}
+
+.post-index-item\:tag {
+  font-size: var(--scale-s);
+  font-weight: bold;
+  line-height: var(--scale-s);
+  background: var(--color-masthead);
+}
+
+.post-index-item\:hr {
+  height: 0;
+  color: var(--color-light);
+}
+
 .footnotes,
 .footer,
 .footer * {
@@ -335,4 +397,9 @@ figcaption {
   font-weight: bold;
   font-size: var(--scale-s);
   line-height: var(--scale-base);
+}
+
+section.footnotes hr {
+  height: 0;
+  color: var(--color-light);
 }
