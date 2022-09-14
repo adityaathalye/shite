@@ -103,16 +103,19 @@ shite_template_common_footer() {
 <footer>
 <hr>
 <div class="box invert footer">
-<p>Copyright, ${shite_global_data[author]} $(date +%Y).</p>
-<p>All content is MIT licensed, except where specified otherwise.</p>
+  <p>All content is copyright, ${shite_global_data[author]} $(date +%Y),
+except where specified otherwise.</p>
+  <form class="cluster"
+        action="https://buttondown.email/api/emails/embed-subscribe/evalapply"
+        method="post" target="popupwindow"
+        onsubmit="window.open('https://buttondown.email/evalapply','popupwindow')">
+    <label for="bd-email">Occasional newsletter (thanks, <a href="https://buttondown.email"
+           target="_blank">Buttondown</a>)</label>
+    <input type="email" name="email" id="bd-email">
+    <input type="submit" value="Subscribe">
+  </form>
 </div>
 </footer>
-EOF
-}
-
-shite_template_common_horizontal_rule() {
-    cat <<EOF
-<hr/>
 EOF
 }
 

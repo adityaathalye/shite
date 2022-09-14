@@ -303,9 +303,10 @@ figcaption {
   font-weight: bold;
 }
 
-.footer {
+.footer,
+.footer * {
   font-family: var(--headings-font-family);
   font-weight: bold;
   font-size: var(--scale-s);
-  line-height: var(--scale-s);
+  line-height: var(--scale-base);
 }
