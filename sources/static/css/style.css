@@ -328,6 +328,7 @@ figcaption {
   font-weight: bold;
 }
 
+.footnotes,
 .footer,
 .footer * {
   font-family: var(--headings-font-family);
