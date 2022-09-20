@@ -35,7 +35,7 @@
     # the root of `sources`, using our little metadata parser from templating.sh
     declare -A shite_global_data=(
         [title]="Eval / Apply is pure magic"
-        [title_icon]="static/img/220px-Lisplogo.png"
+        [title_icon]="static/img/Lisp_logo.svg"
         [author]="Aditya Athalye"
         [description]="Evaling and Applying forever."
         [keywords]="systems thinking,functional programming,architecture,software design,technology leadership,devops,clojure"

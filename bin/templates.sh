@@ -71,6 +71,7 @@ EOF
 shite_template_common_links() {
     cat <<EOF
 <link rel="stylesheet" type="text/css" href="${shite_global_data[base_url]}/static/css/style.css">
+<link href="${shite_global_data[base_url]}/index.xml" rel="alternate" type="application/rss+xml" title="${shite_global_data[title]}">
 EOF
 }
 
@@ -80,7 +81,7 @@ shite_template_common_header() {
   <div class="box invert stack">
     <div class="with-sidebar site-header">
       <a class="box icon" href="${shite_global_data[base_url]}/index.html#main">
-        <img src="${shite_global_data[base_url]}/${shite_global_data[title_icon]}" alt="eval/apply" />
+        <img src="${shite_global_data[base_url]}/${shite_global_data[title_icon]}" alt="${shite_global_data[title]}" />
       </a>
       <div class="stack">
         <div class="site-header">${shite_global_data[title]}</div>
@@ -92,7 +93,7 @@ shite_template_common_header() {
               who did this?
            </a>
            <a href="${shite_global_data[base_url]}/about.html#main">is he unhireable?</a>
-           <a href="#site-footer">feed? newsletter?</a>
+           <a href="#site-footer">contact? feed? newsletter?</a>
         </nav>
       </div>
     </div>
@@ -105,19 +106,44 @@ shite_template_common_footer() {
     cat <<EOF
 <footer id="site-footer">
 <hr>
-<div class="box invert footer">
-  <p>All content is copyright, ${shite_global_data[author]} $(date +%Y),
-except where specified otherwise.</p>
-  <p></p>
+<div class="box invert footer stack">
+  <p> Write to <em>weblog (at) evalapply (dot) org</em>. Made with
+      <a href="https://www.gnu.org/software/emacs/">GNU Emacs</a>,
+      <a href="https://orgmode.org/">org-mode</a>, and
+      <a href="https://github.com/adityaathalye/shite">shite</a>.
+  </p>
+  <hr>
+  <div class="cluster">
+    <span>
+      <a class="site-feed" href="${shite_global_data[base_url]}/index.xml">
+         Get fed
+      </a>.
+    </span>
   <form class="cluster"
         action="https://buttondown.email/api/emails/embed-subscribe/evalapply"
         method="post" target="popupwindow"
         onsubmit="window.open('https://buttondown.email/evalapply','popupwindow')">
-    <label for="bd-email">Occasional newsletter (thanks, <a href="https://buttondown.email"
-           target="_blank">Buttondown</a>)</label>
-    <input type="email" name="email" id="bd-email">
-    <input type="submit" value="Subscribe">
+      <input type="email" name="email" id="bd-email">
+    <span>
+      <input type="submit" value="Get occasional newsletter">
+      <em>(thanks, <a href="https://buttondown.email" target="_blank">Buttondown</a>!)</em>
+    </span>
   </form>
+  </div>
+  <hr>
+  <p>&copy; copyright $(date +%Y), <a href="https://evalapply.org" target="_blank">${shite_global_data[author]}</a>.
+    <span>Except where otherwise noted, content on this site is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
+    Creative Commons Attribution-ShareAlike 4.0 International License
+    </a>, the same one used by Wikipedia.</span>
+<span><a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
+    <img alt="Creative Commons License" style="border-width:0"
+         src="https://i.creativecommons.org/l/by-sa/4.0/80x15.png" />
+    </a></span>
+  </p>
+  <hr>
+  <p>
+  <script async defer src="https://www.recurse-scout.com/loader.js?t=40533398b8c93bb4f3323a170e032e91"></script>
+  </p>
 </div>
 </footer>
 EOF
@@ -223,7 +249,8 @@ $(cat ${posts_meta_file} |
      sort | uniq -c |
      while read -r tag_count tag_name
      do cat <<TAGITEM
-  <a href="${shite_global_data[base_url]}/tags/${tag_name}/index.html#main" class="tag-index-item">
+  <a href="${shite_global_data[base_url]}/tags/${tag_name}/index.html#main"
+     class="tag-index-item">
   <span class="tag-index-item:name">#${tag_name}</span>
   <span class="tag-index-item:count">/ ${tag_count}</span>
 </a>

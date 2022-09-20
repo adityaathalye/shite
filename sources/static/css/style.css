@@ -128,22 +128,55 @@ pre {
 code {
   color: var(--color-code) !important;
   font-size: var(--scale-s);
-  line-height: var(--scale-s);
+  line-height: var(--scale-base);
   font-family: var(--body-code-family);
   font-weight: bold;
 }
 
+figure {
+  margin: 0;
+  padding: var(--scale-s);
+  border-radius: var(--scale-xxxxs);
+  background-color: var(--color-light);
+  color: var(--color-emphasis) !important;
+}
+
+figure > img {
+  border: thin solid;
+  border-color: var(--color-mid);
+}
+
+figure > figcaption {
+  padding: var(--scale-xxs);
+  font-family: var(--headings-font-family);
+  font-size: var(--scale-s);
+  line-height: var(--scale-l);
+  font-weight: bold;
+  background-color: var(--color-mid);
+  border: thin solid;
+  border-color: var(--color-body-text);
+}
+
 blockquote {
   color: var(--color-quotes) !important;
-  margin: var(--scale-s);
+  margin: var(--scale-base);
   font-style: italic;
-  font-size: var(--scale-s);
-  line-height: var(--scale-base);
 }
 
 a {
   color: var(--color-links);
   text-underline-offset: var(--scale-xxxs);
+}
+
+a:hover {
+  color: var(--color-masthead);
+  background: var(--color-dark);
+}
+
+a[href^="http"]::after {
+  content: " \2924";
+  font-size: var(--scale-s);
+  vertical-align: super;
 }
 
 hr {
@@ -180,10 +213,31 @@ img {
   max-width: 100%;
 }
 
-figcaption {
+table {
   font-family: var(--headings-font-family);
-  font-size: var(--scale-s);
-  font-weight: bold;
+  table-layout: fixed;
+  border-collapse: collapse;
+  text-align: left;
+  border: collapse;
+}
+
+thead {
+  background: var(--color-light);
+}
+
+th, td {
+  padding: var(--scale-xxxs);
+  border-bottom: thin dashed;
+  border-color: var(--color-dark);
+}
+
+table > caption {
+  padding: var(--scale-s);
+  border-radius: var(--scale-xxxxs);
+  background-color: var(--color-light);
+  border-bottom: var(--scale-xxxs);
+  border-bottom-style: solid;
+  border-bottom-color: var(--color-mid);
 }
 
 /* --------------------------------------------------
@@ -347,7 +401,7 @@ figcaption {
   font-size: var(--scale-base);
 }
 
-a.tag-index-item {
+.tag-index-item {
   background-color: var(--color-masthead);
   text-underline-offset: var(--scale-xs);
 }
@@ -399,7 +453,25 @@ a.tag-index-item {
   line-height: var(--scale-base);
 }
 
+.footer hr,
 section.footnotes hr {
   height: 0;
   color: var(--color-light);
+}
+
+.footnote-back {
+  font-size: var(--scale-xs);
+  margin-left: var(--scale-base);
+}
+
+.footnote-back::before {
+  content: "# ";
+
+}
+
+a.site-feed {
+  background: url("../img/Feed-icon.svg") no-repeat 100% 0;
+  background-size: var(--scale-base);
+  background-position: left;
+  padding-left: var(--scale-l);
 }
