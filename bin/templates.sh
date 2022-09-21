@@ -160,23 +160,24 @@ __shite_template_posts_article_toc_items() {
 }
 
 __shite_template_posts_article_prepend_toc() {
-    trap "rm -f shite_toc" 0 HUP TERM PIPE INT
-    mkfifo shite_toc
+    local temp_shite_post_body="$(mktemp --tmpdir=$(pwd) 'shite_post_body_tmp.XXXXXXXXXX')"
+    trap "rm -f ${temp_shite_post_body}" 0 HUP TERM PIPE INT
 
-    tee >(__shite_template_posts_article_toc_items >shite_toc) |
-        cat <<EOF
+    cat - > "${temp_shite_post_body}"
+
+    cat <<EOF
 <div id="blog-post-toc" class="stack table-of-contents">
   <details class="box invert stack" open>
     <summary>
       <strong>Contents</strong>
     </summary>
     <nav class="stack">
-      $(cat shite_toc)
+      $(cat ${temp_shite_post_body} | __shite_template_posts_article_toc_items)
     </nav>
   </details>
 </div>
 <hr>
-  $(cat -)
+  $(cat ${temp_shite_post_body})
 EOF
 }
 
