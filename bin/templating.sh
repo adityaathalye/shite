@@ -203,7 +203,6 @@ shite_templating_publish_sources() {
                     # And in the body, some message like...
                     # <p>Page moved! Redirecting you in 5s. Hurried? Click here.</p>
                     ;;
-                *:html:generic|*:org:generic|*:md:generic ) ;&
                 *:html:blog|*:org:blog|*:md:blog ) ;&
                 *:org:rootindex )
                     # Handy trick to modify templates, without having to restart
@@ -248,17 +247,14 @@ shite_templating_publish_sources() {
                                  > "${watch_dir}/public/tags/index.html"
                     fi
                     ;;
-                *:jpg:generic|*:jpeg:generic|*:png:generic|*:svg:generic ) ;&
-                *:jpg:blog|*:jpeg:blog|*:png:blog|*:svg:blog )
-                    cp -u "${watch_dir}/sources/${url_slug}" "${watch_dir}/public/${url_slug}"
-                    ;;
                 DELETE:*:static|MOVED_FROM:*:static )
                     # GC dead static files
                     rm -f "${watch_dir}/public/${url_slug}"
                     ;;
+                *:*:generic ) ;&
                 *:*:static )
-                    # Overwrite public versions of any modified static files, or
-                    # create it if it does not exist.
+                    # Overwrite public versions of any modified generic, or static
+                    # files, or create them if they don't exist.
                     cp -u \
                        "${watch_dir}/sources/${url_slug}" \
                        "${watch_dir}/public/${url_slug}"

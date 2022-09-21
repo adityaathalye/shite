@@ -46,13 +46,16 @@ __shite_events_gen_csv() {
     #
     # NOTE: we strip trailing slashes from BASE_DIR, and URL_SLUG paths, so that
     # we can join them back with slashes interposed, when needed.
+    #
+    # TODO: switch to relying on metadata from page front matter (e.g. define
+    # content_type directly in each post). Also switch to JSON, and depend on jq.
     sed -u -E \
         -e "s;(.*),(${base_dir})\/(sources|public)\/(.*\/?),(.*);\1,\2,\3,\4\5;"  \
         -e "s;.*\.(.*)$;\0,\1;" \
         -e "s;.*,sources,index.org,.*;\0,rootindex;"\
         -e 's;.*,static\/.*;\0,static;' \
-        -e 's;.*,posts\/.*;\0,blog;' \
-        -e '/static|blog|rootindex$/{p ; d}' \
+        -e 's;.*,posts\/[-[:alnum:]_]?+\/index\.(org|md|html),.*;\0,blog;' \
+        -e '/,static|blog|rootindex|(^$)$/{p ; d}' \
         -e 's;.*;\0,generic;'
 }
 
