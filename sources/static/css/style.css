@@ -109,6 +109,7 @@ button {
 
 body {
   margin: var(--scale-xxs);
+  overflow-x: hidden;
 }
 
 main {
@@ -123,6 +124,7 @@ pre {
   padding: var(--scale-s);
   border-radius: var(--scale-xxxxs);
   background-color: var(--color-light);
+  overflow-x: auto;
 }
 
 code {
