@@ -1,0 +1,163 @@
+# SHITE_META
+#+title: Shell ain't a bad place to FP: part 0/N: Introduction
+#+summary: Or, *Supremely Functional Bash Programming*, an exploration in N parts...
+#+author: Adi
+#+date: 2022-02-23
+#+tags: bash unix functional_programming architecture
+#+include_toc: yes
+# SHITE_META
+
+Once upon a time, while fiddling with a log processing shell pipeline, it hit me
+that the UNIX Way is a Surprisingly Functional Way, and so Functional Programming
+(FP) and Bash must be a natural fit. They fit. The world was never the same again.
+
+Now I believe it so much, that I will go on a limb and assert that it is
+highly inappropriate to write imperative-style Bash when we can just as easily
+write /supremely/ functional Bash. Why? Because it makes for supremely /better/
+Bash (more reusable, more composable, more scalable, more enjoyable).
+
+Yes, I truly believe.
+
+Yes, I'm sane.
+
+No? Well OK, humour me...
+
+* Obligatory mea culpa
+  Because I'm am going to lazy-stream this in N parts. Because my original post
+  was growing to "never gonna ship" size. But /*not*/ because "Bash ain't a /real/
+  programming language". (Besides, in our post-reality world, we get to make
+  our own reality.)
+** Nothing here will be novel.
+   - /*I've not invented anything that follows.*/ There are too many influences to
+     enumerate fully. I'll provide references as I go along.
+   - /*I expect to revise*/, correct, add to this series as I learn more over time.
+   - /*Code in the post assumes Bash 4+*/, because that's what I've been using
+     over the last 8-odd years.
+** Your Mileage May Vary.
+   - /*The Bash code will be both message and medium.*/ but I will describe
+     general FP thinking, and Bash sure isn't the only medium. Please replicate
+     solutions in your favourite language (in a UNIX-like way)!
+   - /*I won't go crazy with Bash-isms*/, so the ideas and most of the code should
+     generalise to most UNIXy shells. That said, I haven't used other shells to
+     make equally confident claims about FP in them.
+** FP suffuses my very being.
+   - And I'm fairly confident the FP ideas will translate broadly, because I use
+     them all the time; in my code (Clojure, APL, Ruby, JS, Python, SML...), in
+     my designs for logging systems, infra-as-code systems, CI/CD systems, as
+     well as designing human/communication workflows for teams.
+   - But it's possible I've lived my life all wrong.
+* An outline of the "N" parts
+  This (zeroth) post is about why the UNIX Way is the way of functional-style
+  design [fn:1]. /~N~/ more posts are brewing, with examples and techniques.
+  Likely one per topic:
+
+  - A /rad/ example from 1986 to motivate the rest of the series.
+
+  - Deep-dive into bash functions and function design techniques
+    - Using functions to craft one's own Bytes-sized UNIX tools
+    - Using them interactively like regular UNIX tools
+
+  - Pipelining all the things
+    - How we automatically get map / filter / reduce / early termination
+    - Automatic streaming (regular pipes, tee, named pipes etc...)
+    - Ways to do pipeline-friendly domain design, and to translate that into
+      pipeline-friendly functions.
+
+  - Avoiding manual state management with intelligent use of:
+    - Variables, scopes, program invariants
+    - Command substitution
+    - Process substitution
+
+  - Declarative programming
+    - Templating with heredocs and herestrings
+    - Trickshots with things like ~seq~, ~paste~ etc.
+    - Reasonable uses of pattern matching
+
+  - Environment isolation in detail
+    - Lists and sub-shells
+    - in Pipelines
+    - Session portability
+
+  - Designing idempotent / restart-friendly solutions
+    - Because things can and will fail.
+
+  - Maybe parallelism
+    - Mainly because I haven't /had to/ [fn:2] write parallel Bash, but it will
+      be fun to mess with.
+
+  - Maybe sundry topics like associative arrays (Bash-only), job control,
+    namespacing, metaprogramming, flame-bait like "pipes are monads" etc.
+* Prelude: Seeing the UNIX tools philosophy as a functional design philosophy
+  The many remarkable aspects of UNIX Nature were discovered over half a century
+  worth of versions, revisions, disasters, and reincarnations. While many avatars
+  of UNICES and UNIX-likes have come and gone, the UNIX Way (articulated by the
+  1990s) has thrived through the ravages of time. Here it is, embodied in the
+  form of the UNIX Tools Philosophy.
+
+  - /*Most importantly, do one thing*/, and do it well (just like a function).
+
+  - Consume and emit /*plain data*/ (just like a function).
+
+  - /*Output the same data format as is received at input*/ (formerly only plain
+    lines of text, but now also structured literal data like JSON, EDN etc.)
+
+  - /*Don't be chatty*/ (i.e. avoid side-effects, again, just like a function).
+
+  - Be line-oriented, which design choice turns out to be /*naturally streaming*/,
+    with /*automatic support for map/filter/reduce*/, which we will use a lot.
+
+  - Favour /*universal composition*/ via standard interfaces like file descriptors,
+    standard IN/OUT/ERROR, line-orientation, and UNIX pipes (quite monadic, an
+    argument for much later).
+
+  - Be as /*general-purpose*/ as possible for wide reusability, in any context.
+    This pushes tools away from imposing internal structure on input data, as
+    also from maintaining persistent or shared internal state.
+
+  - Ideally have sane behaviour like environment isolation, idempotence, etc.
+
+  - Last but not least, when out-of-the-box solutions are not good enough, it
+    encourages us to detour to building our own tools. And these can be simple
+    Bash functions, usable interactively at the command line, just like full
+    standalone programs!
+
+  Of course, practice can diverge from the ideal, but not by too much (many tools
+  have to work with stateful objects like files and sockets, some may rely on
+  lock-files, some should be idempotent but aren't, others may grow to do more
+  than one thing and do everything badly etc.). Besides, not even Haskellers
+  escape this reality, so there.
+
+  It stands that the UNIX Way strongly encourages us to create laser-focused,
+  composable, purely functional, data-flow oriented programs that we can remix
+  at will into surprisingly powerful solutions with surprisingly little ceremony.
+
+  This /Way/ has proven to be very useful at scales several orders of magnitude
+  apart; from in-program 1-liner functions, to 1 kilobyte tools, to operating
+  systems, to planet-wide distributed systems. This unreasonable effectiveness
+  is why UNIX People have long valued these values.
+* "Screw that, show me your code"
+  Sorry! I feel ya... no code, no dice. Here is some of my FP-style Bash.
+  I plan to crib liberally from these to illustrate the posts-to-come.
+
+  - *[[https://github.com/adityaathalye/bash-toolkit][bash-toolkit]]*:
+    a "Swiss Army Toolkit" of functions I've been accumulating over the years.
+
+  - *[[https://github.com/adityaathalye/oxo][oxo]]*:
+    a retro-style noughts and crosses game in Bash (and it speaks!).
+
+  - Next up: *[[https://evalapply.org/posts/shell-aint-a-bad-place-to-fp-part-1-doug-mcilroys-pipeline/][Shell ain't a bad place to FP: part 1/N]]*
+    in which we take apart Douglas McIlroy's famous pipeline from 1986, to
+    motivate the rest of the series. "Take apart" in the sense of "Design is
+    about taking things apart.". A most respectful sense.
+
+  May the Source be with us.
+
+[fn:1] Recently I went on for a bit in general about
+[[https://www.evalapply.org/posts/what-makes-functional-programming-systems-functional/][what does it even mean to be "functional"?]]
+Read that if it pleases you, because it informs my approach to /Supremely Functional/
+Bash programming.
+
+[fn:2] There was the one time I could have, at a $DAYJOB, but I was quite green,
+and had deadline, and it was a one time log analysis thing, and I a large EC2
+box to waste, which I hogged for half a day, and came away stunned that my crappy
+shell pipeline chewed through ~600 GiB (gzipped) without crashing anything.

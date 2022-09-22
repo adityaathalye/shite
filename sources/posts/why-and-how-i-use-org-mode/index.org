@@ -1,0 +1,504 @@
+# SHITE_META
+#+title: Why and How I use "Org Mode" for my writing and more
+#+summary: I find myself telling people that they will have to pry org-mode from my cold dead hands. Which befuddles me. Why, as an ingrate software nerd who has soured on software technology — talk about biting the hand that feeds — do I evince such strong sentiment about a software program?!
+#+author: Adi
+#+date: 2022-04-19
+#+tags: howto whyto org_mode local_first notebooks knowledge_management
+#+include_toc: yes
+# SHITE_META
+
+You won't know of [[https://orgmode.org/][Org Mode]] if you live a normal life.
+[[https://orgmode.org/features.html][This page]] has pictures that will help you visualise it.
+
+It is a decidedly un-sexy under-marketed weirdly niche tool for note taking
+(and a lot more). "Your life in plain text", they say.
+
+Yet, I find myself telling people that they will have to pry it from my cold
+dead hands. Which befuddles me. Why, as an ingrate software nerd who has
+soured on software technology ---talk about biting the hand that feeds--- do
+I evince such strong sentiment about a software program?!
+
+Also, /plain text/? In 2022?!
+
+Well, join the wonder club. I've been wondering the same thing!
+
+With further ado, I will:
+  - illustrate my org-mode use with real examples
+  - describe my "what, why, and how" in generally applicable terms
+  - discuss some common objections and concerns
+  - offer some shiny brain-food for your imagination
+
+Also nerd alert. I can't remove some technicalities without also dumbing it
+down and doing your intelligence a disservice. Email me if you need help.
+
+Take what is useful and discard the rest!
+
+#+begin_quote
+Org is a highly flexible structured plain text file format, composed of a
+few simple, yet versatile, structures — constructed to be both simple enough
+for the novice and powerful enough for the expert.
+
+--- [[https://orgmode.org][orgmode.org]]
+#+end_quote
+
+Yes, it's true.
+
+* What I use Org Mode for
+
+  Over the last 8-odd years, I have /gradually/ come to use Org Mode (a.k.a.
+  /org-mode/, /orgmode/, or just /org/) for all my:
+  - note-taking
+  - live demo presentations
+  - slide decks
+  - diagramming
+  - interactive polyglot computational notebooks
+  - blogging. Indeed, this blog post and the surrounding website are written in
+    org text and [[https://www.evalapply.org/#footer][made with]] tools that work with orgmode.
+
+  I have *never* used org for managing TODOs, calendaring, or any "productivity"
+  use cases (time tracking, GTD etc.), which it has become popular for. Nor, as
+  is also popular these days, is it my "second brain". (Or maybe it is because
+  my ~/org directory is a total disaster zone. I just disorganise and use Emacs
+  to search through the files.).
+
+  Some Emacs-using manager-type friends have built very high-leverage workflows
+  to help them stay on top of operations, coaching/mentoring, project management,
+  and more. No other tool in the market comes close to what they can get their
+  org workflows to do for them. (Also, the pun is deeply satisfying --- to run
+  one's org with org :)
+
+  I too have yet to find an alternative that lets me do /all/ my stuff more
+  seamlessly and capably than org-mode. Granted I use the /Emacs/ implementation
+  of org-mode, but I'm optimistic that more apps (web, mobile, desktop) are
+  becoming general enough. I enumerate several of them later.
+* A pretty good example of my usage
+  I enjoy teaching tutorial-style talks and workshops, and I like to live
+  dangerously; only doing live demos. I recently did one of those at Functional
+  Conf 2022. Here is the sequence of events of how things got done, via org-mode.
+
+  1. *Development*:
+     The talk started off [[https://gist.github.com/adityaathalye/1eeb80e407fa937337402b1f15480b24][as prose]] in an orgmode file
+     (click "Raw" button to see the orgmode text I actually typed out).
+     Thanks to [[https://orgmode.org/worg/org-contrib/babel/][org-babel]],
+     I was programming and testing the code examples /right inside the file/,
+     as I went along developing and refining my ideas. This facility is known
+     as "live computational notebook". org-babel was separate before, but now
+     it comes built into the Emacs implementation of Org Mode. Epic win!
+
+  2. *Publishing*:
+     In fact, this content was a draft blog post in my website directory. Once
+     it got decently OK, [[https://www.evalapply.org/posts/n-ways-to-fizzbuzz-in-clojure/][I published it to my blog]], to solicit feedback
+     and to maintain as a living document, progressively improving the
+     prose / examples / explanations.
+
+  3. *Slideware*:
+     The reviewed and revised blog post rapidly turned into
+     [[https://gist.github.com/adityaathalye/398d6fc4c8ce9d23e2e393425f0b6454][this hastily-made presentation version]]
+     (click "Raw" button to see the actual text I edited the post down to).
+     I simply deleted prose, support material and extra-examples until I had
+     just-right examples I could fit into a screen at a time (at a suitably
+     large font size).
+
+  4. *Live Demo*:
+     That in turn enabled [[https://www.youtube.com/watch?v=BTouODWov-A][the live demo]] (video)
+     with live code evaluation (with org-babel),
+     and slide navigation using [[https://github.com/takaxp/org-tree-slide][org-tree-slide]].
+
+  5. *PDF Handout*:
+     Since then I have [[https://raw.githubusercontent.com/adityaathalye/slideware/master/n-ways-to-fizz-buzz-clj.org][cleaned up and restructured]]
+     the hastily-done presentation version so it exports neatly via [[https://orgmode.org/worg/exporters/beamer/tutorial.html][Beamer]],
+     into this [[https://github.com/adityaathalye/slideware/blob/master/n-ways-to-fizz-buzz-clj.pdf][nifty PDF slide deck]].
+     The heavily improved and reformatted orgmode version remains eminently
+     demoscene-able. If I were immune to last-minute prep, this is the version
+     I would have used for the live demo.
+
+  6. *Professor Points*:
+     I also get intermediate [[https://github.com/adityaathalye/slideware/blob/master/n-ways-to-fizz-buzz-clj.tex][tex output]] for free,
+     which I don't need, but may please you if you are a professor (or said
+     professor's hopelessly sleep derived grad students).
+
+  7. *Version-controlled and Highly Reproducible*:
+     I can go back to any saved version of any of the org files above, and
+     reliably reproduce output for "distribution" (PDF, tex, HTML etc.).
+     In other words, it is all
+     highly reproducible.
+* How I got into the org life
+  Well, orgmode was created in anger almost 2 decades ago (circa 2003) by a
+  particularly nerdy astronomer --- [[https://staff.science.uva.nl/c.dominik/][Carsten Dominic]] --- who was fed up with the
+  anemic note taking tools du jour. I discovered it about a decade ago (circa
+  2013), right after I changed careers to "tech", because all the gentlenerds
+  at the little company used Emacs. Told ya. Not normal. (Although, surprisingly,
+  lots of normies use it too. Hi friends!).
+
+  But, long before I found Emacs org-mode, I had Microsoft OneNote in a past
+  life as a Suit. In Gen-Z terms, OneNote was (is?) a "local-first" Personal
+  Knowledge Management (PKM) app (that sold profitably---what a concept).
+  I was a superfan and used it All The Time for All The Things. In hindsight,
+  I wonder if they didn't pinch their ideas from org-mode [fn:onenote].
+
+  Anyway, after I fell into the oddball world of Unix and Emacs users, I started
+  with "well, all I really need is a way to write and search copious notes".
+
+  If memory serves, it was m'colleague [[https://twitter.com/firesofmay][Mayank]], who's Emacs I first saw org in,
+  and m'other colleague [[https://twitter.com/vedang][Vedang]] who's supercharged org-life provided ample
+  inspiration as well as opportunities to rib him about his org dependence.
+  With a little bit of monkey-see-monkey-do and some help, I started dropping
+  words into .org files.
+
+  Little did I know how it would gradually absorb all my OneNote use cases,
+  and provide a lot more.
+
+  I started with plain notes and checkboxes. It was just that for many months.
+
+  - Then I discovered org-babel for code-aware syntax highlighting and editing,
+    because I wanted to also keep nice-looking code snippets in my documents.
+
+  - After several more months, I discovered org-babel supports interactive code
+    evaluation with results capture. WAT??!!
+
+  - Then a year or two in, I started doing little talks. By that time I was
+    clued-in enough to be pretty sure I'd find something to make org-mode do it.
+    And sure enough there exist things like org-tree-slide and org-present.
+
+  - Then I wanted to give PDF handouts and figured out how to export things.
+    It was a bit painful to learn, but quite useful overall.
+
+  - Now my website is under org management :D
+
+  - And whenever some new requirement comes up, org-mode is my first port of
+    call, because /crucially/, *everything works with everything else*. In
+    seamless composability resides the power of the ecosystem that has grown
+    atop org-mode, both within the world of Emacs, and without it.
+
+  Sometimes I have to put in annoyingly extra effort to make some new add-on
+  requirement play well with my other requirements. But each time I've come away
+  knowing that effort was way lower than having to find, shortlist, pick and
+  learn an entire new tool with its own user interface, opinionated workflow,
+  inevitable workarounds, and maybe incompatible data format (not plain org text).
+
+  For the small price of occasional annoyance, I get to keep using my exact
+  same workflow for everything. This has been a surprise win that is hard to
+  explain in words, especially in today's world where standalone apps have
+  normalised disconnected silos. In hindsight, I didn't really know exactly how
+  much I would come to value composability. I do. A lot!
+
+  Which is why, now you will have to pry org-mode from my cold dead hands.
+* Some common objections and questions
+  A reader may rightfully complain about several parts of this blog post, as
+  well as the strangeness of Org Mode.
+** Bleh! A Church of Emacs evangelist...
+   Sorry, [[https://www.emacswiki.org/emacs/ChurchOfEmacs][programmer in-joke]] :-)
+
+   Orgmode became culturally easy for me as I was already using the venerable
+   Emacs editor, but my ardour has little to do with my affiliation with the
+   Church of Emacs. It has everything to do with /utility/. Utility is contextual.
+   Which, for me, is "to write things down such that I can use it all usefully
+   in (many) other ways".
+
+   Besides, Emacs is no longer the only useful interface to org. Which, in fact,
+   makes me want to stick with org-mode even more. Growing support is easing
+   collaboration via org files.
+** But seriously, Emacs winkwink, amirite?
+   Yes, it is a valid question because Emacs contains the canonical, complete
+   implementation of org-mode. Many people use Emacs /just/ for org-mode.
+
+   But also, seriously, no.
+
+   Because not even the most hardcore /Emacs/ org-mode users use all of org-mode.
+   One has particular requirements, which are likely serviceable by particular
+   apps and tools enumerated below.
+
+   See, it's just like normal people and spreadsheets. Not even the guru-est of
+   y'all use all of your spreadsheet software. Or like normal people, normal pens,
+   and normal paper. Even a child can use that stuff, but I'll eat my hat if
+   you go to bed with my handwriting and wake up an ace calligrapher. BUT, you
+   will probably be able to wake up with a pretty good idea, scribble it down
+   and maybe change the world (if you can read my hand).
+
+   Utility is contextual, remember?
+
+   So here are ways to use org-mode without Emacs, for useful-to-you purposes,
+   without even caring it is orgmode text underneath.
+
+   Mobile, Web, and Desktop apps:
+   - mobile: [[https://orgro.org/][Orgro]], a mobile Org Mode file viewer for iOS and Android
+   - mobile: [[https://plainorg.com/][Plain Org]], org text view and editor for iOS
+   - mobile: [[https://www.orgzly.com/][Orgzly]], org text viewer and editor for Android
+     (I use this on my phone, and sync notes to my PC with Dropbox).
+   - mobile: [[https://beorg.app/][beorg]] for iOS (tasks, projects, notes)
+   - mobile: [[https://flathabits.com/][flathabits]], inspired by Atomic Habits, with
+     all your data stored in org files
+   - web+desktop: [[https://logseq.com/][logseq]], a privacy-first, open-source knowledge base
+   - web: [[https://organice.200ok.ch/][organise]], web-based org text editor and viewer
+   - web: [[https://braintool.org/][braintool.org]], a Chrome plugin "to easily
+     capture and categorize all the information and knowledge you want to keep
+     track of, right at the point you discover it or create it"
+
+   Text Editors (apart from Emacs):
+   - You can type [[https://orgmode.org/quickstart.html][org markup text]] (syntax)
+     in any text editor, even Notepad.
+   - Vim: https://github.com/nvim-orgmode/orgmode
+   - Atom: https://atom.io/packages/org-mode
+   - VSCode: https://github.com/vscode-org-mode/vscode-org-mode
+
+   A variety of utilities to:
+   - [[https://orgmode.org/tools.html][Publish, Import, Export, Parse]]
+   - [[https://orgmode.org/worg/org-tools/index.html][More community-enumerated tools]] for the same
+   - Even Github, Gitlab etc. support org markup these days!
+
+   I'm sure more people are making and releasing tools backed by org-mode text.
+
+   The future is bright!
+** But what if one app is not enough?
+   Having your stuff written in a standard portable format like Org Mode text
+   can become very useful, if you need / want to transcend your current app.
+   But, until such time, feel free to use one app for one thing today (say tasks),
+   and another one for another reason (say note taking), and yet another for,
+   say, habits.
+
+   As long as those org-mode based apps don't lock in your data (most don't),
+   then odds are that you will be able to roll all your use cases under one
+   single app later. Worst case, if no other sufficiently capable app is
+   available, or if the app you're using shuts down, Emacs will be there to
+   fall back on!
+
+   Now, Emacs is unfortunately oddball because of half a century of conceptual
+   baggage. Most commonly, it fetches derision for its notoriously awkward
+   keyboard shortcuts. That is mainly because Emacs was already old by the time
+   the PC mouse became mainstream. Keyboards were the only standard method to
+   talk to computers. Also the key combinations feel strange because they don't
+   make keyboards like they used to [fn:spacecadet].
+
+   BUT, Emacs accepts you as you are!
+
+   Beneath its curmudgeonly exterior [fn:emacstrolls], it is perhaps /the/ most
+   accessible software application out there [fn:emacsaccessible]!
+
+   Even I, after so many years of using Emacs org-mode, know barely a handful
+   of very frequently-used keyboard shortcuts (TABTAB to expand tree structures,
+   Shift-TAB to collapse them, ALT-up/down to move trees etc.). Most of the time
+   I just search for commands in the Emacs command menu system (ALT-x followed
+   by a guess for the name of the org command, e.g. ~ALT-x org export~, and the
+   system shows me command options with 'export' in the name).
+
+   Emacs will always be a great choice because org-mode is built into Emacs.
+   So the complete feature set of org-mode is available with zero configuration.
+   Just install Emacs, mouse-open-create a new ~.org~ file and start typing text.
+** But (sexy VC-funded app)?
+   Immersed as I was, in a herd of Emacsen, I started to value some things a lot.
+
+   Offline-first being one, which box OneNote checked off handsomely. /BUT/
+   proprietary data formats became deal-breakers too. It pains me that I can't
+   trivially access my old OneNote dump to snicker at that cocky past-suit-me.
+
+   The cool new tools have also failed to entice me away. Frankly, OneNote's UX
+   and capability 15 years ago hands-down beats most of them. Which may also be
+   why da noo cool don't impress. But that's less worse than the fact that that
+   The Cloud is the new proprietary data format. If my OneNote notes were in The
+   Cloud, and The Cloud "accidentally" chose to lock me out, I wouldn't even be
+   able to dream of snickering at past-suit-me.
+
+   So I now value /*local first*/, which implies /full/ data ownership, with
+   content in a highly portable format, without rigid dependence on 3rd parties,
+   especially not networks or remote services.
+
+   Of course, I now enjoy the specter of losing my backups, but I prefer being
+   (ir)responsible to myself over being beholden to the mysterious demigods that
+   reside in The Cloud Computer. Also, I'm used to it since my OneNote days.
+   Suits can be responsible too, you know.
+
+   Now, /"Your life in plain text"/, as the org website says, is an absolute
+   must-have. Plus, it gives me everything I liked in OneNote and more.
+
+   "Win, Win.", as the Suits say.
+** But isn't org-mode a productivity app?
+   No. It is fundamentally about writing in a structured plain text data format.
+
+   Carsten Dominic created it to be a "system of note taking and project planning",
+   with the insight that we think of tasks in context of projects. So it makes
+   a lot of sense to unify prose-writing with denoting TODOs and project meta
+   information directly in context of the prose.
+
+   Now, here's the nuance. While org prescribes a certain /syntax/ to structure
+   text and to describe meta-information, it does /not/ prescribe or force /any
+   one method/, to interpret and use the text; e.g. GTD or Kanban or GANTT or
+   what have you.
+
+   Besides, "productivity" means different things to different people. If your
+   old man who types with two fingers routinely invents large scale industrial
+   systems (at least one per year), you too would have a rather different view
+   of what "productivity" means, and what tools one needs to be productive,
+   compared to the many Internet subcultures and gurus who are each passionately
+   vocal about their version of tomato timers.
+
+   Anyway, it turns out that given structured text and maybe associated metadata,
+   one can build interesting use-cases and workflows that consume the content
+   as a data structure.
+
+   Lastly, we don't /have/ to think in "productivity" terms. The basic "outline"
+   way of writing text is /absolutely fine and useful/ just by itself. Because
+   writing = thinking. And because structured writing tool can help us easily
+   structure / restructure our thinking. And because even if we share it as-is,
+   our text is at least legible to anyone regardless of their text reading tool.
+
+   Like this:
+
+   #+begin_src org
+     ,* Top level headline
+       some text
+     ,** A second level
+        some other text
+     ,*** A third level
+         still other text
+     ,*** Another Third level
+         more still  other text
+     ,* Another top level headline
+     ,* Lord of the Rings
+       My favorite scenes are (in this order)
+       1. The attack of the Rohirrim
+       + Eowyn's fight with the witch king
+          a. this was already my favorite scene in the book
+          b. I really like Miranda Otto.
+       3. Peter Jackson being shot by Legolas
+       - on DVD only
+
+       He makes a really funny face when it happens.
+
+       But in the end, no individual scenes matter but the film as a whole.
+
+       Important actors in this film are:
+       - Elijah Wood :: He plays Frodo
+       - Sean Astin :: He plays Sam, Frodo's friend.  I still remember him
+       very well from his role as Mikey Walsh in /The Goonies/.
+   #+end_src
+** But why org instead of markdown?
+   OK, so I don't dislike markdown, I just like org much better. I'm facing off
+   org v/s md because md is popular and widespread. Org Mode isn't. Naturally,
+   org /looks/ odd in comparison, at first glance. But really, they have plenty
+   in common.
+
+   For one, there are several flavours of markdown, each with their own syntax
+   for how to describe text. Org Mode syntax is not very different. The general
+   concepts remain similar. So all one really needs is a [[https://orgmode.org/quickstart.html][syntax cheat sheet]]
+   for org.
+
+   Every other benefit of writing in structured plaintext remains available to
+   me, including fine-grained version control, maximum portability, prose-like
+   legibility, publishing to any other format (PDF, html, tex, odf, asciidoc,
+   as well as various markdown variants).
+
+   To me, paying the cost of learning org syntax was well worth it because it
+   afforded me access to text structured in one standard format, with better
+   usability, functionality, and historical support than the various markdowns.
+   I think this article makes a good case for learning org syntax:
+   [[https://karl-voit.at/2017/09/23/orgmode-as-markup-only/][Org Mode Is One of the Most Reasonable Markup Languages to Use for Text]]
+
+   Plus, org text is explicitly designed to double as a raw datastructure that
+   can be used to drive workflows, like showing presentations, or interactive
+   notebooks, or project management etc. This design choice is explicitly /not/
+   the mandate of most other plaintext document formats.
+* Help! /Where do I even begin/?
+  This is a common problem because orgmode has become A Lot!
+
+  Whatever you want to achieve will almost always be possible, if not through
+  a special-purpose org-mode app, then through /Emacs/ org-mode. Being free to
+  do anything is great, but it is also bewildering!
+
+  I'd say eat the Elephant one bite at a time, in a problem/solution format,
+  and that too only as long as you're hungry.
+
+  Method:
+
+  - Review the intro on the front page of the [[https://orgmode.org/quickstart.html][org-mode website]],
+    see the features, and the quickstart, to get an idea of what it's like.
+
+  - Consider /"I want to do X. Can org-mode help me?"/ where X is *the most
+    important* thing for *you*. The answer will almost certainly be /"Yes m'lorx,
+    this way please."/. See if any of the apps I listed previously,  fit your
+    requirement.
+
+  - Then do *only that X* and see if it works for you. If you find yourself
+    reaching for your orgmode app all the time, for X, then you know you have
+    a winner. This trick keeps things simple, which should give you a strong
+    sense of utility. It should also keep switching costs low if it fails you
+    for X. In that case, your data is yours, so you can take it to another app.
+
+  - If you can solve your X admirably, then you can think about your other
+    Y/Z/PQR requirements and start solving them. Maybe in the same app or maybe
+    in a second and third app. Many apps is fine because your data format is
+    the same and you would have an escape hatch from the app. Again, consulting
+    the org-mode website will help match Y/Z/PQR to org.
+* Shiny brain-food for your imagination
+  I love to watch/read tutorials, HOWTOs, essays, trick-shots etc. published by
+  org super-fans and super-users. Lots of inspiration exists out there! I don't
+  know what I don't know!
+
+  Whenever I am stuck, I go to one of these resources:
+  - [[https://orgmode.org/worg/exporters/beamer/tutorial.html][orgmode.org]] is the canonical reference manual.
+  - [[https://orgmode.org/worg/exporters/beamer/tutorial.html][Worg]] is full of gold (tips, tricks, tutorials, hacks).
+
+  Whenever I'm looking for inspiration, I go to these resources:
+  - Document: norang's *epic* [[http://doc.norang.ca/org-mode.html][life in orgmode]] page
+  - Document: EH Neilsen's [[http://ehneilsen.net/notebook/orgExamples/org-examples.html][Emacs org-mode examples and cookbook]]
+    that shows how to make org into a full-bore computing environment.
+  - Demo: Carsten Dominic's timeless presentation
+    "[[https://www.youtube.com/watch?v=oJTwQvgfgMM][Emacs Org-mode - a system for note-taking and project planning]]"
+  - Demo: Youtuber Rainer Konig has published a *fantastic* series of short,
+    clear tutorials of the many [[https://www.youtube.com/playlist?list=PLVtKhBrRV_ZkPnBtt_TD1Cs9PJlU0IIdE][things one can do with Org]].
+  - Demo: [[https://www.youtube.com/watch?v=FtieBc3KptU][Emacs For Writers]] by Jay Dixit,
+    a widely-published science writer who is a non-programmer.
+  - Demo: [[https://www.youtube.com/watch?v=SzA2YODtgK4][Getting Started With Org Mode]], for nerds of all feather.
+  - Demo: [[https://www.youtube.com/watch?v=0g9BcZvQbXU][Consistent Technical Documents Using Emacs and Org Mode]]
+  - Demo: How m'colleague [[https://twitter.com/suvratapte][Suvrat]] uses Emacs org-mode's
+    "Org Capture" feature [[https://www.youtube.com/watch?v=tFt6plDQm58][to stay in flow]] while programming.
+  - Demo: How m'colleague [[https://www.youtube.com/watch?v=KZoQ4EkfDPo][Vedang]] uses Emacs org-mode
+    to run his whole life, as a team lead, project manager, and fallible human.
+  - Search "orgmode" in YouTube for /lots/ more!
+
+  And if you need help getting started or getting un-stuck or advancing your
+  org-life, email me! (/weblog/ at this site).
+* Footnotes
+[fn:onenote] OneNote came complete with always-on auto-save, outline text,
+checklists, cross linking, multiple notebooks, categories/tags, search, export,
+email and calendar integration. Even multimedia embeds, text-to-speech, text
+extraction from images, audio notes, exports etc. All available on-PC, sans Internet.
+But, I also used Ray Ozzie's Groove app (Dropbox a decade before Dropbox, and
+apparently reincarnated as Microsoft OneDrive), so syncing was seamless too.
+And all this was available for the price of an expensive but lifetime software
+license plus a piece of your soul. Cheap for me as a Suit, and so I lapped it up.
+Like I said, it's about utility and it was /fantastic/. Absent org-mode, and
+assuming I were still a suit, and assuming MS did not screw up OneNote, and
+assuming MS OneNote were the only good enough game in town, you might have even
+stood a sliver of a chance to convince today-me to turn a blind eye to the
+horrible inhumane spyware that Windows is today /because/ it also has OneNote.
+But of course, I would probably have rather suffered the ignominy of paying Apple
+an arm a leg and one's personal liberty for access to their increasingly walled-in
+walled gardens, if their MS Office package had a good enough OneNote. Come on MS!
+Why undo the wonderful accessibility work y'all are doing on the one hand, by
+allowing customer data to be weaponised for ads or "personalisation" or whatever?
+Anyway, I'm grateful for Linux. Both those other ships have sailed for me. Now
+if only NVIDIA stopped being such insufferable asses about those graphics drivers.
+Yeah, there is no pleasing some people.
+
+[fn:spacecadet] I wish they would take a lesson from the late great [[https://en.wikipedia.org/wiki/Space-cadet_keyboard][Space Cadet]]
+keyboard. Once I saw that, I couldn't un-see it. Ever since I always reconfigure
+keyboard layouts of my computers, to put CTRL (and META / ALT) under our thumbs,
+the way the Spirits of the Computer intended.
+
+[fn:emacstrolls] The vast majority of Emacs users are gentlenerds. Alas, odds are
+that the crabby trollish subset will project out of the ether into your browser
+window schooling you about How You Are Doing It All Wrong By Using The Mouse.
+Smile and close the browser tab. Allow them to rail into the void. You do you.
+
+[fn:emacsaccessible] Ref: [[https://www.youtube.com/watch?v=oJTwQvgfgMM][Emacs Org-mode - a system for note-taking and project planning]]
+by Carsten Dominik, the inventor of org-mode. The video was curated by TV Raman,
+a blind-since-childhood programmer, who uses org-mode and who also created
+"Emacspeak" - Emacs for the Blind. For the more fortunate of us, though some Emacs
+default settings are weird, and though much of the language to explain Emacs is
+annoyingly crufty and old, it may be worth adapting to the oddities. Honestly,
+one doesn't need to learn much to derive use out of Emacs org-mode. That said,
+if you want all the familiarity of your Mouse and keyboard shortcuts, then by
+all means configure Emacs to fit your needs. That is its forte! Many "starter
+kits" are available, to remove the burden of figuring out how to do so.
+[[https://github.com/corvideon/mousemacs][mousemacs]] seems to be quite nice.
+Hit me up if you need help setting it up (/weblog/ at this site)!

@@ -1,0 +1,102 @@
+# SHITE_META
+#+title: How To Be a Totally Natural Conference Speaker?
+#+summary: Spurred by a conversation with a whip-smart friend and fellow gentlenerd, who unreasonably believed (believes?) they have nothing worth speaking about at the software conferences we like (IN/Clojure, FunctionalConf, local meetups etc).
+#+author: Adi
+#+date: 2022-02-03
+#+tags: meta writing speaking
+# SHITE_META
+
+A friend and I were chatting recently about speaking at conferences. Now this
+person is smart and I've learned a thing or two from his in-depth engineering
+blog posts. Yet there he was, telling me I'm so super good at communicating
+ideas (implying he's /not/ so super good), and besides he has nothing to say
+worthy of a conference talk.
+
+Huh?!
+
+Uncalled for praise is jarring, but I took it---2021 was heartless, OK? Still,
+the subtext of /magic/ bothered me. That I am somehow special. A born natural.
+So I told him my secret formula. And now I'm telling you.
+
+Here is how to be a totes natural conference speaker...
+
+1. Mope around /all the time/ about how you don't /really/ know [Topic X].
+   Sooner or later an opportune Call For Proposals will slide into your Twitter
+   stream or Slack or Discord. (It is very important to mope around /all/ the
+   time. Also, please cultivate several topics to mope around about. This
+   guarantees that every moment is an opportune moment to propose a talk.)
+
+2. Foolishly jump at the chance. Write a proposal to talk (or teach a class)
+   about said [Topic X].
+
+3. Congratulations! You have now made a public commitment, and opted into the
+   specter of falling flat on your face before all and sundry. Let the feeling
+   sink in.
+
+4. When it does, panic and feel obligated to start making something already,
+   because what if you can't actually figure out [Topic X]? Because then you
+   must recuse yourself before it's too late. Proceed to have trouble starting,
+   toss and turn in bed many nights in a row, and finally start typing
+   something---anything---into your computer.
+
+5. Make and trash at least 3 shitty first drafts. Feel like an impostor and
+   /almost/ withdraw your proposal as many times.
+
+6. If your proposal gets selected, GOTO 3 and start over. If it doesn't, GOTO 8.
+   If you are back here after the do-over, GOTO 7. If you got here and you don't
+   know why, well that's because GOTOs are Considered Harmful.
+
+7. Somehow arrive at a version you don't totally hate. Then make minor edits
+   and tweaks for days and days until you're fed up. (Actually you are fed up
+   because the talk is just a week away by now, and you haven't rehearsed even
+   once.)
+
+8. Corral friends who are way smarter than you, and get them to hear you out.
+   (Actually there's a step zero. Get very lucky in life and land up with such
+   friends).
+
+9. /Listen to them and don't make any more edits./ Seriously. Try to rehearse.
+
+10. Second-guess yourself 48 hours before your talk, mid-way through your first
+    /actual/ rehearsal. Proceed to commit the cardinal sin of refactoring the
+    whole bloody thing "before shipping to production", because apparently it's
+    all completely /wrong/ now. Don't sleep much, of course.
+
+11. Wake up with a start on D-day. Curse at yourself in the mirror. Drink an
+    unconscionable quantity of coffee, while feverishly reviewing your material.
+    Entirely miss the "hallway track" and fail to make new friends or to have
+    a good time.
+
+12. Somehow make it to the other end of your presentation. It's OK, everybody
+    forgets half the material (especially those painstakingly crafted turns of
+    phrase and clever asides), and still somehow runs out of time. Spend the
+    rest of the day in a growing fog because the adrenaline wore off, but the
+    caffeine didn't, but you're wiped-out from the excitement and sleep-deprived.
+
+13. Luckily, that also means you forget everything you did on your talk day.
+    Now you just have to make sure you never ever watch the recording of your
+    talk, if they publish it.
+
+14. Bask in the certain knowledge that you too have become a 100% Totally Natural
+    Conference Speaker. (As a veteran of this process, I can tell you it works.
+    Every. Single. Time.)
+
+    Jokes apart, it really is like that. There is no magic. Only student syndrome.
+
+    Just remember that you always know more about something than someone, and/or
+    almost certainly have a /different, unique take/ on something that you believe
+    to be common knowledge. Not infrequently, I find someone's interpretation of
+    something I am intimately familiar with, and the interpretation remarkably
+    changes how I see/feel/understand/relate with the thing. (Frequently it does
+    not, and it's rubbish, but that's fine. I'm not the one for that one.)
+
+    Why? Well because no topic is objectively too small or too silly or too useless,
+    for the right audience in the right context.
+    Look no further than [[https://bangbangcon.com/program.html][!!Con]], for example.
+    People have i!!ega! amounts of fun there!
+
+    So do yourself a favour. Allow yourself chances to suggest your [Topic X] to
+    the world, even when it's just your take on your favourite thing that maybe
+    everybody already knows. Because maybe the world will say...
+
+    "Sure, why not?".

@@ -19,8 +19,12 @@ __shite_events_detect_changes() {
     local watch_dir="$(realpath -e ${1:-$(pwd)})"
     local watch_events=${2}
 
+    local inotifywait_cmd=$(if [[ ${SHITE_HOTRELOAD} == "yes" ]]
+                            then printf "%s" 'inotifywait -m'
+                            else printf "%s" 'inotifywait -m --timeout 10'
+                            fi)
     # WATCH A DIRECTORY
-    inotifywait -m -r --exclude '/\.git/|/\.#|/#|.*(swp|swx|\~)$' \
+    ${inotifywait_cmd} -r --exclude '/\.git/|/\.#|/#|.*(swp|swx|\~)$' \
                 --timefmt "%s" \
                 --format '%T,%:e,%w,%f' \
                 $([[ -n ${watch_events} ]] && printf "%s %s" "-e" ${watch_events})  \
@@ -46,12 +50,16 @@ __shite_events_gen_csv() {
     #
     # NOTE: we strip trailing slashes from BASE_DIR, and URL_SLUG paths, so that
     # we can join them back with slashes interposed, when needed.
+    #
+    # TODO: switch to relying on metadata from page front matter (e.g. define
+    # content_type directly in each post). Also switch to JSON, and depend on jq.
     sed -u -E \
         -e "s;(.*),(${base_dir})\/(sources|public)\/(.*\/?),(.*);\1,\2,\3,\4\5;"  \
         -e "s;.*\.(.*)$;\0,\1;" \
+        -e "s;.*,sources,index.org,.*;\0,rootindex;"\
         -e 's;.*,static\/.*;\0,static;' \
-        -e 's;.*,posts\/.*;\0,blog;' \
-        -e '/static|blog$/{p ; d}' \
+        -e 's;.*,posts\/[-[:alnum:]_]?+\/index\.(org|md|html),.*;\0,blog;' \
+        -e '/,static|blog|rootindex|(^$)$/{p ; d}' \
         -e 's;.*;\0,generic;'
 }
 
@@ -78,4 +86,27 @@ __shite_events_select_sources() {
 
 __shite_events_select_public() {
     stdbuf -oL grep -E -e ".*,public,.*"
+}
+
+__shite_events_drop_public_noisy_events() {
+    # to suppress noisy events, like when tags are bulk-updated
+    stdbuf -oL grep -E -v -e ".*,public,tags/.*,.*"
+}
+
+
+# ##################################################
+# THE EVENT STREAM
+# ##################################################
+
+shite_events_stream() {
+    # Watch all relevant files in the given directory, for the given events.
+    local watch_dir=${1:?"Fail. Please specify a directory to watch"}
+    local watched_events=${2:-'create,modify,close_write,moved_to,delete'}
+
+    __shite_events_detect_changes \
+        ${watch_dir} ${watched_events} |
+        # Construct events records as a CSV (consider JSON, if jq isn't too expensive)
+        __shite_events_gen_csv ${watch_dir} |
+        # Deduplicate file events
+        __shite_events_dedupe
 }

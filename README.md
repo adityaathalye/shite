@@ -3,7 +3,10 @@ shite
 
 The little hot-reloadin' static site generator from shell. Assumes Bash 4.4+.
 
-WARNING: Still under construction. Here be yaks!
+WARNING: Here be yaks!
+
+`shite`'s scope, (mis)feature set, polish will always be production-grade, where
+production is "works on my machine(s)" :)
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
@@ -14,9 +17,9 @@ WARNING: Still under construction. Here be yaks!
     - [Dreams and desires](#dreams-and-desires)
     - [Backstory](#backstory)
 - [Usage](#usage)
-    - [Hot-reloaded workflow](#hot-reloaded-workflow)
+    - [Hot-reloaded shite editing](#hot-reloaded-shite-editing)
     - [Manually invoked page builds](#manually-invoked-page-builds)
-    - [Debug flags](#debug-flags)
+    - [Environment Variables and Debug flags](#environment-variables-and-debug-flags)
 - [Design and Internals](#design-and-internals)
     - [File and URL naming scheme](#file-and-url-naming-scheme)
     - [Code organisation](#code-organisation)
@@ -32,7 +35,12 @@ WARNING: Still under construction. Here be yaks!
         - [Hot reload scenarios](#hot-reload-scenarios)
         - [Hot reload behaviour](#hot-reload-behaviour)
     - [Unrealised Ambitions](#unrealised-ambitions)
+        - [From any source dir to any publish dir from anywhere on my box](#from-any-source-dir-to-any-publish-dir-from-anywhere-on-my-box)
+        - [Hot deployment](#hot-deployment)
+        - [Hot deployment with local hot reload](#hot-deployment-with-local-hot-reload)
+        - [More creature comforts](#more-creature-comforts)
 - [Contributing](#contributing)
+- [License](#license)
 
 <!-- markdown-toc end -->
 
@@ -47,7 +55,7 @@ Well, `shite` aims to make websites.
 
 - It exists because one whistles silly tunes and shaves yaks.
 
-This is baaasically what it does (ref: the `shite_publish_sources` function).
+This is baaasically what it does (ref: the `shite_templating_publish_sources` function).
 
 ``` shell
 cat "${watch_dir}/sources/${url_slug}" |
@@ -64,6 +72,7 @@ cat "${watch_dir}/sources/${url_slug}" |
 - It hot-builds.
 - It hot-reloads (no Javascript).
 - It does neither if you disdain creature comforts.
+- It does not _demand_ any server process for local publishing.
 - It is quite small.
   ```shell
   # The complete "business logic" is 200-is lines as of this comment,
@@ -102,6 +111,8 @@ In my `shite` dreams, I desire...
 - Above all, to keep it (the "business logic") _small_. Small enough to cache,
   debug, and refactor in my head.
 
+- To install and use without superuser permission.
+
 - To _extremely_ avoid toolchains and build dependencies. No gems / npms / venvs
   / what-have-yous. Thus, Bash is the language, because Bash is everywhere. And
   standard packages like `pandoc` or `tidy`, when one needs _specific_ advanced
@@ -110,6 +121,9 @@ In my `shite` dreams, I desire...
 - Dependency-free templating with plain-ol' HTML set in good ol' heredocs.
 
 - Simple metadata system, content namespacing, static asset organisation etc.
+
+- Web server optional (or any kind of server process for that matter). We aim
+  for static sites, after all, which work just fine with `file://` navigation.
 
 - To construct it from small, composable, purely functional, Unix-tool-like
   parts, because I like that sort of stuff a lot.
@@ -131,19 +145,38 @@ path of making this. It is being blogged about at:
 
 # Usage
 
-## Hot-reloaded workflow
+## Hot-reloaded shite editing
 
-The hot-reloaded workflow expects the website to be open in a browser tab, and
+Basically this means that if I create, update, delete any file under `sources`,
+it must automatically translate to HTML, be published locally to `public`, and
+cause an appropriate page navigation or reload action in the web browser, where
+my site is open.
+
+The "hot-reloaded" workflow expects the website to be open in a browser tab, and
 that the site's tab be visible. It won't work if the site is open but the tab is
 not active.
 
-First, open Mozilla Firefox and navigate to, say, the content/index.html page
-(file:///path/to/content/index.html).
+- Open Mozilla Firefox and navigate to, say, the public `index.html`. I can go
+  straight to the file on disk `file:///path/to/shite/public/index.html`. No need
+  for a server.
 
-Open a new terminal session or tmux pane, and call the "main" script.
-``` shell
-./shite.sh
-```
+- Call the "main" script in a clean new terminal session or tmux pane.
+  ``` shell
+  ./shite.sh
+  ```
+
+- In your Emacs or Vim, open some content file under `sources`. Edit, save, and
+  watch the content appear in the browser. (Yes specifying Emacs/Vim is goofy,
+  because I trigger _hot_ actions based on inotify events. Apparently different
+  editors do file updates differently. I use Emacs or Vim, so I watch for the
+  events they cause, so it works on my machine. :)).
+
+- Go to some static asset, like a CSS stylesheet. Alter a thing, like background
+  color value. Save and watch the color change in the browser.
+
+- Tweak some template fragment in `templates.sh`---say, blog post template. Then
+  switch to some blog post content file and modify it to trigger page build with
+  the modified template (e.g. hit space and save).
 
 ## Manually invoked page builds
 
@@ -162,13 +195,16 @@ In a clean new terminal session:
   ```
 - Open the public directory in your file browser, open index.html and click
   away (assuming nothing broke of course).
+- Edit files the usual way, as explained in
 
-## Debug flags
+## Environment Variables and Debug flags
 
 These flags alter the behaviour of the system.
 
-- Setting `SHITE_DEBUG` to "debug" will suppress browser hotreload. Commands
-  will be generated, but streamed to stdout instead of being executed.
+- Setting `SHITE_HOTRELOAD` to "yesplease" will run the event system in "monitor"
+  mode, which in turn drives hotreload behaviour. Setting it to "debug" will
+  suppress browser hotreload. Commands will be generated, but streamed to stdout
+  instead of being executed.
 - Setting `SHITE_DEBUG_TEMPLATES` to "debug" will cause templates to be sourced
   first, before publishing any templated source content.
 
@@ -404,7 +440,7 @@ Baaasically this:
 __shite_detect_changes ${watch_dir} 'create,modify,close_write,moved_to,delete' |
     __shite_events_gen_csv ${watch_dir} |
     # hot-compile-and-publish content, HTML, static, etc.
-    tee >(shite_publish_sources > /dev/null) |
+    tee >(shite_templating_publish_sources > /dev/null) |
     # browser hot-reload
     tee >(__shite_hot_cmd_public_events ${window_id} ${base_url} |
               __shite_hot_cmd_exec)
@@ -452,13 +488,64 @@ and let the computer do the hotreloady thing, we should remain non-annoyed.
 
 ## Unrealised Ambitions
 
+There are many Yaks in the world.
+
+### From any source dir to any publish dir from anywhere on my box
+
+For truly pervasive multi-site publishing mojo:
+
+- `shite` should be available on my PATH
+- I should be able to configure any source / public pair per site
+- Everything else should "just work" as it does
+
+This is a small yak. I'll probably yakshave it soon.
+
+### Hot deployment
+Obviously one can use the CI jobs of popular git hosts to trigger `shite` builds.
+But why use clunky current-century tech, when we have already advanced to the
+state of the art of the late 1900s... fully streaming and fully reactive?
+
+Sarcasam aside, I don't see why the same event system cannot be used to add
+hot-deploy support, on a remote machine I run.
+
+On the remote box:
+
+- a web server serves the public pages of the site
+- a clone of the site `sources` is enshrined
+- the selfsame hotreload process is live against `sources`
+  (minus the browser-watching).
+- a git checkout auto-triggers on receiving a git push
+- which should cause hot-build against the modified sources (with some special
+  case to trigger full build if a template changes)
+
+On my local box:
+
+- edit, preview locally with local hotreloadin'
+- git commit, push sources to remote
+- hit F5 on the appropriate public URL `https://mydomain.com/posts/hello/index.html`
+- the hot-build should have completed in the time it takes to get to F5
+
+### Hot deployment with local hot reload
+
+Do something over SSH to bring browser refresh back to local box, in case of hot
+deploys to remote server.
+
+- maybe Shell "Session Portability"?
+  [video](https://www.youtube.com/watch?v=uqHjc7hlqd0&t=2436s "Video: Shell Session Portability over SSH"),
+  [slides](http://talk.jpnc.info/bash_oscon_2014.pdf "Slides: Shell Session Portability over SSH").
+- maybe tap the browser hotreload commands and stream only those back to my box,
+  with a "server-mode" for hot-publish at the remote box and a "client-mode" for
+  hot-reload on my local box?
+- maybe I'll find out it all "just work" with Emacs/TRAMP?
+
+### More creature comforts
 Maybe some "Dev-ing/Drafting" time setup/Teardown scenario? Maybe a 'dev_server'
 function that we use to kick start a new shite writing session?
 
-- xdotool open a new tab in the default browser (say, firefox).
-- xdotool goto the home page of the shite based on config.
+- xdg-open a new tab in the default browser (say, firefox), and goto the home
+  page of the shite based on config.
 - xdotool 'set_window --name' to a UUID for the life of the session.
-- xdotool close the tab when we kill the dev session
+- Close the tab when we kill the dev session.
 
 # Contributing
 
@@ -481,3 +568,14 @@ Together we can whistle silly tunes, and co-yak-shave our respective yaks, in
 our own special ways.
 
 May The Source be with us.
+
+# License
+
+This work is dual-licensed under the MIT license and the CC By-SA 4.0 license.
+
+- The Bash source code for making shite is licensed under the MIT license.
+- My website's content which I've included in this project, for demo purposes,
+  commit is licensed under the Creative Commons Attribution-ShareAlike 4.0
+  International License (CC By-SA 4.0).
+
+SPDX-License-Identifier: mit OR cc-by-sa-4.0

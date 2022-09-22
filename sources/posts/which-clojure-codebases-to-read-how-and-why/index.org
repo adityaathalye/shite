@@ -1,0 +1,217 @@
+# SHITE_META
+#+title: Which Clojure codebases should I read? How and why?
+#+summary: Newcomers to Clojure so frequently ask this question that an FAQ/Guide is being discussed, to add to the Clojure website. I struggled a lot with the question too, when starting off in Clojureland. Here are my notes and opinions.
+#+author: Adi
+#+date: 2022-04-29
+#+tags: clojure howto whyto
+#+include_toc: yes
+# SHITE_META
+
+Newcomers to Clojure so frequently ask this question that an FAQ/Guide is
+being discussed, to add to the Clojure website. See Issue #586:
+[[https://github.com/clojure/clojure-site/issues/586][Add FAQ or guide for example projects]].
+Please add your thoughts to that ticket!
+
+This post is my (opinionated) take on it. I struggled a lot with this too.
+I still do from time to time, in unfamiliar territory, and these days I feel
+like I'm in unfamiliar territory a lot. Various Clojurians --- individuals and
+groups --- have been producing so much creative, diverse work over these last
+few years that keeping up quickly became impossible!
+
+No doubt this surfeit of creativity intimidates newcomers. The strange ideas,
+lingo, thinking, and writing espoused by Clojurians can seem so very alien.
+But despair not, for Clojureland also has a surfeit of friendly, helpful people.
+And very many of our codebases are small! You will be able to read them! And
+get help if you get stuck!
+
+This post explains what I believe I've done subconsciously over the years. It
+is as much an answer for somewhat experienced me as it is for the relative
+newcomer you!
+
+* A quick motivating example
+  I haven't done much focused code reading recently, but semi-recently, I went
+  down the rabbit hole of comparing "System" libraries. The details are for a
+  separate blog post. I've placed it here as reference material to illustrate
+  some of this post.
+
+  [[https://github.com/adityaathalye/slideware/raw/master/Grokking%20Libraries%20in%20Clojureland.pdf][Grokking Libraries in Clojureland]] (PDF, slides).
+* Heuristics to choose a project to read
+  This kind of code reading is best viewed as applied, directed reading designed
+  to deeply understand creative (and destructive) ways to use an instrument,
+  in this case, Clojure the language, its standard library, idioms, patterns,
+  and style.
+
+  The key problem here is "you don't know what you don't know". Coming up with
+  a set of heuristics can help discover good choices. In fact, one can make a
+  decision-making matrix of #{libraries} X #{heuristics}, like so:
+
+  | Heuristic / Library            | Lib A | Lib B | Lib C |
+  |--------------------------------+-------+-------+-------|
+  | Code size (LoC)                |       |       |       |
+  | Code complexity (high/mid/low) |       |       |       |
+  | Utility                        |       |       |       |
+  | Stability (high, mid, low)     |       |       |       |
+  | Docs                           |       |       |       |
+  | Talks                          |       |       |       |
+  | Tutorials                      |       |       |       |
+  | ...                            |       |       |       |
+
+  It also helps to decide a domain or area of knowledge (web/HTML, web/HTTP,
+  algorave, databases etc.), before drawing up the decision-making matrix.
+
+  Here is a set of opinions and heuristics to steal and/or riff off.
+** Choosing an area of domain knowledge
+   Knowledge about a domain or problem space is a source of massive cognitive
+   overhead. It helps a lot to pick an area of knowledge you feel you are most
+   comfortable with, and narrow your code search and reading to that area.
+
+   For example, web programmers may want to read an HTTP library. Musicians may
+   want to find a music synthesis codebase. Frontend people many like to read
+   HTML / CSS parsers or generators. Database nerds may want to know how we do
+   stuff without fancy ORMs etc.
+** Project type
+   Choose single-purpose libraries. The Clojure world is full of libraries of
+   various sizes and responsibilities. Most of these tend to focus very sharply
+   on one single problem, which makes it easier to build and retain complete
+   context in one's head. These tend to be good place to start.
+
+   Application code, by contrast, tends to be a complex (or complected) mix
+   of domains, patterns, libraries. This makes it easy to get lost.
+
+   Further, there is no one true way to organise Clojure apps. Often, apps
+   don't even mirror standard conventions seen elsewhere (e.g. MVC/MVCC etc.).
+   Clojure apps are assemblies of libraries, where each library choice comes
+   with some technical and/or design tradeoff. Further, build tools vary. App
+   configuration systems vary. etc. etc. many tens of moving parts.
+
+   One eventually develops a sense for it all, but most of it is completely not
+   obvious when one is just starting off. It makes way-finding really hard.
+   You will spend lots of time just to figure out how some app is wired together.
+
+   So it's better to subtract everything until you are left with a singular
+   idea and its expression. That is, often, a single-purpose library!
+** Code size
+   Prefer libraries with as few lines of code as possible. The good news is
+   that Clojure libraries tend to focus on a single well-defined problem,
+   which tends to result in small /and complete/ solutions to problems. Many
+   excellent Clojure libraries weigh in at under 1,000 LoC.
+
+   With some effort, you can hope to hold the entire codebase in your head.
+   Once that happens, your brain will discover things in diffuse mode in your
+   shower or on a walk or something. And then you know you've struck gold!
+** Code complexity
+   Even if a library is small, it may be complex, because it address a hard
+   problem. This is tricky to infer up-front, and that's fine. Getting stuck is
+   part of the process. One mitigation is to skim-read the source first. If you
+   see very deeply indented code, or lots of large functions, or lots of macros,
+   maybe park it for later. Definitely prefer libraries without advanced macrology
+   (unless your purpose is to understand advanced macrology :).
+** Utility
+   How much is the library used? A well-used library may be widely used, or it
+   may be niche but heavily used. Either way, odds are good that the source has
+   been vetted. Also it improves your chances of finding help if you get stuck.
+
+   Some proxy measures like github stars, a dedicated channel in Slack or Zulip,
+   or references in mailing list history can help judge this. If you are still
+   uncertain, just drop a message in one of the community forums. Helpful people
+   will help!
+** Talks, docs, tutorials
+   Are talks, docs, and tutorials available for the library, or at least the space
+   the library addresses? The code often does not tell the full story of the
+   "why?" of the library, the roads not taken or choices unmade. Code also tends
+   not to convey the author's mental process. This is the highest value learning
+   that comes from reading; viz. learning a new way to think. So knowing what
+   knowledgeable people have been saying about the space/code is very useful.
+** Beware the falsehood of "dead" repos
+   Many in-use Clojure libraries don't see frequent (or large) updates. This is
+   a virtue in our circles. It indicates finished-ness and stability. In fact, if
+   you find a repo with no commits for months or years, and a "liveness advisory"
+   on it, you /definitely/ want to read that code. That code has proven itself
+   handsomely!
+* Effective way(s) to read a project
+  This is basically a set of ways to /engage/ with the material. The programmer
+  equivalent of textbook underlining, marginalia, scribbling notes and diagrams.
+** Read the README and API docs
+   And keep them handy. Ideally figure out the /why/ of the project before getting
+   into the weeds, because weeds there will be.
+** Use the REPL
+   I habitually use ~clojure.repl/source~, to pull up source code for functions
+   that are new to me.
+** Learn to navigate the code
+   Find editor functions that let you see an overview of a namespace, jump to
+   and fro from definitions.
+** /Experiment/
+   IMHO it is critical to /experiment/ with the code. Passive reading gets us
+   only so far. To truly grok code one must modify and play with it! This is
+   where one thanks oneself for choosing a focused, concise project :)
+** "Comparitive Literature" approach
+   Preferably find a space where multiple libraries exist. As long as one well
+   used library is present, it is fine if unused ones exist too. Frequently
+   contemporary libraries aim to overcome walls their classic brethren hit, or
+   are novel approaches to the same problem that offer a different set of
+   tradeoffs v/s the classics.
+
+   There is much to learn from bygone classics, but only after one works through
+   the contemporary stuff, and has several "Wait, but why?" moments.
+** Alt-implementation
+   The Black Belt move is to combine experimentation and comparative lit. and
+   try to hack up your own alternate implementation, by purposely taking a
+   completely different approach to representing the problem space, as compared
+   to the library under study.
+* Suggested projects with short reasons why to read
+  This is a first-cut top-of-mind list, from the top of /my/ chaotic mind.
+  Take with a pinch of salt!
+
+  Cross-reference with [[https://github.com/clojure/clojure-site/issues/586][this discussion]]
+  where folks are trying to figure out what projects to suggest, how, and why,
+  as part of an FAQ or a Guide at the official Clojure website.
+** web/HTML/CSS
+   - *[[https://github.com/weavejester/hiccup][weavejester/hiccup]]* to understand
+     a natural translation of one domain (HTML) to Clojure data. Writing HTML as
+     Clojure data is what we mean when we say "well, it's just data" or "data DSL".
+   - *[[https://github.com/noprompt/garden][noprompt/garden]]*
+     which does unto CSS what Hiccup does unto HTML.
+** web/HTTP
+   - *[[https://github.com/ring-clojure/ring][Ring]]*, to understand one of the
+     most popular HTTP server abstractions in the Clojureverse.
+** Clojure itself
+   - *[[https://github.com/clojure/clojure/blob/master/src/clj/clojure/test.clj][Clojure.test]]*
+     which is the built-in testing framework, in a surprisingly small amount of
+     code. Also, incidentally, to start feeling OK diving into Clojure's own source.
+** Database queries
+   - *[[https://github.com/seancorfield/honeysql][honeysql]]*
+     to grok a way to represent the Domain of SQL queries as Clojure data.
+** Music maker
+   There's lots out there that I don't know of, but...
+   - [[https://github.com/overtone/overtone][overtone/overtone]], but it is a big project
+   - [[https://github.com/ssrihari/ragavardhini][ssrihari/ragavardhini]] is smaller
+** "System" start/stop thingy
+   - *[[https://github.com/stuartsierra/component][stuartsierra/component]]*
+     "Managed lifecycle of stateful objects in Clojure".
+** App configuration thingy
+   - *[[https://github.com/juxt/aero][juxt/aero]]*
+     "A small library for explicit, intentful configuration."
+** Applications designed for "copy-and-hack"
+   As [[https://github.com/puredanger][@puredanger]] and [[https://github.com/plexus][@plexus]] have [[https://github.com/clojure/clojure-site/issues/586][written here]]:
+   If you're wondering "what's something similar I can copy and hack on" or
+   "what does a real project look like"?
+   - [[https://github.com/seancorfield/usermanager-example][seancorfield/usermanager-example]]
+   - [[https://github.com/clojureverse/clojurians-log-app][clojureverse/clojurians-log-app]]
+** Large-scale repos
+   - [[https://github.com/nasa/Common-Metadata-Repository][NASA's Common Metadata Repository]]
+     project, just to have one's mind blown :D
+* Library maintainers: Would HOWTOREADMEs make sense?
+  Hi! First, thank you for your library work! I'm just thinking aloud here...
+
+  Suppose Clojure library authors write little reading guides for their projects;
+  *"How to read me"s*? Maybe a paragraph or two that provides context like:
+  - Suggested entry point and Meta-dot pathway
+  - The most important namespace(s)
+  - Interesting functions
+  - Tests or Rich comments to try out on priority
+  - Any known hairy-scary bits or gotchas
+  - Perhaps a line or two suggesting "compare with Alternate Libs A, B, C"
+  - etc.
+
+  A reader may fruitfully combine this guidance with information about project
+  purpose, rationale, and any open issues marked "beginner" etc.

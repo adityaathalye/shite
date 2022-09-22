@@ -1,0 +1,232 @@
+# SHITE_META
+#+title: Dismal Arithmetic in Dyalog APL and Clojure
+#+summary: Dismal arithmetic is just like the arithmetic you learned in school, only simpler: there are no carries, when you add digits you just take the largest, and when you multiply digits you take the smallest. How does code look in the two languages I like a lot; Clojure and APL?
+#+author: Adi
+#+date: 2022-02-25
+#+tags: clojure apl functional_programming
+#+include_toc: yes
+# SHITE_META
+
+--- /Throwback: Jan 2018./ ---
+
+I learned of /[[https://arxiv.org/abs/1107.1130][Dismal Arithmetic]]/ from [[https://twitter.com/rdivyanshu][@rdivyanshu]] who posed it as a
+programming problem in a Slackroom of local gentlenerds.
+
+As the linked paper describes it:
+
+#+begin_quote
+Dismal arithmetic is just like the arithmetic you learned in school, only
+simpler: there are no carries, when you add digits you just take the largest,
+and when you multiply digits you take the smallest. This paper studies basic
+number theory in this world, including analogues of the primes, number of
+divisors, sum of divisors, and the partition function.
+#+end_quote
+
+I thought it might be fun to implement it in APL for kicks, but I wrote it in
+Clojure first, because I wasn't sure of my APL-fu. And I'm glad I wrote the
+Dyalog APL version because I learned something about trains, and also because
+I stumbled on the idea of "inverse of a function" which melted my mind a bit.
+
+* Examples of Dismal Addition and Multiplication
+  OK, so first, a disclaimer. The code doesn't explore all of the paper, just
+  addition, multiplication along with commutative, associative, distributive
+  properties thereof, because that's all the Mathematics I understand :) I had
+  fun struggling through the paper anyway mainly because of the funny name.
+  (More papers should have more wryness and less dryness.)
+
+  Anyway, the rules of the game are:
+  - arithmetic as in school, except that
+  - there there are no carries,
+  - when you add digits you just take the largest,
+  - and when you multiply digits you take the smallest
+
+  Dismal addition: 169 + 248 = 269, because...
+  #+begin_src text
+      1 6 9
+    + 2 4 8
+    -------
+      2 6 9
+  #+end_src
+
+  Dismal Multiplication: 169 * 248 = 12468, because...
+
+  #+begin_src text
+       1 6 9
+     x 2 4 8
+    ---------
+       1 6 8
+      1 4 4
+    1 2 2
+    ---------
+    1 2 4 6 8
+  #+end_src
+
+  The tasks:
+  - Write function for dismal addition
+    - Takes two positive integer returns dismal sum
+  - Write function for dismal multiplication
+    - Takes two positive integer returns dismal multiplication
+* Dismal Arithmetic in Clojure
+  Here I explored the basic properties of addition and multiplication. Yeah,
+  sorry got to slog through some encoding/decoding prerequisites first.
+
+  #+begin_src clojure
+    (ns dismal-arithmetic)
+
+    (defn n->digits
+      "Really dismal :sobbing:
+       Will turn the number 12345 into the sequence (1 2 3 4 5)."
+      [n]
+      (loop [n n
+             xs (list)]
+        (if (< n 10) ; ensure we split 10 also, into 1 and 0
+          (conj xs (-> n Math/floor Math/round))
+          (recur (/ n 10)
+                 (conj xs
+                       (-> n (rem 10) Math/floor Math/round))))))
+
+    ;; Check...
+    #_(map n->digits [169 248 100 10 1 0])
+
+
+    (defn digits->n
+      "Will turn the sequence (1 2 3 4 5) into the number 12345."
+      [dxs]
+      (reduce (fn [r dx] (+ (* r 10) dx))
+              dxs))
+
+
+    (defn dismal-add
+      "x and y can have any number of digits"
+      [x y]
+      (let [nxs (n->digits x)
+            nys (n->digits y)
+            cxs (count nxs)
+            cys (count nys)
+            dxys (Math/abs (- cxs cys))
+            dzs (repeat dxys 0)
+            [nxs nys] (if (> cxs cys)
+                        [nxs            (concat dzs nys)]
+                        [(concat dzs nxs) nys])]
+        (->> nys
+             (map max nxs)
+             digits->n)))
+
+
+    (defn dismal-mul
+      "Like politics and war, multiplication is just addition
+       by other means. No?"
+      [x y]
+      (let [nxs (n->digits x)
+            nys (n->digits y)
+            diagonal-summable
+            (reduce (fn [rs y]
+                      (conj rs (map #(min y %) nys)))
+                    []
+                    nxs)
+            transpose-matrix (fn [matrix]
+                               (into []
+                                     (apply map vector matrix)))
+            summable-matrix (transpose-matrix diagonal-summable)
+            summables (reverse (map digits->n summable-matrix))
+            summables (map-indexed (fn [idx x]
+                                     (* x (Math/round (Math/pow 10 idx))))
+                                   summables)]
+        (reduce dismal-add summables)))
+
+
+    (comment
+      ;; Given test cases:
+      (= (dismal-add 169 248)
+         269)
+
+      (= (dismal-mul 169 248)
+         12468)
+
+      ;; Other numbers:
+      (dismal-add 123 45678)
+      (dismal-mul 123 45678)
+
+
+      ;; Associative?
+
+      (= (dismal-add 169 (dismal-add 248 100))
+         (dismal-add (dismal-add 169 248) 100))
+
+      (= (dismal-mul 169 (dismal-mul 248 100))
+         (dismal-mul (dismal-mul 169 248) 100))
+
+
+      ;; Commutative?
+
+      (= (reduce dismal-add [169 248 12345])
+         (reduce dismal-add [248 12345 169])
+         (reduce dismal-add [12345 169 248]))
+
+      (= (reduce dismal-mul [169 248 12345])
+         (reduce dismal-mul [248 12345 169])
+         (reduce dismal-mul [12345 169 248]))
+
+
+      ;; Distributive?
+
+      (= (dismal-mul 100
+                     (dismal-add 169 248))
+
+         (dismal-add (dismal-mul 100 169)
+                     (dismal-mul 100 248)))
+      )
+  #+end_src
+
+* Dismal Arithmetic in Dyalog APL
+  Here, I managed to implement addition, discovered how to write "inverse of a
+  function" and my mind melted.
+
+  #+begin_src dyalog
+          da ← 10⊥(⌈/10⊥⍣¯1⊢)
+          da 169 248
+    269
+  #+end_src
+
+  Yes, that's the entire solution to dismal addition. ~⍣¯1~ is APL for "inverse".
+  Here is the solution explained in parts. I first did it with dfns, because my
+  brain is stuck inside Lisp / traditional functional programming style.
+
+  Apart from built-in support for numeric encoding/decoding, notice the automatic
+  zero-padding.
+
+  #+begin_src dyalog
+          {10(⊤⍣¯1)⍵}∘{⌈/⍵}∘{10(⊥⍣¯1)⍵}⊢ 100000 10000 1000 100 10 1
+    111111
+
+          {10(⊤⍣¯1)⍵}∘{⌈/⍵}∘{10(⊥⍣¯1)⍵}⊢ 1 10 100 1000 10000 100000
+    111111
+
+          da ← 10⊥(⌈/10⊥⍣¯1⊢)
+
+          da 1 10 100 1000 10000 100000
+    111111
+  #+end_src
+
+  /However/, there is something deeply unsatisfying about using dfns in APL, when
+  you know trains exist.
+
+  So I muddled about and managed to express the whole idea as a single unit, viz.
+  this lovely little expression ~10⊥(⌈/10⊥⍣¯1⊢)~ which says "Dismal Arithmetic"
+  in fewer characters than the name /and is also/ a working partial implementation.
+  Here is how it breaks down in my FP-addled brain:
+
+  #+begin_src dyalog
+    decode ← 10(⊥⍣¯1)⊢
+
+    reducemax ← ⌈/
+
+    encode ← 10(⊤⍣¯1)⊢
+
+    encode reducemax decode 169 248
+    269
+  #+end_src
+
+* Addendum: The ⍣ of inverse
+  Aaron Hsu helped me understand what was going on, and wrote about
+  "[[https://www.sacrideo.us/decoding-inverses/][Decoding Inverses]]" at his blog.

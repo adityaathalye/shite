@@ -1,0 +1,1699 @@
+# SHITE_META
+#+title: n ways to FizzBuzz in Clojure
+#+summary: FizzBuzz is everywhere. Every programmer passes through its rite of passage, or at least bears witness to another. Over the years, many gentlenerds have taken it upon themselves to discover ever new ways to incant those hoary symbols. I hereby enjoin these few drops of Clojure to that roiling ocean of FizzBuzzery.
+#+author: Adi
+#+date: 2022-03-25
+#+tags: clojure functional_programming howto
+#+include_toc: yes
+# SHITE_META
+
+The brainwave here is to (mis)use the feature set of Clojure and its standard
+library to cook up as many ways to encode FizzBuzz as one can muster (or steal).
+If all goes well, this post will receive many updates. If it goes /really/
+well, all sorts of bad ideas and clever foot-guns will be discovered and used.
+
+The creative constraint is this: any FizzBuzz, however terrible or hilarious,
+/must also be useful/. It should have reason to exist and should reveal some
+real-world Clojure thinking.
+
+That means no [[https://github.com/EnterpriseQualityCoding/FizzBuzzEnterpriseEdition][FizzBuzzEnterpriseEdition]]
+but also no Dylan Beattie's brilliant [[https://www.youtube.com/watch?v=6avJHaC3C2U&t=3350s][FizzBuzz in RockStar]].
+So sorry!
+
+Not to be indelicate, but I will state the problem before proceeding.
+
+#+begin_quote
+Fizz buzz is a group word game for children to teach them about division.
+Players take turns to count incrementally, replacing any number divisible by
+three with the word "fizz", and any number divisible by five with the word "buzz".
+
+--- https://en.wikipedia.org/wiki/Fizz_buzz
+#+end_quote
+
+Needless to say, they mean natural numbers starting at 1 when they say "numbers".
+
+Phew that was rough on the ego. Let us compose ourselves for a minute.
+
+...
+
+OK, onward.
+
+* Usage guide
+** Reading the code
+   - Find the ~check-all-fizz-buzzers~ function below, for usage examples.
+
+   - We use functions only from Clojure's standard library (clojure.core).
+
+   - Lookup unfamiliar functions at https://clojuredocs.org/quickref, helpfully
+     illustrated with community-contributed examples.
+** Running the code
+   - If you don't already have [[https://clojure.org/guides/getting_started][Clojure installed]],
+     you can run the code online at https://tryclojure.org/ (fully client-side,
+     but minimalist), or at https://repl.it/languages/clojure (feature-rich
+     web-based IDE, but requires signup).
+
+   - Preferably, copy over code as you go along. Try it out bit by bit.
+
+   - If you are in a hurry, find the "Interlude" section and copy over all the
+     code from there.
+
+   - Finally, run ~(check-all-fizz-buzzers)~ to see if it all works as expected.
+** Complaining about the code
+
+   - If I've made bugs in the Code or the English (possible) or made egregious
+     remarks (very possible), please write to /weblog/ at this website. I'll
+     fix the bugs.
+
+   Right, then. Shall we begin?
+* Le FizzBuzz Classique
+  In the beginning, one might trawl the Clojure standard library for familiar,
+  safe-looking words and accidentally discover ~for~[fn:stdlib].
+  Python or Javascript gentlenerds may say /"Ooh, List Comprehension. Nice!"/,
+  and bang out /Le FizzBuzz Classique/. Java or C# gentlenerds may struggle a
+  lot more, because Clojure has no ~Class~. We are sorry for this disappointment.
+  Please follow the Python for now.
+
+  #+begin_src clojure
+    (defn fizz-buzz-classic
+      [num-xs]
+      (for [n num-xs]
+        (cond
+          (zero? (rem n 15)) (println "FizzBuzz")
+          (zero? (rem n 3)) (println "Fizz")
+          (zero? (rem n 5)) (println "Buzz")
+          :else (println n))))
+  #+end_src
+
+  Then you will evaluate it /in/ the "REPL", et voilà! Something
+  très familiar!
+
+  #+begin_src clojure
+    user=> (fizz-buzz-classic (list 1 3 5 15 16))
+    1
+    Fizz
+    Buzz
+    FizzBuzz
+    16
+    (nil nil nil nil nil)
+  #+end_src
+
+  (Except for that pesky last line full of nils. But like, whatever. It worked.).
+** Le FizzBuzz Classique est mort à Clojure. Désolé :(
+   Sadly, the spurious nils are the least of your woes. You just fell prey to
+   something called "Laziness", and the code is dead on arrival, but you don't
+   know it yet because evaluating /in/ the "REPL" obscures this fact.
+
+   Welcome to Functional Programming (FP) with lazy sequences, which is /awesome/,
+   but which is also one of the double edges of Clojure that will cut you if you
+   come here with set ideas about How Things Ought To Work.
+
+   Saying it in French (however broken) felt gentler, somehow.
+
+   At this point, you might accuse me of setting you up with this strawman ~for~.
+   In response, I might simply wait for your production to blow up. Unknowing
+   mixing of laziness and side effects reliably trips up all programmers new to
+   Clojure [fn:repl].
+
+   Luckily we can avoid going down that rabbit hole [fn:lazy] entirely, because
+   there is a more pressing problem that makes /Le FizzBuzz Classique/ look
+   severely defective to this Clojurist's FP-addled brain. Fixing that makes the
+   point of lazy sequences moot, as a nice bonus.
+** Le FizzBuzz Classique, remedied
+   Behold this cleaned up version.
+
+   #+begin_src clojure
+     (defn lazybuzz
+       [num-xs]
+       (for [n num-xs]
+         (cond
+           (zero? (rem n 15)) "FizzBuzz"
+           (zero? (rem n 3)) "Fizz"
+           (zero? (rem n 5)) "Buzz"
+           :else n)))
+   #+end_src
+
+   Yes, ~println~ is no more, and...
+
+   #+begin_src clojure
+   user=> (lazybuzz (list 1 3 5 15 16))
+   (1 "Fizz" "Buzz" "FizzBuzz" 16)
+   #+end_src
+
+   Compare the shape of the collection of nils seen classically, with what we see
+   now. They are both sequences with the same number of items, /but/ the new one
+   contains useful values (insert :trollface: :).
+
+   #+begin_src clojure
+     user=> (fizz-buzz-classic (list 1 3 5 15 19))
+     1
+     Fizz
+     Buzz
+     FizzBuzz
+     19
+     (nil nil nil nil nil) ; 5 prints, 5 nils
+
+     user=> (lazybuzz (list 1 3 5 15 19))
+     (1 "Fizz" "Buzz" "FizzBuzz" 19) ; no prints, 1 value containing 5 values
+   #+end_src
+
+   Well, that's because all expressions in Clojure return a value. ~println~
+   creates a side effect of printing and has a return value of ~nil~. Thus for
+   each item in the input range, the "impure" classic version prints to the REPL,
+   collects the return value of each println (nil), and returns that collection.
+
+   The "purified" fizz-buzz simply calculates a result for each branch and the
+   ~for~ returns the accumulated result. And now the results are printed inside
+   parentheses, which is, like, sure whatever. At least it /looks/ like it's
+   doing the right calculations /and/ the pesky nils are gone, so we can move on?
+
+   Not so fast.
+** Le FizzBuzz Classique, dissected
+   To FizzBuzz creatively in Clojure, we must examine /and avoid/ the defects of
+   the classic version, which are as follows.
+
+   1. *Broken behaviour*: ~println~ alters the state of the world and thus
+      injects non-determinism into an otherwise purely functional calculation.
+      This is anathema [fn:anathema] to Clojurists (and FP practitioners at large).
+   2. *Broken API contract*: We get back a useless collection nils, instead of the
+      result of a calculation that we can use further. We prefer to always write
+      functions that return useful values.
+   3. *Broken time model*: Effects want to happen "now" (here, printing to
+      some output device), while lazy computations want to happen "maybe never"
+      (here, a definition that maps the domain of a collection of countless
+      numbers to the domain of FizzBuzz). Effects and laziness can be made to
+      pair well, /but only when/ we define them separately from the get go, and
+      have some third way of joining them together safely when needed. For now,
+      you could do worse than lasering this into your brain: "Never mix (side)
+      effects and laziness.".
+   4. *Broken aesthetic*: We like our functions to do one job, and do it well.
+      Printing things is a /second/ job, and as Messers Hal and Gerry like to
+      say in SICP [fn:sicp], "That's George's problem.".
+
+   Henceforth, all functions shall be pure calculations, and we will rely on
+   our metaphorical George "the REPL" Ableman to handle all our print jobs.
+
+   As an added benefit, writing pure functions makes laziness such a good friend,
+   that we don't even need to acknowledge its presence.
+
+   Yet another benefit is that we won't have to burn hundreds of words to apologise
+   for broken code [fn:please].
+
+   See? Such passion. I wasn't joking when I said "looks severely defective to me" [fn:imperative].
+** Le FizzBuzz Classique, doseq'd
+   Maybe you still aren't convinced. ~println~ is such a global standard. /Easy/ [fn:simple].
+   So you might dig into the standard library more and come up with ~doseq~ to
+   eliminate laziness...
+
+   #+begin_src clojure
+     (defn doseq-fizz-buzz
+       [num-xs]
+       (doseq [n num-xs]
+         (cond
+           (zero? (rem n 15)) (println "FizzBuzz")
+           (zero? (rem n 3)) (println "Fizz")
+           (zero? (rem n 5)) (println "Buzz")
+           :else (println n))))
+   #+end_src
+
+   And declare victory...
+
+   #+begin_src clojure
+     user=> (doseq-fizz-buzz (list 1 3 5 15 19))
+     1
+     Fizz
+     Buzz
+     FizzBuzz
+     19
+     nil ; maybe we can live with just one nil?
+   #+end_src
+
+   But the code is still fatally broken for the other reasons, and now /it is
+   also worse/, because this implementation cannot say "here are /all/ the
+   fizzbuzzes". Only a lazy definition can say this /and/ allow you to carry on
+   computing. Besides, ~doseq~ is meant for cases when we /want to cause/ side
+   effects. And the functional Clojurist almost never /wants/ to.
+
+   Remember the children's game definition of FizzBuzz? It is beautiful because
+   it /does not/ say "FizzBuzz only for the first K numbers". Now if you go
+   DuckDuck search the standard coding interview version of the question, what
+   do you find? "Write a program that prints the numbers from 1 to 100
+   such that...".
+
+   Boo.
+** Le FizzBuzz Classique, doall'd
+   As a famous TV detective would say; "Oh, just one other thing.". Here are ways
+   to break your programs. And if you are feeling suitably adventurous, to also
+   test the stability of your employment.
+
+   The following invocation of ~lazybuzz~ in your ~-main~ would not be fine,
+   assuming you wanted to do something useful with it. But would also not
+   precipitate anything terrible.
+   #+begin_src clojure
+     (defn -main
+       "The entry point to your microservice."
+       [& args]
+       ;; Do things ...
+       (println "I'm about to do...")
+
+       ;; No block, no foul.
+       (lazybuzz (range))
+
+       ;; Sure, why not ...
+       (println "I'm done!"))
+   #+end_src
+
+   Here is a good way to break your software _and_ print FizzBuzzes to the console
+   indefinitely (or at least as long as your computer can make new numbers).
+   #+begin_src clojure
+     (defn -main
+       "The entry point to your microservice."
+       [& args]
+       ;; Do things ...
+       (println "I'm about to do...")
+
+       ;; Spin wheels until the numbers run out.
+       (doseq-fizz-buzz (range))
+
+       ;; Maybe never ...
+       (println "I'm done!"))
+   #+end_src
+
+   As a funner party trick, if you make a computer (VM) with a bad output device
+   (or redirect program output to /dev/full), then you can crash or hang your
+   program. If you discover it crashes, feel free to daemonise it and make an
+   infinitely restarting JVM process that does nothing but burn CPU cycles.
+   Take that, cryptominers!
+
+   To be fair, you can also break programs with lazy evaluation, with the added
+   benefit of doing it silently. But at least you are forced to say ~doall~,
+   which might make you feel at least a tiny bit guilty.
+   #+begin_src clojure
+     (defn -main
+       "The entry point to your microservice."
+       [& args]
+       ;; Do things...
+       (println "I'm about to do...")
+
+       ;; Spin wheels silently, until OOM or no more numbers,
+       ;; whichever happens first.
+       (doall (lazybuzz (range)))
+
+       ;; Maybe not ...
+       (println "I'm done!"))
+   #+end_src
+
+   To see if you can get /fired/ by solving fizzbuzz (now that's a concept,
+   innit?), you can ship to production [fn:fired] the...
+   - doseq version, to fill up your log files with fizzbuzz. They will fill
+     up really fast. Faster than logrotate.
+   - doall lazybuzz version, to confuse the daylights out of everyone, at
+     least until your process dies with OOM.
+   - badly daemonised verison, to enjoy repeated restart cycles through crashes
+     from number overflows and/or OOMs.
+   - Or something actually dangerous...
+
+   #+begin_src clojure
+     (defn -main
+       "The entry point to your microservice."
+       [& args]
+       ;; Do things...
+       (println "I'm about to do...")
+
+       ;; Your /thought/ you were going to /do/ something useful here.
+       (fizz-buzz-classic (range))
+
+       ;; You now falsely believe you did something useful ...
+       (println "I'm done!"))
+   #+end_src
+
+   I assure you, experienced Clojurists are no longer grinning at the tomfoolery.
+   Many of us have shipped [fn:lazyleak] (or /almost/ shipped) this category of
+   bugs to prod. Not fun.
+
+   OK, now I consider /Le Cheval Classique/ suitably flogged postmortem, and
+   yourself suitably /Caveat Emptor/-ed.
+
+   Now we will FizzBuzz joyously.
+* Little functions are good!
+  Once we remove the /ick/ of ~println~ from our code, we can see further room
+  for improvement. ~(zero? (rem n divisor))~ is not only a common pattern,
+  it is actually a distinct /idea/, viz. "Is ~n~ /divisible/ by ~divisor~?".
+
+  We can name it locally, with ~let~.
+  #+begin_src clojure
+    (defn letbuzz
+      [num-xs]
+      (for [n num-xs]
+        (let [divisible? (fn [n1 n2] (zero? (rem n1 n2)))] ; locally-bound lambda
+          (cond
+            (divisible? n 15) "FizzBuzz"
+            (divisible? n 3) "Fizz"
+            (divisible? n 5) "Buzz"
+            :else n))))
+  #+end_src
+
+  /However/, this definition of divisibility is generally applicable to numbers,
+  so it makes sense to define a top-level global concept.
+  #+begin_src clojure
+    (def divisible?
+      "True when the remainder of n1/n2 is zero. e.g. (divisible? 4 2) => true"
+      (fn [n1 n2] (zero? (rem n1 n2))))
+  #+end_src
+
+  Yep, ~defn~ is just ~def~ + ~fn~ under the hood, and we can conveniently
+  write the same thing as follows.
+  #+begin_src clojure
+    (defn divisible?
+      "True when the remainder of n1/n2 is zero. e.g. (divisible? 4 2) => true"
+      [n1 n2]
+      (zero? (rem n1 n2)))
+  #+end_src
+
+  We can also use ~comp~ to define divisibility more succinctly.
+  #+begin_src clojure
+    (def divisible?
+      "True when the remainder of n1/n2 is zero. e.g. (divisible? 4 2) => true"
+      (comp zero? rem))
+  #+end_src
+
+  Since the various implementations of ~divisible?~ are all pure functions,
+  they are drop-in replacements for each other ("referentially transparent").
+  Use whichever version you like best.
+
+  It may seem silly to write such tiny functions, but we earn a lot of firepower
+  by lifting out named domain concepts, /especially/ the simple ones, because
+  we can /compose/ them flexibly to express other domain concepts as needed.
+* map reduce for FizzBuzz
+  Here's a doozy. By putting FizzBuzz /logic/ inside ~for~, we have in fact
+  deeply intertwined [fn:complect] two very distinct computations; viz. sequence
+  generation, and choice-making.
+
+  Suppose we lifted out the decision logic into its own function?
+  #+begin_src clojure
+    (defn basic-buzz
+      "We can also trivially rewrite this with 'condp'.
+      ref: https://clojuredocs.org/clojure.core/condp"
+      [n]
+      (cond
+        (divisible? n 15) "FizzBuzz"
+        (divisible? n 3) "Fizz"
+        (divisible? n 5) "Buzz"
+        :else n))
+
+    (comment
+      ;; Unsurprisingly...
+      (basic-buzz 1) => 1
+      (basic-buzz 3) => "Fizz"
+      (basic-buzz 5) => "Buzz"
+      (basic-buzz 15) => "FizzBuzz"
+      )
+  #+end_src
+
+  Now we can bring back ~for~ this way...
+  #+begin_src clojure
+    (def all-fizz-buzzes
+      (for [n (rest (range))]
+        (basic-buzz n)))
+  #+end_src
+
+  But our new choice opens up the design space, because we can directly say
+  "this is just a mapping of the domain of numbers to the domain of FizzBuzz".
+  #+begin_src clojure
+    (def all-fizz-buzzes
+      (map basic-buzz (rest (range))))
+  #+end_src
+
+  Now since ~map~ is conceptually just a special case of ~reduce~, we could write
+  the following. /However/ in Clojure, ~map~ is lazy but ~reduce~ is eager, and
+  we only use /reduce/ when we want to force a final calculation.
+  #+begin_src clojure
+    (def just-some-fizz-buzzes
+      (reduce (fn [result n]
+                (conj result
+                      (basic-buzz n)))
+              []
+              ;; the classic programmer's problem statement
+              (range 1 101)))
+  #+end_src
+
+  Once again, we earned more compositional power by lifting out another small
+  concept. Let's do some more of that.
+* Domain Driven Design FizzBuzz
+  We can further define concepts specific to the business domain of FizzBuzz.
+  This opens up our design space even more.
+
+  Before that I'll make one small tweak to help us express ourselves better.
+  I'll rearrange the argument list of ~divisible?~ so that the "more constant"
+  argument is placed first, and successively more variable argument(s) are
+  placed successively. Also rely on "truthiness" in Clojure to imply yes/no.
+  #+begin_src clojure
+    (defn divisible?
+      "Given a number 'n', return the given word (truthy) when it is divisible
+       by the divisor, or nil otherwise (falsey)."
+      [divisor the-word n]
+      (when (zero? (rem n divisor))
+        the-word))
+
+    (def fizzes?
+      "Is a given number divisible by 3?"
+      (partial divisible? 3 "Fizz"))
+
+    (def buzzes?
+      "Is a given number divisible by 5?"
+      (partial divisible? 5 "Buzz"))
+
+    (def fizzbuzzes?
+      "Is a given number divisible by 3 and 5?"
+      (partial divisible? 15 "FizzBuzz"))
+  #+end_src
+
+  Now we can rewrite ~basic-buzz~ using ~or~, which short-circuits, and
+  returns the first /truthy/ value it encounters. You will see this construct
+  in real-world Clojure code.
+  #+begin_src clojure
+    (defn or-buzz
+      "Just like conditional matching, but exploit short-circuit behaviour of 'or'.
+       Sadly, order of conditionals still matters."
+      [n]
+      (or (fizzbuzzes? n)
+          (buzzes? n)
+          (fizzes? n)
+          n))
+  #+end_src
+
+  We argued that we are essentially expressing a choice, and that we can even
+  do it with ~juxt~, because once we grok ~juxt~, we want to use it /everywhere/.
+  #+begin_src clojure
+    (defn juxt-buzz
+      "juxt for fun:
+           e.g. ((juxt f g h) 42) -> [(f 42) (g 42) (h 42)]
+           cf. https://clojuredocs.org/clojure.core/juxt
+       Sadly, order of conditional checks still matters, which combined with
+       the nil-punning that's going on here is too subtle for production use."
+      [n]
+      (some identity ((juxt fizzbuzzes? buzzes? fizzes? identity)
+                      n)))
+  #+end_src
+  Yeah, that's a head-scratcher. Best leave it back at home.
+* Actually Domain Driven FizzBuzz
+  You might protest that well actually the clever little functions, in fact,
+  express the domain of the /solution/ (the business of calculating FizzBuzz),
+  not the domain of the /problem/ (arithmetic representation of FizzBuzz).
+
+  And even though I flunked maths a lot, I would concur. So here goes nothing...
+
+  15 is the least common multiple of the prime factors. Suppose we cook up an
+  encoding scheme based on remainders of 15, and write it down as a lookup table?
+  We can then find ~(rem n 15)~, and look up the answer to FizzBuzz in the table.
+
+  Why do a lookup table? Well, what is the simplest possible function? A literal
+  hard-coded lookup table!
+
+  In Clojure, we can use hash-maps to write down look-up tables.
+  #+begin_src clojure
+    ;; A table of remainders of 15, in a hash-map.
+    {0  "FizzBuzz"
+     3  "Fizz"
+     6  "Fizz"
+     9  "Fizz"
+     12 "Fizz"
+     5  "Buzz"
+     10 "Buzz"}
+  #+end_src
+
+  And here is a very fun and useful fact. Clojure hash-maps are not just inert
+  data. They also behave as functions of their keys. We can literally call
+  ~({:a 42} :a)~ and get back 42. Noice!
+
+  So suppose we define a global lookup table?
+  #+begin_src clojure
+    (def rem15->fizz-buzz
+      {0  "FizzBuzz"
+       3  "Fizz"
+       6  "Fizz"
+       9  "Fizz"
+       12 "Fizz"
+       5  "Buzz"
+       10 "Buzz"})
+
+    (comment
+      (rem15->fizz-buzz (rem 3 15)) => "Fizz"
+      (rem15->fizz-buzz (rem 5 15)) => "Buzz"
+      (rem15->fizz-buzz (rem 15 15)) => "FizzBuzz"
+      (rem15->fizz-buzz (rem 1 15)) => nil
+      )
+  #+end_src
+
+  See the ~nil~ returned for "no result found"? If you were paying attention
+  to the nil punning [fn:nilpun], and the short-circuiting ~or~, you might get
+  the following idea. And you would not be wrong.
+  #+begin_src clojure
+    (defn or-rem15-buzz
+      [n]
+      (or (rem15->fizz-buzz (rem n 15))
+          n))
+  #+end_src
+
+  But we can be more right by using the ~get~ function, which is designed for
+  use with hash-maps, and which allows us to conveniently specify a fallback
+  value for the "not found" case.
+  #+begin_src clojure
+    (defn get-rem15-buzz
+      [n]
+      (get rem15->fizz-buzz
+           (rem n 15)
+           n))
+  #+end_src
+
+  Not to press the point, but they are referentially transparent.
+  #+begin_src clojure
+    (= (map or-rem15-buzz (range 1 16))
+       (map get-rem15-buzz (range 1 16)))
+  #+end_src
+
+  You may have also astutely noted that, in both the implementations above,
+  the order of calculation ceases to matter. Now we are doing maths.
+* FizzBuzz by construction
+  Closely related to remainder lookup tables, we can make the observation that
+  FizzBuzz is cyclical in modulo 3, 5, and 15. So we can directly define the
+  /idea/ of FizzBuzz in those terms.
+
+  This FizzBuzz is correctly ordered /by definition/.
+  #+begin_src clojure
+    (def mod-cycle-buzz
+      "We can declare a lazy sequence of FizzBuzz as modulo 3, 5, 15.
+      The sequence is ordered by definition."
+      (let [n  identity
+            f  (constantly "Fizz")
+            b  (constantly "Buzz")
+            fb (constantly "FizzBuzz")]
+        (cycle [n n f
+                n b f
+                n n f
+                b n f
+                n n fb])))
+  #+end_src
+
+  Now, Clojure's ~map~ is not only lazy, it can also apply a function of ~n~
+  arguments over ~n~ collections until any one of the collections is exhausted.
+  So we can...
+  #+begin_src clojure
+    (def all-fizz-buzzes
+      (map (fn [f n] (f n))
+           mod-cycle-buzz ; countless modulo pattern
+           (rest (range)))) ; countless sequence of numbers
+  #+end_src
+
+  If we think in terms of the prime factors 3 and 5, along with modulo cycles,
+  it may inspire a generalised version of fizzbuzz, like so.
+  #+begin_src clojure
+    (defn any-mod-cycle-buzz
+      "Given a number and a sequence of words mapping to prime factors,
+       either return the corresponding word-version for the number position,
+       or the number itself, if no prime factor exists.
+
+       Basically, the set of words should map to set of prime factors.
+
+       We also don't make any assumptions about order of words here. It is up
+       to the caller to choose whatever sequence they please."
+      [num & words]
+      (or (not-empty (reduce str words))
+          num))
+
+    (map any-mod-cycle-buzz
+         (range 1 16)
+         (cycle [nil nil "Fizz"])
+         (cycle [nil nil nil nil "Buzz"]))
+  #+end_src
+
+  And last but not least, this interpretation allows us to express the arithmetic
+  /identity/ of the whole category of FizzBuzzes, which is, just the number
+  sequence itself. (As in, the identity of + is 0 and that of * is 1).
+  #+begin_src clojure
+    (map any-mod-cycle-buzz
+         (range 1 16))
+  #+end_src
+  But then again, I've flunked maths too often to be confident about any of this.
+  Please complain to me if I'm wrong.
+* Interlude: all the fizz-buzzes so far
+  I'll drop this mini /pièce de résistance/ (for now), and pause for a breather.
+  I've copied down all the fizz-buzz variants (minus doc strings for brevity).
+  #+begin_src clojure
+    (ns all.them.fizz.buzzers)
+
+    (def fizz-buzz map) ; now, what `map` can do fizz-buzz can too
+
+    ;; Le FizzBuzz Classique Functional
+
+    (defn basic-buzz
+      [n]
+      (let [divisible? (comp zero? rem)]
+        (cond
+          (divisible? n 15) "FizzBuzz"
+          (divisible? n 5) "Buzz"
+          (divisible? n 3) "Fizz"
+          :else n)))
+
+
+    ;; Branching logic FizzBuzzes
+
+    (defn divisible?
+      [divisor the-word n]
+      (when (zero? (rem n divisor))
+        the-word))
+
+    (def fizzes? (partial divisible? 3 "Fizz"))
+    (def buzzes? (partial divisible? 5 "Buzz"))
+    (def fizzbuzzes? (partial divisible? 15 "FizzBuzz"))
+
+    (defn or-buzz
+      [n]
+      (or (fizzbuzzes? n)
+          (buzzes? n)
+          (fizzes? n)
+          n))
+
+    (defn juxt-buzz
+      [n]
+      (some identity
+            ((juxt fizzbuzzes? buzzes? fizzes? identity)
+             n)))
+
+
+    ;; More mathematical FizzBuzzes
+
+    (def rem15->fizz-buzz
+      {0  "FizzBuzz"
+       3  "Fizz"
+       6  "Fizz"
+       9  "Fizz"
+       12 "Fizz"
+       5  "Buzz"
+       10 "Buzz"})
+
+    (defn or-rem15-buzz
+      [n]
+      (or (rem15->fizz-buzz (rem n 15))
+          n))
+
+    (defn get-rem15-buzz
+      [n]
+      (get rem15->fizz-buzz
+           (rem n 15)
+           n))
+
+    (def mod-cycle-buzz
+      (let [n  identity
+            f  (constantly "Fizz")
+            b  (constantly "Buzz")
+            fb (constantly "FizzBuzz")]
+        (cycle [n n f
+                n b f
+                n n f
+                b n f
+                n n fb])))
+
+    (defn any-mod-cycle-buzz
+      [num & words]
+      (or (not-empty (reduce str words))
+          num))
+
+    ;; Inspect and check the fizz-buzzes
+
+    (defn call-all-fizz-buzzers
+      [range-of-buzzees]
+      [(fizz-buzz basic-buzz
+                  range-of-buzzees)
+       (fizz-buzz or-buzz
+                  range-of-buzzees)
+       (fizz-buzz juxt-buzz
+                  range-of-buzzees)
+       (fizz-buzz or-rem15-buzz
+                  range-of-buzzees)
+       (fizz-buzz get-rem15-buzz
+                  range-of-buzzees)
+       (fizz-buzz (fn [f n] (f n))
+                  mod-cycle-buzz
+                  range-of-buzzees)
+       (fizz-buzz any-mod-cycle-buzz
+                  range-of-buzzees
+                  (cycle [nil nil "Fizz"])
+                  (cycle [nil nil nil nil "Buzz"]))])
+
+    (defn check-all-fizz-buzzers
+      "Return true if all known fizz-buzzers produce equal results
+       for the programmer's FizzBuzz for numbers 1 to 100"
+      []
+      (apply = (call-all-fizz-buzzers (range 1 101))))
+  #+end_src
+
+  And lest we forget, let us flog the dead horse one last time.
+  #+begin_src clojure
+    (defn severely-broken-buzz
+      "Please don't do this in Clojure."
+      [n]
+      (cond
+        (divisible? n 15) (println "FizzBuzz")
+        (divisible? n 3) (println "Fizz")
+        (divisible? n 5) (println "Buzz")
+        :else (println n)))
+  #+end_src
+
+  The mind is abuzz drafting moaaaar variants... Stay tuned!
+* Peano FizzBuzz
+  Since we are computing with natural numbers, we can express FizzBuzz in terms
+  of the "Successor" operation of Peano arithmetic.
+
+  However, we have to modify our number system a bit to make it work right.
+  We define a PeanoBuzz number to be a pair of a natural number and its FizzBuzz
+  counterpart. The /PeanoBuzz/ number system starts at ~[0 0]~.
+
+  We can enjoy the fruits of compositionality that we planted earlier.
+  #+begin_src clojure
+    (ns all.them.fizz.buzzers)
+
+    (def rem15->fizz-buzz
+      {0  "FizzBuzz"
+       3  "Fizz"
+       6  "Fizz"
+       9  "Fizz"
+       12 "Fizz"
+       5  "Buzz"
+       10 "Buzz"})
+
+    (defn get-rem15-buzz
+      [n]
+      (get rem15->fizz-buzz
+           (rem n 15)
+           n))
+
+    (def S
+      "The PeanoBuzz number system starting at [0 0] is closed under
+      this definition of Successor."
+      (comp (juxt identity get-rem15-buzz)
+            inc
+            first))
+
+    (def all-peano-buzzes
+      (iterate S [0 0]))
+
+    (comment
+      (= (take 16 all-peano-buzzes)
+         [[0 0] [1 1] [2 2]
+          [3 "Fizz"] [4 4]
+          [5 "Buzz"]
+          [6 "Fizz"] [7 7] [8 8]
+          [9 "Fizz"]
+          [10 "Buzz"] [11 11]
+          [12 "Fizz"] [13 13] [14 14]
+          [15 "FizzBuzz"]]))
+  #+end_src
+  Since we have a ~S~ that closes over the /PeanoBuzz/ number system, I wonder
+  if we can satisfy all the [[https://en.wikipedia.org/wiki/Peano_axioms][Peano Axioms]]? Probably another blog post :)
+
+  Incidentally, we can trivially map the domain of PeanoBuzz back into the
+  domain of FizzBuzz.
+  #+begin_src clojure
+    (ns all.them.fizz.buzzers)
+
+    (= (fizz-buzz basic-buzz
+                  (range 1 101))
+       (fizz-buzz second
+                  (take 100 (rest all-peano-buzzes))))
+  #+end_src
+
+  We are already half way to Lambda Calculus / Church Numerals. But going there
+  will side-track our FizzBuzz expedition way too much. So I'll leave the Church
+  Numerals version as an exercise to the reader [fn:churchnums]. Try to make it
+  so that that we can define an ~all-church-nums-buzz~ and slot it into the
+  ~fizz-buzz~ checks we already have.
+* Dispatch Buzz
+  If you squint at the conditional FizzBuzzes, like ~basic-buzz~, ~or-buzz~ etc.,
+  you might re-see them as a /dispatch/ problem. And why would you be wrong?
+  They, like any other if-else-y construct are truth tables hard-wired to
+  "finalised" values or operations.
+
+  Naturally we will follow the consummate Clojurian's primal instinct of needing
+  to pry apart two things masquerading as one (/"decomplecting"/ [fn:decomplect]
+  in Clojurish). But, /what exactly/ are we, ah, /decomplecting/? Now that is
+  a very interesting rabbit hole.
+
+  In this case we are /"separating mechanism from policy"/ [fn:mechapolicy].
+  Figuring out how to do this delivers a powerful, flexible method of program
+  design into our eager hands.
+
+  This table shows "mechanism" and "policy" hard-wired together.
+
+  #+begin_src org
+  <-- ------- MECHANISM -------- -->|<-- POLICY -->
+
+  | n divisible? 3 | n divisible? 5 | Final value |
+  |----------------+----------------+-------------|
+  | true           | true           | FizzBuzz    |
+  | true           | false          | Fizz        |
+  | false          | true           | Buzz        |
+  | false          | false          | n           |
+  #+end_src
+
+  Here is an attempt to pry the two apart.
+
+  /*Mechanism*/
+
+  The /*"mechanism"*/ here is /any/ function that translates a number (or more
+  generally, /any/ thing) to the two inputs of a 2-value truth table. We can
+  see it more clearly if we rewrite the input columns of the truth table like
+  this. Here ~f~ and ~g~ are functions of ~a~ to Boolean.
+
+  #+begin_src org
+    | (f a) | (g a) |
+    |-------+-------|
+    | true  | true  |
+    | true  | false |
+    | false | true  |
+    | false | false |
+  #+end_src
+
+  We can express this as a Clojure punction 'coz (f a) (g a) is ((juxt f g) a).
+  #+begin_src clojure
+    (ns dispatch.buzz)
+
+    (defn mechanism
+      "Given two functions, presumably of anything -to-> Boolean, return
+      a function that can construct inputs of a 2-input truth table."
+      [f? g?]
+      (juxt f? g?))
+  #+end_src
+
+  See? Such abstract. Much general-purpose. Very decomplect. Wow.
+
+  /*Policy*/
+
+  Here, we define /*"policy"*/ as something having special context of FizzBuzz
+  that consumes input rows of the truth table and emits corresponding output fields.
+
+  First, we specialise the abstract ~mechanism~ to a FizzBuzz mechanism. You
+  may smirk [fn:javajoke], but just you wait. There is a (multi) method to the
+  madness...
+
+  Here is the table we started with, rewritten for our specialisation.
+
+  #+begin_src org
+    | (fizzes? n) | (buzzes? n) | (mechanism fizzes? buzzes?) -> mfb |
+    |-------------+-------------+------------------------------------|
+    | true        | true        | (mfb n) => "FizzBuzz"              |
+    | true        | false       | (mfb n) => "Fizz"                  |
+    | false       | true        | (mfb n) => "Buzz"                  |
+    | false       | false       | (mfb n) => n                       |
+  #+end_src
+
+  Here is the intermediate step of the specialisation, viz. ~(mechanism f g) -> h~.
+  #+begin_src clojure
+    (ns dispatch.buzz)
+
+    (defn divisible?
+      [divisor n]
+      (zero? (rem n divisor)))
+
+    (def fizzes? (partial divisible? 3))
+    (def buzzes? (partial divisible? 5))
+
+    ;; If we take the abstract mechanism and give it functions
+    ;; that test numbers for fizzery and buzzery, then we can
+    ;; construct a version of the truth table that is /concretely/
+    ;; specific to FizzBuzz.
+    (comment
+      (= (map (mechanism fizzes? buzzes?)
+              [15 3 5 1])
+         [[true true]
+          [true false]
+          [false true]
+          [false false]])
+      )
+  #+end_src
+
+  Finally, we hang it all together with Clojure's multimethods [fn:multimethods], like so.
+  #+begin_src clojure
+    (ns dispatch.buzz)
+
+    (def fizz-buzz map)
+
+    (def fizz-buzz-mechanism
+      (mechanism fizzes? buzzes?))
+
+    (defmulti dispatch-buzz
+      "It yields the third column of the truth table."
+      fizz-buzz-mechanism)
+
+    ;; The /Policy/, fully realised.
+    ;; ((mechanism fizzes? buzzes?) n) -> final results
+    (defmethod dispatch-buzz [true true]
+      [n]
+      "FizzBuzz")
+
+    (defmethod dispatch-buzz [true false]
+      [n]
+      "Fizz")
+
+    (defmethod dispatch-buzz [false true]
+      [n]
+      "Buzz")
+
+    (defmethod dispatch-buzz :default
+      [n]
+      n)
+
+    ;; The /Policy/, applied.
+    (comment
+      (= (fizz-buzz dispatch-buzz
+                    [1 3 5 15 16])
+         [1 "Fizz" "Buzz" "FizzBuzz" 16])
+      )
+  #+end_src
+
+  Yes, 'tis a wee FizzBuzz interpreter!
+
+  (Pirouettes off-stage, gracefully.)
+* Embarrassingly Parallel FizzBuzz
+  It turns out FizzBuzz is one of those so-called [[https://en.wikipedia.org/wiki/Embarrassingly_parallel][Embarrassingly Parallel]] problems.
+
+  #+begin_src clojure
+    (ns all.them.fizz.buzzers)
+
+    (def fizz-buzz map)
+
+    ;; Add 1 character for parallel map.
+    (def embarrassingly-parallel-fizz-buzz pmap)
+
+    (comment
+      (let [range-of-buzzees (range 1 101)]
+        (= (fizz-buzz basic-buzz
+                      range-of-buzzees)
+           (embarrassingly-parallel-fizz-buzz basic-buzz
+                                              range-of-buzzees)))
+      )
+  #+end_src
+  I was almost too embarrassed to write this, but I'm glad good sense prevailed,
+  because the trivial replacement of ~map~ with ~pmap~ teaches a lesson.
+
+  Parallelism is impossibly hard if we don't have pure functions, immutability,
+  and laziness. When we do, it reduces to merely hard but tractable. The
+  proverbial single character code modification (in this case, literally so)
+  gets a free ride on those other constructs.
+
+  We can see it in ~pmap~'s implementation. It is fairly straightforward. Fetch
+  its source and stare at it for a bit; ~(clojure.repl/source pmap)~. You will
+  be able to make sense of it with a bit of cross-referencing ClojureDocs.
+
+  If your favourite language has something similar (parallel version of a
+  sequential function), and if you choose to compare implementations, I will
+  be delighted to learn from your analysis!
+* OOP Buzz
+  What is an Object in, say, Java? It is a combination of four distinct things:
+  - Name (Class name / Java type)
+  - Structure (Class members, methods etc.)
+  - Behaviour (effects caused by methods)
+  - State (contained in the run-time instance of the Class)
+
+  In Clojure, /all of these are separate/ ("available a la carte", in Clojurish),
+  the consequences of which are hard to explain sans a motivating example.
+
+  Clojure's approach to Polymorphism allow us to do things like this.
+  #+begin_src clojure
+    (ns oops.fizzbuzz)
+
+    (def divisible? (comp zero? rem))
+    (def fizz-buzz map)
+
+    ;; Like a Java Interface, but better.
+    (defprotocol IFizzBuzz
+      (proto-buzz [this]))
+
+    ;; We can add new behaviour to existing types,
+    ;; including /any/ Java built-in type.
+    (extend-protocol IFizzBuzz
+      java.lang.Number
+      (proto-buzz [this]
+        (cond
+          (divisible? this 15) "FizzBuzz"
+          (divisible? this 3) "Fizz"
+          (divisible? this 5) "Buzz"
+          :else this)))
+
+    (comment
+      ;; Now we can do this
+      (= (fizz-buzz proto-buzz
+                    [1 3 5 15 16])
+         [1 "Fizz" "Buzz" "FizzBuzz" 16])
+
+      ;; And we can also do this
+      (= (fizz-buzz proto-buzz
+                    [1.0 3.0 5.0 15.0 15.9])
+         [1.0 "Fizz" "Buzz" "FizzBuzz" 15.9])
+
+      ;; WITHOUT breaking any existing Equality semantics.
+      ;; (= 42 42) => true (long and long)
+      ;; (= 42 42.0) => false (long and double)
+      ;; (= 42.0 42.0) => true (double and double)
+
+      ;; Thus, this is false, as it should be.
+      (= (fizz-buzz proto-buzz
+                    [1 3 5 15 16])
+         (fizz-buzz proto-buzz
+                    [1.0 3.0 5.0 15.0 15.9]))
+      )
+  #+end_src
+
+  Not to put too fine a point on it, but Clojure is a /far more capable/
+  Object Oriented Programming System than say Java or Kotlin, a fact which I
+  have personally profited from handsomely in the past [fn:inclojuretalk].
+
+  Why?
+
+  In short, Clojure cleanly solves the "[[https://en.wikipedia.org/wiki/Expression_problem][Expression Problem]]".
+
+  In long, you can...
+  - Watch [[https://www.youtube.com/watch?v=kQhOlWXXl2I][Clojure Protocols Explained]], by Sean Devlin.
+  - Watch [[https://www.infoq.com/presentations/Clojure-Expression-Problem/][Clojure's Solutions to the Expression Problem]], by Chris Houser.
+  - Listen to [[https://www.infoq.com/interviews/hickey-clojure-protocols/][Rich Hickey on Protocols and Clojure 1.3]], by Rich Hickey.
+  - Read "[[https://gist.github.com/reborg/dc8b0c96c397a56668905e2767fd697f][Rich Already Answered That!]]", curated by reborg.
+    /"A list of commonly asked questions, design decisions, reasons why Clojure
+    is the way it is as they were answered directly by Rich."/
+  - Read the parable of [[https://people.csail.mit.edu/gregs/ll1-discuss-archive-html/msg03277.html][The venerable master Qc Na and his student Anton]].
+    This [[https://news.ycombinator.com/item?id=14235020][HN thread]] also has some interesting links (and diatribes).
+
+  In /very/ short... Tweet this, look smart, get paid!
+
+  #+begin_quote
+  /If you do Functional Programming right, you get Object Oriented Programming
+  for free #Clojure. (And vice-versa e.g. #Erlang #Smalltalk #OCaml)./
+
+  - Yours Truly
+  #+end_quote
+* Non-Destructive FizzBuzz
+  ~proto-buzz~ is a great motivating example of what I would like to call the
+  /*Non-Destructive*/ FizzBuzz.
+
+  All the FizzBuzz solutions seen previously, except PeanoBuzz, lose information.
+  This is almost always bad because its impossible to reverse information loss.
+  The inverse is also true. It is almost always good to /augment/ information.
+  Prefer to enrich information and retain as much as resources permit (organised
+  neatly, of course). Ask any lawyer or accountant or friendly neighbourhood
+  Clojurian which alternative would set their hair on fire.
+
+  Here I play with some more ways to FizzBuzz non-destructively.
+
+  As I do, I meditate upon the extra super nice thing about ~proto-buzz~.
+  Which is that we did /not/ have to invent a new number system or box numbers
+  in some composite FizzBuzz data representation /and/ we lost no functionality
+  --- numbers still behave exactly as we expect, with zero added overhead!
+** Composite Data Buzz
+   PeanoBuzz was an example of writing FizzBuzz in terms of "composite" data.
+   Abstractly, that idea is basically "attach some meta-data to my things".
+
+   PeanoBuzz was a tuple ~[3 "Fizz"]~, but it could very well have been a custom
+   map representation, say, ~{:n 3 :fizzbuzz "Fizz"}~.
+
+   We can do one better by using Clojure Records to attach full-blooded Java
+   types to our numbers [fn:boxednums] /and also/ make "composite" data, because
+   Records give us all the features of generic hash-maps for free.
+   #+begin_src clojure
+     (ns boxed.fizz.buzz)
+
+     (def divisible? (comp zero? rem))
+     (def fizz-buzz map)
+
+     (defrecord Fizz [n])
+     (defrecord Buzz [n])
+     (defrecord FizzBuzz [n])
+     (defrecord Identity [n])
+
+     (defn boxed-buzz
+       [n]
+       (cond
+         (divisible? n 15) (->FizzBuzz n)
+         (divisible? n 3) (->Fizz n)
+         (divisible? n 5) (->Buzz n)
+         :else (->Identity n)))
+
+     (def all-boxed-buzzes
+       (map boxed-buzz
+            (rest (range))))
+
+     (comment
+       ;; Composite hash-map-like data!
+       (= (fizz-buzz boxed-buzz
+                     [1 3 5 15])
+          [#boxed.fizz.buzz.Identity{:n 1}
+           #boxed.fizz.buzz.Fizz{:n 3}
+           #boxed.fizz.buzz.Buzz{:n 5}
+           #boxed.fizz.buzz.FizzBuzz{:n 15}]) ; => true
+
+       ;; Which is nondestructive!
+       (= [1 3 5 15]
+          (fizz-buzz (comp :n boxed-buzz)
+                     [1 3 5 15])) ; => true
+
+       ;; And which has real Java types!
+       (= (map type (fizz-buzz boxed-buzz [1 3 5 15]))
+          [boxed.fizz.buzz.Identity
+           boxed.fizz.buzz.Fizz
+           boxed.fizz.buzz.Buzz
+           boxed.fizz.buzz.FizzBuzz]) ; => true
+       )
+   #+end_src
+
+   Further exercises for the dear reader!
+   - Re-implement PeanoBuzz using Clojure hash-maps!
+   - Re-re-implement PeanoBuzz with Records!
+   - /Separately/ write something that can return the classic string-or-number
+     equivalent of your composite types! (Hint: use multimethods and/or protocols
+     as appropriate).
+
+   Last but not least, ask yourself "But what about equality? And the rest of
+   arithmetic?" while comparing these with ~proto-buzz~.
+** Clojure Spec'd Buzz
+   Off-label use of [[https://clojure.org/guides/spec][Clojure Spec]]'s ~conform~ as a parser can be very handy.
+   #+begin_src clojure
+     (ns conformer.buzz)
+     (require '[clojure.spec.alpha :as s])
+
+     (defn divisible?
+       [divisor n]
+       (zero? (rem n divisor)))
+
+     (def fizzes? (partial divisible? 3))
+     (def buzzes? (partial divisible? 5))
+
+     (s/def ::number number?)
+     (s/def ::fizzes (s/and ::number fizzes?))
+     (s/def ::buzzes (s/and ::number buzzes?))
+
+     (comment
+       ;; Now we can parse input data...
+       (s/conform ::fizzes 3) ; => 3
+       (s/conform ::buzzes 5) ; => 5
+       (s/conform ::buzzes 3) ; => :clojure.spec.alpha/invalid
+       (s/conform (s/and ::fizzes ::buzzes) 15) ; => 15
+
+       ;; And we can handle non-conforming data gracefully,
+       ;; instead of panicking and throwing exceptions.
+       (s/conform (s/or ::fizzes ::buzzes) "lol") ; :clojure.spec.alpha/invalid
+       )
+
+     (def fizz-buzz-specs
+       "Set of FizzBuzz parsers."
+       #{::fizzes ::buzzes ::number})
+
+     (defn spec-parse-buzz
+       "Conform the given input to the set of specs for fizz-buzz, and return
+       a pair of the input and a map of parsed values keyed by the parser name."
+       [x]
+       [x (zipmap fizz-buzz-specs
+                  (map #(s/conform % x) fizz-buzz-specs))])
+
+     (def all-spec-buzzes
+       (map spec-parse-buzz
+            (rest (range))))
+
+     (comment
+       ;; And we can...
+       (take 100 all-spec-buzzes)
+
+       ;; Which gives us enriched data, like this:
+       (= (into {} (map spec-parse-buzz [1 3 5 15 "lol"]))
+          {1 #:conformer.buzz{:fizzes :clojure.spec.alpha/invalid,
+                              :buzzes :clojure.spec.alpha/invalid,
+                              :number 1},
+           3 #:conformer.buzz{:fizzes 3,
+                              :buzzes :clojure.spec.alpha/invalid,
+                              :number 3},
+           5 #:conformer.buzz{:fizzes :clojure.spec.alpha/invalid,
+                              :buzzes 5,
+                              :number 5},
+           15 #:conformer.buzz{:fizzes 15,
+                               :buzzes 15,
+                               :number 15},
+           "lol" #:conformer.buzz{:fizzes :clojure.spec.alpha/invalid,
+                                  :buzzes :clojure.spec.alpha/invalid,
+                                  :number :clojure.spec.alpha/invalid}}) ; => true
+      )
+   #+end_src
+   However, like off-label use of anything, this ~conform~-as-parser trick too
+   skirts the "can be a very bad idea" territory.
+
+   YMMV.
+** Wicked pprint Buzz
+   [[https://twitter.com/rdivyanshu][@rdivyanshu]] said to add this extra [[https://github.com/clojure/clojure/blob/b1b88dd25373a86e41310a525a21b497799dbbf2/src/clj/clojure/pprint/dispatch.clj#L175][pprint dispatcher]],
+   /"and let no number escape fizzbuzzness when showing itself"/.
+
+   Why not?
+   #+begin_src clojure
+     (ns pprint.buzz)
+     (require '[clojure.pprint :as pp])
+
+     (defn pprint-buzz
+       [n]
+       (let [divisible? (comp zero? rem)
+             prettyprint (comp prn
+                               (partial format "%d doth %s"))]
+         (cond
+           (divisible? n 15) (prettyprint n "FizzBuzzeth")
+           (divisible? n 3) (prettyprint n "Fizzeth")
+           (divisible? n 5) (prettyprint n "Buzzeth")
+           :else (prettyprint n "not Fizzeth nor Buzzeth. Alas!"))))
+
+     (comment
+       ;; lol
+       (#'pp/use-method pp/simple-dispatch java.lang.Number pprint-buzz)
+
+       ;; nothing to see here... you will have to look at the REPL
+       (doseq [n [1 3 5 15]]
+         (pp/pprint n)) ;; lol lol lol lolllll
+       )
+   #+end_src
+   You, Sir, are truly a gentlenerd and a scholar.
+
+   Nondestructive, and hilarious to boot!
+** Tagged Literal Buzz
+   Thinking aloud...
+
+   Clojure has a concept of "tagged literals"; plaintext labels that we can
+   "attach" to data /without/ changing the literal value of our data, /and/
+   transmit over wires along with the data.
+
+   Clojure provides built-in support for a small set of some fairly universal
+   types of literals (instant, UUID etc.). And I have used fancier tagged
+   literals, but only in context of other people's libraries ([[https://github.com/juxt/aero][juxt/aero]]).
+
+   How to make this work, I wonder?
+   #+begin_src clojure
+     (ns tagged.buzz)
+
+     ;; We can do this, but how to work with it?
+
+     (set! *default-data-reader-fn* tagged-literal)
+
+     (def tagged-buzz
+       #tagged.buzz/FizzBuzzSequence [#tagged.buzz/Fizz 3
+                                      #tagged.buzz/Buzz 5
+                                      #tagged.buzz/FizzBuzz 15
+                                      #tagged.buzz/Number 1])
+   #+end_src
+
+   Note: Parked for now. I'm not sure if this a reasonably real-world FizzBuzz.
+* Interlude: What more could we possibly decomplect?
+  Well, in one word, /*Transducers*/.
+
+  Which you can assume is Clojurish for "You haven't decomplected your Clojure
+  quite enough just yet.". But before we go there, a quick survey.
+
+  Thus far, we have pulled apart the FizzBuzz problem space in many dimensions.
+  - Calculation v/s Effects (lifted out ~println~)
+  - Calculation v/s Sequence generation (lifted fizzbuzz logic out of ~for~)
+  - Definition v/s Realisation (lazy definitions like ~all-fizz-buzzes~)
+  - Lifted out concepts in the domain of the /solution/ (~fizzes?~ ~buzzes?~ etc.)
+  - Lifted out concepts in the domain of the /problem/ (modulo math FizzBuzzes)
+  - Lifted all fizzbuzzes out of the concrete 3/5 FizzBuzz (~any-mod-cycle-buzz~)
+  - Added Fizzbuzz-meaning to Numbers /without/ changing existing Number-meaning
+    (protocols, and maybe also tagged literals if I can make it work sensibly)
+  - Concrete Numbers v/s abstract representations (PeanoBuzz, ~mod-cycle-buzz~)
+  - Calculation v/s Specification (~spec-parse-buzz~)
+  - We even teased apart /printing context/ (wicked ~pprint-buzz~)
+
+  Note that /*all of this belongs in the real-world Clojurian's design toolbox*./
+
+  Not only do we do it "in the small", in our little namespaces and +monoliths+
+  polyliths, we also do it "in the large" in our data-center-spanning distributed
+  systems.
+
+  But you see, in all the teasing apart so far, we /implied/ FizzBuzz was
+  in-memory sequence processing. What if we /could not make any assumption
+  whatsoever/ about data source, or data size, or data format, or process
+  control, or the output sink? Can we still describe FizzBuzz in some useful way?
+
+  Well, in one word, /*Transducers*/.
+
+  Savvy Clojurians may appreciate that text above has [[https://clojure.org/reference/transducers#_terminology][transducer signature]].
+
+  #+begin_quote
+  (whatever, input -> whatever) -> (whatever, input -> whatever)
+
+  "[[https://www.youtube.com/watch?v=6mTbuzafcII&t=1677s][Seems like a good project for the bar, later on.]]"
+  - Rich Hickey
+  #+end_quote
+* Transducery Buzz
+  This is really my feeble attempt to nerdsnipe you into falling into deep
+  abstraction territory.
+
+  I pray that you give yourself time to /absorb/ transducers. Peruse the code
+  below. Then peruse the list of stimulating material that follows, over a
+  relaxed weekend with several cups of delicious artisanal Oolong to salve
+  the brain pain.
+** What are we decomplecting?
+   Because, with /*transducers*/, we will now /also/ pull apart:
+   - Data source (sequence, stream, channel, socket etc.)
+   - Data sink (sequence, stream, channel, socket etc.)
+   - Data transformer (function of any value -> any other value)
+   - Data transformation process (mapping, filtering, reducing etc.)
+   - Some process control (we can transduce finite data (of course) as well as
+     streams, and also have optional early termination in either case. I'm not
+     sure about first-class support for other methods like backpressure.)
+
+   Of course, for useful computations, we have to compose these back in some
+   sensible way, appropriate to the context at hand (e.g. read numbers off a
+   Kafka topic, FizzBuzz them, and send them to another Kafka topic, OR slurp
+   numbers from file on disk, FizzBuzz them, and push into an in-memory queue).
+
+   A word of caution. As you read, you may think "Ew, he peddles oldass Unix
+   Pipes." [fn:unixpipes] (or shiny new Monads or Lambda Architecture(TM) or some
+   familiar-to-you generics). You won't be /wrong/. You won't be /right/ either.
+
+   Because, as is true for all sufficiently abstract abstractions, analogies
+   are not equivalences. Details differ deeply and your brain will hurt at first.
+   A lot. For example, it is /not/ obvious /why/, but the transducer's mandate
+   of /a la carte/ re-composition /demands/ that /all/ the new pulling apart
+   /must be fully compatible/ with /all/ the old pulling apart.
+
+   'nuff said. Decomplecting our Clojure 'smore in 3... 2... 1...
+   #+begin_src clojure
+     (ns transducery.buzz)
+
+     (def divisible?
+       (comp zero? rem))
+
+     (defn basic-buzz
+       [n]
+       (cond
+         (divisible? n 15) "FizzBuzz"
+         (divisible? n 3) "Fizz"
+         (divisible? n 5) "Buzz"
+         :else n))
+   #+end_src
+
+   zzzzz. snort. Old news. Whatever.
+** Demo One: Computation and /Output/ format pulled apart
+   #+begin_src clojure
+     (ns transducery.buzz)
+
+     ;; Separately define /only/ the transformation "xform"
+     (def fizz-buzz-xform
+       (comp (map basic-buzz)
+             (take 100))) ;; early termination
+
+     ;; Separately define /only/ input data
+     (def natural-nums
+       (rest (range)))
+
+     ;; Compose to produce a sequence
+     (comment
+       (transduce fizz-buzz-xform ;; calculate each step
+                  conj ;; and use this output method
+                  []   ;; to pour output into this data structure
+                  natural-nums) ;; given this input
+       )
+
+     ;; Compose differently to produce a string
+     (comment
+       (transduce fizz-buzz-xform ;; calculate each step
+                  str ;; and use this output method
+                  ""  ;; to catenate output into this string
+                  natural-nums) ;; given this input
+       )
+
+     ;; Compose still differently to produce a CSV string
+     (defn suffix-comma
+       [s]
+       (str s ","))
+
+     (comment
+       (transduce (comp fizz-buzz-xform
+                        (map suffix-comma)) ;; calculate each step
+                  str ;; and use this output method
+                  ""  ;; to catenate output into this string
+                  natural-nums) ;; given this input
+       )
+
+   #+end_src
+   Pause for a bit.
+
+   - Consider the parts we did /not/ have to modify /at all/ even though we
+     modified /everything/ about the output and about the xform.
+   - Consider what it might take to reuse any of the other fizzbuzzers instead
+     of ~basic-buzz~.
+   - Try it!
+** Demo Two: Computation and /Input/ format pulled apart.
+   #+begin_src clojure
+     (ns transducery.buzz)
+
+     ;; Setup
+     (def numbers-file
+       "Plaintext file containing numbers in some format."
+       "/tmp/deleteme-spat-by-clj-fizz-buzz-demo.txt")
+
+     ;; Write 10,000 natural numbers to file, one per line
+     #_(spit numbers-file
+             (clojure.string/join "\n" (range 1 10001)))
+
+     ;; Read back to double-check we got it.
+     #_(slurp numbers-file)
+
+
+     ;; For contrast: This is how we might fizz-buzz traditionally.
+     (comment
+       ;; Like this, if we don't know our threading macros.
+       ;; (Don't fret about it. This is just fine.)
+       (let [fizz-buzz (fn [s] (basic-buzz (Integer/parseInt s)))]
+         (take 15
+               (map fizz-buzz
+                    (clojure.string/split-lines (slurp numbers-file)))))
+
+
+       ;; Or more Clojurishly, with our nifty threading macros.
+       (->> numbers-file
+            slurp
+            clojure.string/split-lines
+            (map #(basic-buzz (Integer/parseInt %)))
+            (take 15))
+       ;; I interrupted us with this, because of a pet peeve. People like to
+       ;; describe this form as a "pipeline". It isn't. It is a formatting
+       ;; sleight of hand that makes in-process call stacks of functions
+       ;; /appear/ to be straight-line. The resulting shape visually suggests
+       ;; punching data through a pipeline.
+       ;;
+       ;; Whereas pipelines are fundamentally streaming abstractions that
+       ;; cross process boundaries.
+       ;;
+       ;; Transducers + xforms are highly pipeline-like.
+       )
+
+     ;; Apart from not really being pipelines, both these traditional versions
+     ;; are also hopelessly complected with sequences, which malady is addressed
+     ;; by this transducer version.
+     (comment
+       (transduce (comp (map #(Integer/parseInt %))
+                        fizz-buzz-xform) ;; calculate each step
+                  conj ;; and use this output method
+                  []   ;; to pour output into this data structure
+                  (clojure.string/split-lines
+                   (slurp numbers-file))) ;; given this input
+       )
+   #+end_src
+
+   A reader may complain that split-lines and file slurpin' is still complected.
+   The reader would be right. Tim Baldridge's video series listed below will
+   help work out how one might go about transducing over numbers-file directly.
+** Demo Three: Use /only/ the xform as a calculator
+   #+begin_src clojure
+     (ns transducery.buzz)
+
+     ;; The xform can still calculate just a single item:
+     ((fizz-buzz-xform conj) [] 3) ;; => ["Fizz"]
+     ((fizz-buzz-xform str) "" 3) ;; => "Fizz"
+     ((fizz-buzz-xform str) "" 1) ;; => "1"
+     ((fizz-buzz-xform (fn [_ out] out)) nil 3) ;; "Fizz"
+     ((fizz-buzz-xform (fn [_ out] out)) nil 1) ;; 1
+   #+end_src
+
+   Hopefully now it is a little more obvious /why/ the transducer's mandate
+   of /a la carte/ re-composition /demands/ that /all/ the new pulling apart
+   /must be fully compatible/ with /all/ the old pulling apart.
+** Further reading
+   Transducers are very deep conceptually, and literally. Since Clojure 1.7,
+   they have come to underpin all of Clojure's heavy-lift capability.
+
+   I recommend drilling down this way.
+
+   /*Thirty minute quickstart*/
+   - Skim-read the official words introducing [[https://clojure.org/reference/transducers][Transducers]],
+     and describing "[[https://clojure.org/guides/faq#transducers_vs_seqs][What are good use cases for transducers?]]".
+   - Watch [[https://twitter.com/timbaldridge][Tim Baldridge]] lift the essence of transducers out from
+     map/filter/reduce in 10 minutes: [[https://www.youtube.com/watch?v=WkHdqg_DBBs][Transducers - Episode 1 - Introduction to Transducers]]
+   - Compare with ~(clojure.repl/source map)~ (and filter and reduce).
+
+   /*Half day binge watch*/
+   - Watch Rich Hickey [[https://www.youtube.com/watch?v=6mTbuzafcII][introduce Transducers]]
+   - Follow Tim Baldridge through [[https://tbaldridge.pivotshare.com/categories/transducers/2426/media][9 short video demos]],
+     where he "draws the rest of the Owl" so to speak, but actually, with all
+     the intermediate steps accounted for. IMHO, this is hands-down the best
+     exploration of transducers out there [fn:halgari].
+   - Watch Rich Hickey dive [[https://www.youtube.com/watch?v=4KqUvG8HPYo][Inside Transducers]].
+
+   /*Grok some real-world Transduction*/
+   - [[https://github.com/bobby/kafka-streams-clojure][Kafkaesquely Streaming Transducery]]
+   - [[https://www.grammarly.com/blog/engineering/building-etl-pipelines-with-clojure-and-transducers/][Grammar Transduction]]
+   - [[https://github.com/hyPiRion/haskell-transducers][Transducers Haskellized]]
+   - [[https://www.youtube.com/watch?v=1sC71eb9Ox0][Structure and Interpretation of Clojure Transducers]]
+     re:Clojure 2021 workshop, by Ben Sless
+
+   /*Exercise your brain*/
+   - Write a FizzBuzz in Shell that can compute with any source/sink combination;
+     in-line seq, mkfifo, files, sockets, URLs.
+   - Next, replace /only/ the Shell FizzBuzz function with the ~basic-buzz~
+     function we wrote (use babashka).
+   - Finally, write an all-Clojure version around the ~basic-buzz~ function,
+     /without/ losing the the ability to transparently read/write from/to
+     seq, mkfifo, file, socket, URL.
+
+   #+begin_src shell
+     man bash |
+         tr -cs A-Za-z '\n' |
+         tr A-Z a-z |
+         sort | uniq -c | sort -rn |
+         sed 10q
+   #+end_src
+
+   [[https://www.evalapply.org/posts/shell-aint-a-bad-place-to-fp-part-1-doug-mcilroys-pipeline/][;-)]]
+* TODO Buzz
+  Ideas on deck, to put self on the hook...
+  - [ ] curried fizzbuzz (like Ring libraries),
+  - [X] dispatch-based fizzbuzz (with multimethods),
+  - [X] OOP fizzbuzz (with protocols),
+  - [X] Nondestructive fizzbuzz (several!!!),
+  - [ ] concurrent fizzbuzz (with agents, but the code in my head is
+    probably totally wrong),
+  - [X] parallel fizzbuzz, (just pmap, quite silly actually, but why not? It's legit!)
+  - [X] transducing fizzbuzz, (should be able to transduce all the fizz-buzzes
+    up to Peano FizzBuzz)
+  - [ ] maaabe also re-do Rich's ants sim with FizzBuzz ants (4 species of, ah,
+    ConcurrAnts --- IdentiAnt, FizzAnt, BuzzAnt, FizzBuzzAnt).
+
+  Outside of clojure.core, maaaaybe core.async fizzbuzz, but IDK, maybe that
+  will be too high concept, and too contrived.
+* Acknowledgments
+  Thanks to [[https://twitter.com/rdivyanshu][@rdivyanshu]] for review and feedback and ideas.
+
+[fn:stdlib] Official and community-curated Clojure API docs https://clojure.org/api/api
+
+[fn:repl] Official guide: [[https://clojure.org/guides/repl/introduction][Programming at the REPL]].
+The REPL is an /eager/ beast. Lazy sequences want to never be fully realised, if
+possible. But, a REPL is typically designed to fully evaluate everything it gets.
+This is why we didn't feel the bite of mixing printing with lazy sequence generation.
+If we had this in our code somewhere, nothing would print, and any caller would
+get back just a useless collection of nils.
+
+[fn:lazy]
+Laziness is a form of deferred computation. Clojure has "lazy sequences".
+~for~ generates a lazy sequence. Several essay-length answers await your eager perusal.
+Rich Hickey's notes from back in the day: [[https://clojure.org/reference/lazy][Making Clojure Lazier]].
+Ramsharan G.J. muses /"[[https://www.youtube.com/watch?v=XCYTvZtTetI][Lazy Seqs - Why are they so lazy?]]"/ ([[https://speakerdeck.com/sharangj/lazy-sequences-why-are-they-so-lazy][slides]]).
+Oitihjya Sen muses [[https://otee.dev/2022/01/17/lazy-clojure.html][Who Moved My Cheese: Laziness in Clojure]].
+Debashish Ghose has some thoughts on [[https://debasishg.blogspot.com/2010/05/laziness-in-clojure-some-thoughts.html][Laziness in Clojure]].
+
+[fn:anathema] Watch Rafal Dittwald refactor some Javascript in
+[[https://www.youtube.com/watch?v=vK1DazRK_a0][Solving Problems the Clojure Way]].
+Basically, we like to /prevent/ side effecting code as much as humanely
+possible. When we can't, we do [[https://www.destroyallsoftware.com/screencasts/catalog/functional-core-imperative-shell][Functional Core Imperative Shell]].
+
+[fn:sicp] The [[https://mitpress.mit.edu/sites/default/files/sicp/index.html][full SICP textbook]] is available free, online.
+The [[https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-001-structure-and-interpretation-of-computer-programs-spring-2005/video-lectures/][video lecture series]] from 1986.
+Further DuckDuck searches will yield various tours of SICP in Clojure.
+Still further into the deep end, there is now [[https://github.com/sicmutils][SICMUtils]] in Clojure,
+built around the Structure and Interpretation of Classical Mechanics.
+
+[fn:please]
+To anyone writing Clojure tutorials, please for the love of lambda, /*do not*/ use
+~println~ to "show" people results. You may think you are being kind by using a
+familiar way to "show" results, but it is far better to rip the bandage off right
+from the get go. Double down on teaching good REPL habits and quality FP thinking
+instead.
+
+[fn:imperative] Incidentally, the Classic implementation is also sensitive to the
+ordering of conditions, which is also a defect from a FP point of view, because
+there is no good reason to write an imperative control-flow-y interpretation of
+what could be a purely mathematical definition of FizzBuzz.
+
+[fn:simple] Well, maybe Rich can convince you otherwise:
+[[https://www.infoq.com/presentations/Simple-Made-Easy/][Simple Made Easy]].
+
+[fn:fired] I mean, don't be actively malicious, of course. However, such a
+/category/ of error can happen. And if "they" git-blame-fire you, then I'd say
+celebrate. You inadvertently self-evicted from a place that will destroy your
+soul with bad systems and bad management.
+
+[fn:lazyleak] One fine day, one of our Clojure services at $FormerEmployer,
+started to run out of heap space after a fresh deployment. Our service graphs
+looked like this ~_/|_/|_/|_~. The sawtooth of heap death. It wasn't super critical,
+and everybody was busy shipping features. So naturally we did some napkin math
+and rolled out a Jenkins job that triggered a rolling restart every six hours.
+Eventually, someone found the time to go debug the crashes. We had /memoized/ a
+function that returned an anonymous function (a lambda or /thunk/), when we meant
+to memoize the return value from evaluating said lambda. Clojure creates a /new/
+object every time we ask it to make a lambda. So [[https://clojuredocs.org/clojure.core/memoize][memoize]] saw new return values
+every time the original "thunkified" function was called, dutifully cached them
+all, and held onto them, thus preventing JVM garbage collector from cleaning
+them out. The story is relevant here because /thunking/ (making functions return
+partially evaluated fuctions) is a form of delayed or "lazy" evaluation. Also
+because nobody was fired. Everyone learned a good lesson and had a good laugh.
+In fact, we continued to use the rolling restart job in at least one other case
+where the memory leak was very slow, the service was very fault tolerant, and the
+service owner was really pressed for time with other always-higher priorities in
+that hyper-growth phase of the company. Slow leak tolerance is very much justified
+when used carefully. In fact, the friend who owned that service recently told me
+the periodic restart method worked so well, that they almost forgot about it for
+several years until they did a whole data center migration, at which point the
+service crashed for the first time in years, because someone forgot to also
+switch on the restart job. More good laughs were had and the documentation and
+automation were improved. You may now like to read
+[[https://devblogs.microsoft.com/oldnewthing/20180228-00/?p=98125][/"An amusing story about a practical use of the null garbage collector"/]].
+
+[fn:complect] "[[https://www.merriam-webster.com/dictionary/complect][Complect]]"-ed, if you speak Clojurish.
+When a Thing is made of lots of Sub-Things that are braided together tightly, we
+say "This Thing is /complected/." in Clojurish. After we transform and reconstitute
+the Thing in terms of sub-things that are /no longer/ braided together, we smile
+inwardly and say "This Thing is now /decomplected/". Clojurish is basically a
+postmodern revival of the Latin roots of American English.
+
+[fn:nilpun] Eric Normand on /[[https://ericnormand.me/podcast/what-is-nil-punning]["What is Nil Punning?"]]/.
+
+[fn:churchnums] For reference, [[https://github.com/adityaathalye/sicp/blob/master/ex2-06-church-numerals.scm][my attempt]] at implementing [[https://en.wikipedia.org/wiki/Church_encoding][Church Numerals]] in SICP.
+
+[fn:decomplect]
+See the footnote for "Complect".
+
+[fn:mechapolicy] Arne Brasseur on
+[[https://www.lambdaisland.com/blog/2022-03-10-mechanism-vs-policy][Improve your code by separating mechanism from policy]].
+Don't you just love it when Lots Of Thoughts are rattling around in your brain,
+and someone drops a sweet one-liner that instantly crystallises it all for you?
+Thanks [[https://twitter.com/robstuttaford][@RobStuttaford]] for bringing this back into my consciousness!
+
+[fn:javajoke] I see you and that ~AbstractFactoryFactory~ joke forming in your brain.
+
+[fn:multimethods] See [[https://clojure.org/reference/multimethods][Multimethods and Hierarchies]] page at the official site,
+and the [[https://clojuredocs.org/quickref#multifunctions][Multifunctions]] section at ClojureDocs for examples.
+This stuff may break your brain for a bit, if you are very accustomed to Class-y
+OO programming. That's absolutely fine. It /is/ fairly mind bending and takes
+some getting used to. Stay with it, play with concepts against the REPL. Translate
+or reduce as many patterns as you can to this kind of open-ended multiple dispatch.
+
+[fn:inclojuretalk] You can watch me flail about live-demoing a UI test automation
+DSL I designed using Clojure. [[https://www.youtube.com/watch?v=hwoLON80ZzA&t=170s][Video]], [[https://github.com/adityaathalye/slideware/blob/master/designing_object_functional_system_IN-Clojure_2016.pdf][Slides]].
+
+[fn:boxednums] Aside: This is actually double-boxing, because in Java, numbers
+are already boxed by design. So this approach may carry some performance penalty
+depending on your context. For example, see this DZone > Java Zone article:
+[[https://dzone.com/articles/whats-wrong-with-java-boxed-numbers][What's Wrong With Java Boxed Numbers?]]
+
+[fn:unixpipes] Yes I do: [[https://www.evalapply.org/posts/shell-aint-a-bad-place-to-fp-part-1-doug-mcilroys-pipeline/][Shell ain't a bad place to FP]] :)
+
+[fn:halgari] Later, get all of [[https://tbaldridge.pivotshare.com/][Clojure Tutorials - With Tim Baldridge]].
+It is a joy to watch a master craftsman at work!

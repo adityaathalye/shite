@@ -1,0 +1,676 @@
+# SHITE_META
+#+title: Shell ain't a bad place to FP: part 2/N: Functions as Unix Tools
+#+summary: Or, the one in which we hand-craft nano Unix tools using Bash functions.
+#+author: Adi
+#+date: 2022-04-27
+#+tags: bash unix functional_programming architecture
+#+include_toc: yes
+# SHITE_META
+
+As we saw in the [[https://evalapply.org/posts/shell-aint-a-bad-place-to-fp-part-1-doug-mcilroys-pipeline][previous post]],
+functions obey stdio and we can mix and match them with built-ins (grep, sed,
+cat etc.) and other installed tools (like jq, pandoc, babashka etc.). We used
+functions to name parts of Douglas McIlroy's pipeline and mess around a bit.
+
+I tend to make libraries of pure functions that I can source in shell sessions
+and use just like any other shell tool, complete with tab-completion. e.g.
+[[https://github.com/adityaathalye/bash-toolkit][bash-toolkit]] and [[https://github.com/adityaathalye/shite][shite]].
+
+Now we step back and try to build good intuitions about
+- what functions are
+- how to design good functions
+- how to design programs with functions
+- how to name them :)
+
+* Previously in this series...
+  - [[https://evalapply.org/posts/shell-aint-a-bad-place-to-fp-part-1-doug-mcilroys-pipeline][Part 1/N]]:
+    Exploring McIlroy's pipeline to motivate the series. And an unexpected
+    masterclass from the Master himself (see appendix)!
+  - [[https://evalapply.org/posts/shell-aint-a-bad-place-to-fp-part-0-intro/][Part 0/N]]:
+    intro, caveats, preamble
+* What Bash functions are
+  Last time, we wrote functions like this:
+  #+begin_src shell
+    flatten_paragraphs() {
+        tr -cs A-Za-z '\n'
+    }
+  #+end_src
+
+  The syntax may look familiar, but their behaviour and semantics differ in
+  many ways from functions in the more modern languages like Python or JS etc.
+** Bash functions are compound commands
+   ~man bash~ describes functions as follows (online manpage: [[https://www.gnu.org/software/bash/manual/html_node/Shell-Functions.html][shell functions]]).
+
+   #+begin_quote
+   *Shell Function Definitions*
+
+   A shell function is an object that is called like a simple command and
+   executes a compound command with a new set of positional parameters.
+   Shell functions are declared as follows:
+
+   ~name () compound-command [redirection]~
+
+   ... and more stuff ...
+   #+end_quote
+
+   We will do names last, because names are hard :) Let's start with the
+   "compound command" part.
+
+   There are several ways to write /compound commands/, each serving a different
+   purpose. To define functions, we only need the ~{ list; }~ form. So we will
+   ignore the others. Some context from the Bash manpage.
+
+   #+begin_quote
+   *Compound Commands*
+
+   A compound command is one of the following. In most cases a list in a
+   command's description may be separated from the rest of the command by
+   one or more newlines, and may be followed by a newline in place of a semicolon.
+
+   ~(list)~
+   list is executed in a subshell environment ...
+
+   ~{ list; }~
+   list is simply executed in the current shell environment. list
+   must be terminated with a newline or semicolon. This is known as
+   a group command. The return status is the exit status of list.
+   Note that unlike the metacharacters ( and ), { and } are reserved
+   words and must occur where a reserved word is permitted to be
+   recognized. Since they do not cause a word break, they must be
+   separated from list by whitespace or another shell metacharacter.
+
+   ~((expression))~
+   Arithmetic expressions ...
+
+   ~[[ expression ]]~
+   Compound conditional expression ...
+   #+end_quote
+
+   The Bash manual page can feel a little obtuse at times. Hopefully the examples
+   and discussion in this post will serve as useful illustrations.
+** Function definitions live in a global namespace
+   This means function definitions are isolated, and don't override any alias,
+   builtin, variable, or reserved keyword of the same name.
+
+   To see what that means, let's bind the same name to different things.
+   #+begin_src shell
+     $ sed() { echo lol; } # will the function override the sed built-in?
+
+     $ sed="phew!" # will the variable override the function we defined?
+
+     $ alias sed=cat # will the alias override everything?
+   #+end_src
+
+   We can query all objects that the name ~sed~ is bound to. (Note: the variable
+   meaning won't show up in this listing.)
+   #+begin_src shell
+     $ type -a sed
+     sed is aliased to 'cat'
+     sed is a function
+     sed ()
+     {
+         echo lol
+     }
+     sed is /bin/sed
+   #+end_src
+
+   And we can invoke or evaluate each meaning of the word ~sed~.
+   #+begin_src shell
+     $ man bash | sed # Oops. Boy, are we in trouble now.
+     # Bash interprets the unquoted word as an alias, which is 'cat'.
+
+     $ man bash | command sed 1q # execute as a command (not function, or alias)
+     BASH(1)           General Commands Manual              BASH(1)
+
+
+     $ 'sed' # quoting prevents interpretation as alias. Function meaning gets used.
+     lol
+
+     $ echo foo | 'sed' # works fine in pipes too
+     lol
+
+     $ echo $sed # the variable remains intact too
+     phew!
+   #+end_src
+
+   This namespacing is certainly merciful, but it is not quite enough. As you
+   may have guessed, it can get very confusing if we reuse names willy-nilly.
+   If there was one thing I could improve about Bash, it would be adding "real"
+   namespaces. That would help write modular code. Alas, that ship sailed long ago.
+
+   Anyway, I drop Bash after the code starts getting too involved; beyond about
+   1,000 LoC (of clean FP-style Bash). In large scripts, the sharp corners of Ye
+   Olde Shell start poking holes and forcing bugs (quoting, expansion, trap/error
+   handling etc.).
+
+   That said (or um, sed), under 1K LoC clean FP-style Bash can do a crazy amount
+   of work sufficiently fast [fn:bashvsawk]. That sweet spot is what this series
+   is all about. Like [[https://github.com/adityaathalye/shite][shite]] and [[https://github.com/adityaathalye/oxo][oxo]].
+* How to design good functions
+  Bash functions provide certain highly functional features like obeying stdio,
+  thus being streaming-friendly units of program design. Several other creature
+  comforts of functional style are not automatic. /However/ we can get plenty
+  functional with /some/ care and manual effort.
+
+  Here are things I do to keep my functions, well, functional.
+** Wrap domain concepts in single-purpose functions
+   Previously, we wrapped invocations of Unix tools and pipelines in functions,
+   gave them domain-specific names, to achieve domain-specific compositional power.
+
+   For example:
+   #+begin_src shell
+     sort_dictionary() {
+         sort -b -d -k2
+     }
+
+     sort_rhyme() {
+         rev | sort -b -d | rev
+     }
+   #+end_src
+
+   Small functions are absolutely fine! In fact, we prefer our functions be small,
+   single-purpose, and as general as possible, just like any other Unix tool.
+** Use parameter substitutions and local scope variables
+   Functions only accept positional parameters, like regular shell scripts. And
+   like regular scripts, we can send input for evaluation as well as to control
+   behaviour of the function, as well will see later in this post.
+
+   Unfortunately, positional-only params make optionality hard. The following
+   techniques help mitigate this limitation. Compare them with the example below.
+   - I tend to keep my functions small and avoid API design that requires more
+     than 3 parameters. This is just a nonscientific thumb rule.
+   - Next, I use Bash parameter substitution to provide sane fallbacks, and/or
+     enforce API contracts (fail and die if param not provided).
+   - I always assign positional params to local variables inside the function
+     body, which is a bit verbose, but improves readability and traceability.
+     And it makes any parameter substitution explicit.
+   - I also declare all named params as ~local~, which ensures variable scope
+     and mutation is local to the function.
+
+   Most of my parameter-accepting functions are designed with just one optional
+   parameter. Here is a motivating example from my little [[https://github.com/adityaathalye/bash-toolkit][bash-toolkit]] library.
+   The ones copied here help with ad-hoc log analysis tasks.
+
+   Accept optional parameter, with a sane default.
+   #+begin_src shell
+     drop_first_n() {
+         local lines="${1:-0}"
+         local offset="$(( lines + 1 ))"
+
+         tail -n +"${offset}"
+     }
+
+     drop_last_n() {
+         local lines="${1:-0}"
+         head -n -"${lines}"
+     }
+   #+end_src
+
+   Enforce all parameters, as these functions are meaningless without them.
+   #+begin_src shell
+     drop_header_footer() {
+         local header_lines="${1:?'FAIL. Header line count required, 1-indexed.'}"
+         local footer_lines="${2:?'FAIL. Footer line count required, 1-indexed.'}"
+
+         drop_first_n "${header_lines}" |
+             drop_last_n "${footer_lines}"
+     }
+
+     window_from_to_lines() {
+         local from_line="${1:?'FAIL. \"FROM\" line number required, 1-indexed.'}"
+         local to_line="${2:?'FAIL. \"TO\" line number required, 1-indexed.'}"
+
+         drop_first_n "${from_line}" |
+             head -n "${to_line}"
+     }
+   #+end_src
+
+   Notice how the latter two functions reuse the earlier functions to create
+   completely different log processing tools, yet retain flexibility to deal with
+   arbitrary parts of log files, as well as compose together any way we please
+   (not all of which will be sensible, but that's besides the point :).
+
+   There are many ways to do [[https://wiki.bash-hackers.org/scripting/posparams][parameter handling]]; a whole topic of its own.
+   Play around to get a sense for it, but keep your actual usage simple.
+** Partial application of functions
+   [[https://en.wikipedia.org/wiki/Partial_application][Partial application]] is not automatic in Bash,
+   but that does not mean we can't do it.
+
+   In the example below, a utility function ~__with_git_dir~ knows something
+   about a git directory, but nothing about a git subcommand that we wish to run.
+   #+begin_src shell
+     __with_git_dir() {
+         local repo_dir="${1}"
+         shift
+         git --git-dir="${repo_dir}/.git" "$@"
+     }
+
+     git_fetch() {
+         local repo_dir="${1}"
+         __with_git_dir "${repo_dir}" fetch -q
+     }
+
+     git_status() {
+         __with_git_dir "${1}" status
+     }
+
+     git_branch_current() {
+         local repo_dir="${1}"
+         __with_git_dir "${repo_dir}" rev-parse --abbrev-ref=strict HEAD
+     }
+   #+end_src
+
+   These functions [[https://github.com/adityaathalye/bash-toolkit/blob/7cbac8bd6a7970481f6f62e5a2a604afcaf804ea/bulk-git-ops.sh#L99][belong to some git utilities]] [fn:gitutilityfns] that
+   help me conveniently run git commands against any repo on my file system,
+   without cd-ing to the repo.
+
+   See? Functions can be dead-simple yet super useful. If you accumulate wee
+   functions for your git needs, you get executable documentation. You can ~source~
+   them in your Bash terminal on any computer and be on your way. Likewise, any
+   other command-line-y need of yours.
+** Dependency injection with functions
+   The previous section brought us close to dependency injection. We passed in
+   git subcommands as argument to the ~__with_git_dir~ utility. /*We can do the
+   same with our own functions.*/ This is a form of "higher order" Functional
+   Programming; viz. making functions that accept functions as arguments.
+
+   For example, [[https://github.com/adityaathalye/bash-toolkit/blob/7cbac8bd6a7970481f6f62e5a2a604afcaf804ea/bulk-git-ops.sh][see the same git utilities file]] for usages such as these:
+
+   - Use the ~xgit~ utility fn to apply simple git commands to the given repos.
+     #+begin_src shell
+       ls_git_projects ~/src/bitbucket | xgit fetch # bitbucket-hosted repos
+     #+end_src
+
+   - Use ~proc_repos~ to apply custom functions to the given repos.
+     #+begin_src shell
+       ls_git_projects ~/src/bitbucket |
+           proc_repos git_fetch # all repos
+
+       ls_git_projects ~/src/bitbucket |
+           take_stale |
+           proc_repos git_fetch # only stale repos
+
+       ls_git_projects ~/src/bitbucket |
+           take_active |
+           proc_repos git_fetch # only active repos
+     #+end_src
+
+   - What's the current branch?
+     #+begin_src shell
+       ls_git_projects ~/src/bitbucket |
+           proc_repos git_branch_current
+     #+end_src
+
+   I've also used this design technique in [[https://github.com/adityaathalye/shite][shite]]
+   (the little static site generator from shell :).
+   This is baaasically what its [[https://github.com/adityaathalye/shite/blob/f8d2d22316a8c2fc04c92c1390abb77c69377f6f/shite_utils.sh#L237]["main" function]] does.
+   #+begin_src shell
+     # Build page and tee it into the public directory, namespaced by the slug
+     cat ${body_content_file} |
+         ${content_proc_fn} |
+         # We have only one page builder today, but
+         # we could have a variable number tomorrow.
+         shite_build_page  |
+         ${html_formatter_fn} |
+         tee "${shite_global_data[publish_dir]}/${html_output_file_name}"
+   #+end_src
+   All the ~_fn~-suffixed variables are locals in the "main" fn, that are
+   assigned to function names we pass from the outside. Also notice the use of
+   sane fallbacks for the positional params in this case.
+** Keeping Functions pure
+   The ~return~ statement in Bash returns exit codes, not values. So we have to
+   pause a bit to figure out how to "return" values. Well, we have to rely on
+   stdio, and the fact that the Unix tools philosophy encourages us to emit data
+   in the same format as we receive it.
+
+   The ~identity~ function is the simplest example. By definition, it returns
+   its input unchanged. That's just ~cat~! Thus we can write this streaming
+   /identity/ function.
+   #+begin_src shell
+     identity() {
+         cat -
+     }
+   #+end_src
+   This definition of /identity/ is surprisingly useful, as we will see below.
+
+   Note that I strongly favour pipeline-friendly domain modeling and functional
+   programming, to profit from the naturally streaming nature of Unix.
+
+   Under such architecture, /map/, /filter/, and /reduce/ are automatic, and I
+   only need to write a pure "step" or single-item processing function.
+
+   My "step" functions are simply transforms of input text (or data structure)
+   to output text (or data structure). This can be anything; in case of plain
+   text lines I do line transforms with ~sed~ or ~printf~, or line selects
+   with ~grep~, or line-munging with ~tr~ etc. I do the equivalent with ~jq~
+   for JSON-formatted lines. [[http://evalapply.org/posts/shell-aint-a-bad-place-to-fp-part-1-doug-mcilroys-pipeline/][The previous post]] featured such "step" functions
+   for /map/ (~tokenise_lowercase~, ~bigram~), /filter/ (~drop_stopwords~), and
+   /reduce/ (~frequencies~, ~sort_dictionary~).
+
+   /shite/ has a [[https://github.com/adityaathalye/shite/blob/f8d2d22316a8c2fc04c92c1390abb77c69377f6f/shite_utils.sh#L89][more interesting example]].
+
+   Suppose we want to make a blog site. For each blog post, only the content
+   changes. The surrounding HTML wrapper remains constant (head, body, header,
+   footer etc.). If we tease apart wrapper HTML construction and body HTML
+   construction, then we can write a "page builder" function like this. Note
+   the ~cat -~ in the middle. Our identity function appears!
+   #+begin_src shell
+     shite_build_page() {
+         cat <<EOF
+     <!DOCTYPE html>
+     <html>
+         <head>
+             <!-- Some basic hygiene meta-data -->
+             <meta charset="utf-8">
+             <title>My Blog</title>
+             <link rel="stylesheet" href="css/style.css">
+         </head>
+         <body>
+             <header id="site-header">
+               <h1>My Blog</h1>
+               <hr>
+             </header>
+             <main>
+               $(cat -)
+             </main>
+             <footer>
+               <hr>
+               <p>All content is MIT licensed, except where specified otherwise.</p>
+             </footer>
+         </body>
+     </html>
+     EOF
+     }
+   #+end_src
+   Observe that ~$(cat -)~ blindly injects content in the ~<main></main>~ block,
+   received via stdin of the /function/ ~shite_build_page~. Thus, for the same
+   input it will always produce the same output, making it a pure function.
+   This choice also makes the caller responsible for passing it HTML, because
+   the output is HTML.
+
+   Further, by the single responsibility principle, our function's job is simply
+   to punch HTML content into an HTML wrapper and return the composite. So it is
+   vital that this function /not know or care/ how the HTML it receives is made.
+
+   And here's the cherry... By making this design choice, we have in fact made
+   a step function that we can /map/ over many blog posts.
+   #+begin_src shell
+     gen_html_posts_from_md() {
+         while read blog_post_md_file
+         do local html_file_name="$(basename -s.md ${blog_post_md_file}).html"
+            pandoc -f markdown -t html ${html_file_name} |
+                shite_build_page > ./public/posts/${html_file_name}
+         done
+     }
+   #+end_src
+
+   Thus, if our blog posts are ~markdown~ files in some folder (let's say under
+   a ~content~ directory). We can do this.
+   #+begin_src shell
+     find ./content/posts/ -type f -name *.md |
+         gen_html_posts_from_md
+   #+end_src
+
+   A reader may complain that our HTML posts generator function is too specific
+   to the markdown format, and knows too much about how to transform markdown
+   to HTML, as well as where to put it. Its job ought to be just to describe
+   the transform process.
+
+   The reader would be right, and may like to solve the problem at home [fn:hintpurefn] :)
+* Program design with functions
+  Now, how do we apply functional programming principles to the next level up,
+  viz. to design our programs?
+
+  If you've seen shell scripts in the wild, you'd have observed they are often
+  written as sequences of statements and imperative control flow that evaluates
+  top to bottom. I think that practice is a bit tragic, because it produces
+  needlessly complex code, because people reach for flags and global variables
+  and traps and suchlike.
+
+  Functions obviate a lot of that icky stuff. We still need the ick, but we can
+  constrain it to very specific tightly controlled bits of our program, and only
+  when the ick makes absolute sense.
+
+  I will also say that if we can make programs that are themselves functional
+  compositions, then we can chain entire programs together into still larger
+  scale functional structures. Further, since stdio includes named pipes, and
+  sockets, we can compose multi-process as well as multi-machine pipelines,
+  with a great economy of code. And this is /not/ insane at all. Seriously.
+
+  But I'm getting ahead of myself. Here is how I try to keep my programs functional.
+** Writing Pipeline-friendly Functions
+   Frequently, an imperative algorithm can also be expressed in data-flow terms.
+   That is, instead of if-else-y code, think in terms of map/filter/reduce.
+
+   Once again, recalling the git utility functions referenced above. Suppose you
+   had to return a list of "stale" repositories from a given directory, you may
+   be tempted to write something like this. (Here "stale" means "not worked on
+   for the last N hours").
+   #+begin_src shell
+     get_stale_repos() {
+         local repos_root_dir="${1}"
+         local stale_hrs="${2:-12}"
+         local hrs_ago=$(( ($(date +%s)
+                            - $(stat -c %Y "${repo_dir}/.git"))
+                           / 3600 ))
+
+         for repo_dir in $(ls ${repos_root_dir}); do
+             if [[ $hrs_ago -le $stale_hrs ]]
+             then printf "%s\n" "active: ${repo_dir}"
+             else printf "%s\n" "stale: ${repo_dir}"
+             fi
+         done
+     }
+   #+end_src
+
+   However this kind of implementation combines ("complects") many different things.
+
+   Given the fact that functions respect ~stdio~, we can pull apart our imperative
+   attempt. The insight is to combine ~while~ and ~read~ as follows. I use this
+   idiom a lot because it helps me drastically simplify my code.
+
+   #+begin_src shell
+     __is_repo_active() {
+         local repo_dir="${1}"
+         local stale_hrs="${2:-12}"
+         local hrs_ago=$(( ($(date +%s)
+                            - $(stat -c %Y "${repo_dir}/.git"))
+                           / 3600 ))
+         [[ $hrs_ago -le $stale_hrs ]]
+     }
+
+     take_stale() {
+         local repo_dir
+         while read repo_dir
+         do __is_repo_active "${repo_dir}" || printf "%s\n" "${repo_dir}"
+         done
+     }
+   #+end_src
+
+   Now we can do this:
+   #+begin_src shell
+     ls ~/src/github/adityaathalye |
+         take_stale
+   #+end_src
+
+   And we get bonus reuse, because we may also want to do the inverse.
+   #+begin_src shell
+     take_active() {
+         local repo_dir
+         while read repo_dir
+         do __is_repo_active "${repo_dir}" && printf "%s\n" "${repo_dir}"
+         done
+     }
+   #+end_src
+   With a little bit more thinking, we can pull apart this logic even further,
+   usefully. Hint: these functions have a ~filter~ embedded inside them.
+
+   As another fun example, one @rsms [[https://twitter.com/rsms/status/1508900257324666882][tweeted this]] recently:
+   #+begin_quote
+   Was curious about source code-line length so wrote a horribly hacky bash
+   script that draws a histogram. https://gist.github.com/rsms/36bda3b5c8ab83d951e45ed788a184f4
+   #+end_quote
+
+   I saw the script and my habitual thought kicked in, "Well, why can't that be
+   a pipeline?". A short while later, this emerged.
+   #+begin_src shell
+     # get some lines of text
+     man bash |
+         # remove blank lines (extensible to any non-code lines)
+         grep -v '^$' |
+         # count chars for each line
+         while read line; do echo ${line} | wc -c - | cut -d' ' -f1; done |
+         # calculate the frequency distribution
+         sort -nr | uniq -c |
+         # add a histogram graph to the frequency distribution
+         while read lines cols;
+         do printf "%s\t%s\t%s\n" ${lines} ${cols} $(printf "%0.s|" $(seq 1 8 ${cols}));
+         done |
+         # add labels to the histogram
+         cat <(printf "%s\t%s\t%s\n" "LN" "COL" "HIST(|=8COL)") -
+   #+end_src
+   Note the similarities to McIlroy's pipeline from the last post. Also, like
+   that program, mine too fits in a tweet and I wasn't even trying.
+** Separating return values and non-values
+   "Don't be chatty" is an important design principle. This means don't pollute
+   your stdout values with non-values. Sometimes though, we want to emit process
+   information (like logs) /along/ with emitting process output. For example,
+   a structured process log becomes handy when we want to design idempotent jobs.
+
+   Going back to my [[https://github.com/adityaathalye/bash-toolkit/blob/7cbac8bd6a7970481f6f62e5a2a604afcaf804ea/bulk-git-ops.sh#L49][bulk-git-ops example]],
+   suppose I want to process a whole bunch of git repos. This may fail any time
+   if my network flakes, or laptop battery dies, or some weird condition occurs.
+   Sh*t happens when processes run for a long time /and/ need networks. So I
+   usually want to log each repo as it is being processed.
+
+   #+begin_src shell
+     identity() {
+         printf "%s\n" "$@"
+     }
+
+     proc_repos() {
+         # Apply any given operation on the given repos. Use in a pipeline.
+         # Presumably, the supplied function emits values expected by stdin
+         # of the downstream function.
+         local func=${1:-identity}
+         local repo_dir
+         while read repo_dir
+         do $func "${repo_dir}"
+            log_info "Applied ${func} to ${repo_dir}"
+         done
+     }
+   #+end_src
+
+   This way a downstream consumer can rely on always receiving a legal value at
+   stdin, and /optionally/ access non-values (like logs), if it wants to, via
+   stderr [fn:monadicpipelines].
+
+   I casually name-dropped /idempotence/. It needs its own blog post. Maybe the
+   next one!
+** Functions to delay evaluation
+   I like to write my code in groups and sequences that help a reader acquire
+   context easily, and I call it in sequences that make sense from a process
+   point of view. Functions help me do this, because they group statements in
+   the scope of the script, /without/ causing the interpreter to evaluate them.
+
+   For example, scripts I wrote:
+   - to [[https://gitlab.com/nilenso/cats/-/blob/c26bcd7e6618843690070b8bf38cf7adb553a0d2/bin/cicd-deployment.sh#L122][perform build/deploy steps]] for a study project
+   - to help me [[https://github.com/adityaathalye/bash-toolkit/blob/7cbac8bd6a7970481f6f62e5a2a604afcaf804ea/machine-setup.sh#L274][set up my machine]] (or at least remember what I have use for :)
+** Functional core, imperative shell
+   Pun intended. This is [[https://www.destroyallsoftware.com/screencasts/catalog/functional-core-imperative-shell][a very useful design technique]].
+
+   We lift out as much work as possible into lots of small, pure, single purpose
+   functions, and compose these separately to do composite work and/or to cause
+   effects (perform I/O, set/reset globals, mutate in-process state etc.).
+
+   You may observe it applied in all my code:
+   - My [[https://github.com/adityaathalye/bash-toolkit/blob/7cbac8bd6a7970481f6f62e5a2a604afcaf804ea/usage-trap.sh#L109][usage-trap file]]
+     is a template for how I tend to go about that for single-file scripts.
+   - The whole game design of [[https://github.com/adityaathalye/oxo][oxo]]:
+     - The ~oxo_logic.sh~ file is the "functional core".
+     - The ~oxo~ file is the "imperative shell" (and is the game's entry point).
+   - [[https://github.com/adityaathalye/shite][shite]] is being developed exactly this way.
+
+   This technique helps me develop scripts incrementally, in terms of highly
+   reusable, testable, composable functional "lego blocks".
+* Naming conventions
+  Now the really hard part...
+
+  I write all my function names as follows, because it is the most portable
+  syntax. Bash accepts several ways to define functions, but POSIX sh strictly
+  expects this syntax, and I prefer to maintain as much compatibility as I can.
+  Also I find it is the neatest of the alternatives.
+
+  #+begin_src shell
+    namespace_func_name() {
+        statement 1
+        statement 2
+        statement 3
+    }
+  #+end_src
+
+  Sometimes I write short one-liners as follows. The semicolon is essential
+  for one-liners. So is the space between the braces and the statement.
+
+  #+begin_src shell
+    namespace_func_name() { statement ; }
+  #+end_src
+
+  There is no such thing as a "private" or locally-scoped function, so I resort
+  to marking these "private" by convention with a ~__~ (double underscore) prefix.
+
+  #+begin_src shell
+    __namespace_private_func_name() {
+        statement1
+        statement2
+    }
+  #+end_src
+
+  The following syntax is legal Bash, but I do not use it.
+
+  #+begin_src shell
+    function namespace_func_name {
+        statement1
+        statement2
+    }
+
+    function namespace_func_name() {
+        statement1
+        statement2
+    }
+
+    # OR one-liner variants
+    function namespace_func_name { statement ; }
+    function namespace_func_name() { statement ; }
+
+  #+end_src
+
+  Bash accepts ~.~ and ~-~ in function names, but that is also a no-no for me.
+  A linter like Shellcheck will complain in strict mode.
+  #+begin_src shell
+    namespace.funcname() {
+        statement 1
+        statement 2
+    }
+
+    namespace-funcname() {
+        statement 1
+        statement 2
+    }
+  #+end_src
+
+  Ok, we covered a lot of ground, so I'll stop for now. There are more aspects
+  of FP in bash (idempotence, declarative programming etc.), for future posts.
+  But even this much will elevate your shell-fu, and let you write nontrivial
+  scripts incrementally, safely, and maintainably.
+
+  Happy Bash-ing!
+
+[fn:bashvsawk] And if you use awk, I hear that it is known to outperform hand
+optimized C for a variety of data processing problems. Apparently genomics people
+awk a lot.
+[fn:gitutilityfns] You may particularly enjoy those if you sometimes (or often)
+have to do bulk maintenance on many repos. Fetch and update them, or at least
+identify stale repos before deciding what to do etc.
+[fn:hintpurefn] Hint: Partial application and/or dependency injection may be appropriate.
+[fn:monadicpipelines] Monads. There, I said it.

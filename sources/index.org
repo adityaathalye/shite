@@ -1,0 +1,35 @@
+# SHITE_META
+#+title: Eval / Apply is pure magic
+#+summary: Stuff I like to nerd about.
+#+author: Adi
+#+tags: index
+#+date: 2021-11-10
+# SHITE_META
+
+**Oh _eval/apply_, you beautiful thing...**
+
+/At once, the essence of cognition, a system of thinking,/
+/and an engine to compute anything./ Lisp [fn:1].
+/Simultaneously a philosophy, a strategy framework, and a/
+/gun in a knife fight./ OODA [fn:2].
+/Holistically a state of being, a path to excellence, and a/
+/catalyst of growth for self and kind./
+Flow [fn:3]. /Fundamentally a.../
+
+Oh, hello!
+
+/... Lowers face and arms, directed vaguely toward Betelgeuce./
+
+Pardon my rambling. It's dark out here and I didn't see you arrive!
+Have a dekko, please. And if it strikes your fancy, write to
+/weblog (at) evalapply (dot) org/.
+
+\\//_ :)
+
+[fn:1] LISP as Maxwell's Equations of Software: [[https://www.gnu.org/software/mes/manual/html_node/LISP-as-Maxwell_0027s-Equations-of-Software.html][GNU Mes manual]].
+[fn:2] John Boyd's concept of OODA: [[https://en.wikipedia.org/wiki/OODA_loop][Wikipedia]].
+[fn:3] Mihaly Csikszentmihalyi's [[https://en.wikipedia.org/wiki/Flow_(psychology)][Flow]]. (Though,
+[[https://xkcd.com/1796/][XKCD's riff, "Focus Knob"]] appeals (and applies) more to me :).
+#+attr_html: :alt Maybe if I spin it back and forth really fast I can do some kind of pulse-width modulation.
+[[https://imgs.xkcd.com/comics/focus_knob.png]]
+...

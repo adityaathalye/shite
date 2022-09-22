@@ -1,0 +1,320 @@
+# SHITE_META
+#+title: Systems, Scale, Value
+#+summary: Creating things is a delicate endeavour, fraught with peril. People struggle forward through crazy marketplace and environmental complexities just to get from one day to the other. Yet I can't shake off the feeling that we make it harder for ourselves than it should be. I've been trying to work out why. There's a lot to unpack. This post is a start at thinking about it in public.
+#+author: Adi
+#+tags: systems scale complexity
+#+date: 2021-11-13
+#+include_toc: yes
+# SHITE_META
+
+I'm going to amble along a wavy line of thought through Story, Metaphor, Model,
+and Example. Please join the noodling-over and ambling-off into tangents.
+
+* Story: Damaging the children
+  My parents are deeply systems-oriented thinkers /and/ doers. Biased to
+  thoughtful execution; whether short-or-long-range. Connoisseurs of checklists.
+
+  They've done it all, and then some, with their systems-oriented minds...
+  Buying a car, planning a wedding, building warships, running schools and R&D
+  institutes, organizing large events, helping feed stranded migrant workers,
+  producing textbooks, caring for their elderly and infirm, helping their
+  network build lives, teaching their children independence. And I gleefully
+  imagine, also some top-secret classified stuff my dad can't tell me about,
+  because then he would have to kill me. (Kid-me read too many spy novels :)).
+
+  At the big-picture level, in this household, keeping an up-to-date "death file"
+  is not morbid or fatalist, but a simple plan for /after the inevitable/. An
+  act of care and kindness. At the microscopic level, I cannot recall a single
+  day growing up, going without a fresh hot meal on the table whether my mom was
+  home, or away, or sick. Together, they seemingly never missed a beat even against
+  steep odds, or even if one of them was failing, or was out of commission. And
+  here I am, barely keeping it together. Apples do fall far from trees.
+
+  They never made the mistake of coddling us, but they did err by wiring us--my
+  sibling and I--with /standards/ for our actions and output. They failed to stop
+  at ethical conduct, kindness, and good manners. We had to also pay attention
+  to detail. Run what-if scenarios. Write things down. Be accountable to our
+  surroundings and the people in there. Own our successes and failures. In several
+  cases they had to push us (teenagers gonna teenage). In many others they led
+  by example.
+
+  They also erred by letting us rifle through Daddy's Awesome Cabinet of Books
+  and letting us borrow action-packed thrillers like "How Things Work" (Volumes 1
+  /and/ 2), and "Systems in Action". Maybe my sibling was spared, I don't know.
+  I certainly wasn't. You're a boy. And you worship your dad. And you want to be
+  like him. So damn straight you will devour daddy's books. But you're an 8th
+  grader, and can't know better. To what extent that material might infiltrate
+  your brain. And the many ways that influence will /mess you up/ in adult life.
+
+  To be clear, I adore my parents, but I don't mean to gloat about some superior
+  upbringing. For millennia, traditional societies have been bringing up their
+  young sensitised to cause/effect, feedback loops, and the interconnectedness of
+  all things. My chance mental conditioning merely has different set and setting.
+
+  Nor am I advocating the merits of my superior mammalian brain. We are all
+  monkeys. We absorb a tremendous amount by osmosis and proximity. I simply
+  was (am) around them and they are a certain kind of people. So, monkey see,
+  monkey do, monkey programmed for life.
+
+  Remember this for later.
+* Archetypes as Metaphor: A Vogon and Slartibartfast
+  Unfortunately, enterprise demise is rarely merciful.
+
+  Even the best systems-oriented organisations can fail through mistakes or
+  forces outside their control. Systems-disoriented ones, though, are almost
+  certain to end. The best case end-state is a mercifully swift death. The
+  worst case is akin to eternal hell.
+
+  It is easy to spot hellish organisations. They are ones who mistook bureaucracy
+  for systems. They erect tall barb-wire fences of paperwork and procedure (and
+  of actual barb-wire, too, come to think of it). They make Byzantine mazes of
+  confounding rules and approvals. Elaborate rituals with no memory of why.
+  Their customers puzzle through the madness. Their staff dutifully tend to these,
+  because that's what procedure, fences, and mazes are for, after all; to be
+  tended to, ritually.
+
+  Unfortunately, bureaucracies frequently succeed and turn pathological.
+
+  Bureaucracies are the ones that successfully pulled off the reality-escape
+  magic trick of turning into axiomatic self-perpetuating ever-expanding entities.
+  And they are frequently pathological. They exist because they exist. They make
+  rules because they make rules. They don't grow, they metastasise. Vogons.
+
+  Unfortunately, systems people look like bureaucrats at first glance.
+
+  It is often hard to understand, or indeed believe, what these so-called systems
+  people are going on about. They appear to be infuriatingly reluctant to
+  /just do/ stuff. They want us to think of this feedback loop and that delay
+  and the other thing---reservoir something. They ask too many questions and
+  engage in that perversion of holism which our education weaned us off long ago.
+
+  Unfortunately, consummate bureaucrats are camouflage experts.
+
+  They don the colours of systems-builders (it makes for great press, and randomly
+  it can actually become true through no fault of said consummate bureaucrat).
+  But really it is all in service of the pathological bureaucracy that kowtows
+  the whims of some great dictator high above. The consummate /and/ competent
+  bureaucrat is an endangered animal.
+
+  How, pray tell, is the hapless commoner to discern the master of Machiavellian
+  machinations, from the grappler of vexing problems of far-reaching import?
+  One who sees through the Eye of Sauron versus one who has vision? One who is
+  capable of thinking *and* of creating?
+
+  When suddenly confronted with an alive, organic whole wrought of systems
+  harmonised of systems, we can be forgiven for getting lost in a single detail
+  amidst infinite splendour. Like Arthur Dent trying to comprehend the copy of
+  Earth suspended before him, and finally finding succour in a familiar cup of
+  tea in his own replicated home. "Amazed and lost" is quite unlike "lost in a
+  maze". The systems-builder, meanwhile, looks on with kind empathy for our
+  sudden loss of tongue. Silently joyous about what was realized through them.
+  Slartibartfast. Now you're gagging aren't you? Not at the name, but at the
+  Utopian idealism of this whole paragraph? Stay with the feeling. That's your
+  prickly adult conditioning suppressing your intelligent, curious 13-year-old
+  inner self.
+
+  A Vogon's employer and A Slartibartfast's employer both produce and perpetuate
+  grand structures, intricately patterned, with unfathomable puzzles and games
+  of life that could keep us occupied forever, and perhaps even drive us to
+  insanity. Yet one is a simulacrum of the other.
+
+  With reference to /Westrum typology/, the Vogon Empire would be a Pathological
+  Bureaucracy. So lets just say that if I were fated to go stark raving mad,
+  and I had to choose between these opposite archetypes, I'd rather lose my
+  mind working for a Slartibartfast. And if you find yourself under a Vogon...
+
+  Do Panic.
+* Model: A picture is worth a 1,000 % points
+  /Scale/ is where it's at, these days. It so obviously /right/ to /want/ to
+  /scale/ all the things all the time.
+
+  Try to loudly diss "scaling". See if you don't get funny looks and wry remarks
+  about "lifestyle business" or something appropriately classifying. Luckily,
+  that's not what I'm going to do today. Also this is the last time fish,
+  reptiles, dermatology, or the insides of boilers will appear in this piece.
+  Business thinks of scaling as growing bigger _and_ doing so faster. And we
+  mean business here, okay?
+
+  But we're in a spot of trouble, aren't we? The word /fucked/ comes to mind.
+
+  "Systems", "complexity", and "perspective" feel like dirty epithets in polite
+  (board)rooms (or indeed, most rooms). And heaven forfend if you're an engineer
+  given to worrying about such stuff. (Engineers can actually verify their
+  Enterprise F-word Factor real quick. Use those words in your next executive
+  meeting, and closely watch superior eyes. If they light up, count your lucky
+  stars.)
+
+  Yet people know deep down, that such things really exist, that they matter,
+  that we are part of the equation. But even if everyone cares, where is the
+  time or incentive to ferret out their presence in our organisations, much less
+  map out and observe their mechanics? We're so focused and /busy/ pushing the
+  numbers that denote scaling for us.
+
+  Fortunately, people have an intuitive feel for the aggregate effect of their
+  scaling efforts.
+
+  This "effective scaling effect", for lack of better words, is measurable in
+  gut-feels, and I bet, also as hard numbers in terms of *net resources expended*
+  *to convert net inputs into net outputs*. Such a /lens of net effect/ would
+  abstract over systems thinking mechanics of flows, feedback loops, buffers,
+  controls, and relationships.
+
+  The following picture is not meant to capture system dynamics, but to think
+  about net effects of system dynamics... a sort of contrast material to compare
+  one's current trajectory.
+
+  #+begin_src text
+        NET INPUTS               NET RESOURCES CONSUMED   NET OUTPUTS
+        +----------------------+ +----------------------+ +----------------------+
+        |                   .  | |                      | |                .     |
+        |                  .   | |                      | |               .      |
+        |                 .    | |                      | |             .        |
+        |               .      | |                      | |            .         |
+        |             .        | |                      | |           .          |
+        |           .          | |                      | |          .           |
+        |         .            | |                 /----| |        .             |
+SCALING |.  .  .               | |____ /---------       | | . . .                |
+        +----------------------+ +----------------------+ +----------------------+
+        +----------------------+ +----------------------+ +----------------------+
+        |                      | |                      | |                      |
+        |                   /--| |                   /--| |                   /--|
+        |                /--   | |                /--   | |                /--   |
+        |             /--      | |             /--      | |             /--      |
+        |          /--         | |          /--         | |          /--         |
+        |       /--            | |       /--            | |       /--            |
+        |    /--               | |    /--               | |    /--               |
+STASIS  | /--                  | | /--                  | | /--                  |
+        +----------------------+ +----------------------+ +----------------------+
+        +----------------------+ +----------------------+ +----------------------+
+        |                      | |             .        | |                      |
+        |                   /--| |            .         | |                   /--|
+        |                /--   | |           .          | |                /--   |
+        |             /--      | |          .           | |             /--      |
+        |          /--         | |         .            | |          /--         |
+        |       /--            | |        .             | |       /--            |
+        |    /--               | |      .               | |    /--               |
+DEATH   | /--                  | |.. .                  | | /--                  |
+        +----------------------+ +----------------------+ +----------------------+
+  #+end_src
+
+  I worry for us, you know.
+
+  In our great civilization-scale hustle, we've lost the greater (systemic)
+  perspective. Perspective crucial to the control and management of giant grizzly
+  bears of self-made complexity. Everything seems to be on fire at all scales,
+  but we all seem to feel... fine.
+
+  Maybe I just have a morbid eye. Please tell me I'm wrong.
+
+* Example: What's cooler than 10 Bn? 100 Bn.
+  The way tech startups function in India drives me to despair.
+
+  I think founders and staff lose a tremendous amount of value to avoidable chaos,
+  needless complexity, excessive cargo-culting of tech and business ideas, severe
+  under-investment in human capacity-building, and quite frankly rather poor
+  attention to detail. One can very well count their true burn rate not in dollar
+  terms, but in minds wasted, and bodies spent.
+
+  Operating in India is ridiculously hard as it is, and founders must struggle
+  forward through crazy marketplace/environmental complexities. I think those
+  other factors I stated previously compound to make things far worse that they
+  need to be. It's like death by a thousand cuts.
+
+  For example, people look at me funny when I say I think that the poster-child
+  sale of Flipkart to Walmart was a tragedy. To me, that was a $100 Bn company
+  (or bigger!) that didn't happen. Anecdotally, I believe many similar tragedies
+  are in progress as we speak. Value erosion of a colossal scale. Maybe I'm
+  too much of an idealist? Or worse, maybe I'm too much of an engineer? What
+  could I /possibly/ know about things way above my pay grade?
+
+  Unfortunately for me, I can't help thinking there must be a better way.
+* Tying it together. Trying it together?
+  Software /is/ extreme leverage.
+
+  Transmuting real-world idioms and processes into bits and API calls is literally
+  game-changing. This we know to be true to experience.
+
+  However, any enormously high-leverage intervention routinely produces every
+  conceivable externality, positive or negative or just... alien. So often,
+  we don't even know what we're really looking at. /New/. /NFT/. /WTF/. /Wow/.
+  That's what you get when a model in a computer can thumb its nose at the laws
+  of Physics. Crazy variance of outcome. Power law inversions of control away
+  from the world of brick and mortar and atoms and societies into power-centers
+  capable of planet-scale rearrangement.
+
+  People don't scale, systems do.
+
+  Scaling begets complexity. Systems create leverage. Systems-oriented people
+  create ways to thrive in complex worlds. Organisations that invest deeply in
+  systems-oriented people have a shot at greatness at scale. Those that don't,
+  risk unchecked destruction of value for self and ecosystem. It's a muscle to
+  build. It takes persistent work. You need the stomach for it.
+
+  Unfortunately, you will likely build a bureaucracy.
+
+  And build it fast. Actually, you don't even need to "build" one, you just have
+  to do nothing and let it manifest itself. Easy-peasy.
+
+  Suppose you suddenly learn that you are now a founder hustlin' a red-hot tech
+  startup, and suddenly find yourself in possession of gobs of money, and honestly
+  not much leadership experience, you may very quickly also find yourself in
+  possession of small armies of people. The pressure to "grow" will be immense.
+  So will be the weight of responsibility. You may feel trapped, your only recourse
+  being to open wide and swallow as much as you can as fast as you can. You will
+  make the cardinal mistake of adding more people to your already late launch.
+  And when it's all threatening to go sideways, you will discover your inner
+  Great Dictator.
+
+  It will be tempting. You feel the hurt, but you also feel the power. You tell
+  yourself it will somehow all work out in the end. That growth will forgive all
+  sins. It won't. Resist the urge to command and control. Resist becoming a Vogon.
+  Resist the slippery slope to the hell of pathological bureaucracies. Strive
+  to be a Slartibartfast. A creative, generative leader.
+
+  /"Power over rules is real power."/
+
+  /"If you want to understand the deepest malfunctions of systems, pay attention
+  to the rules and to who has power over them."/ - Donella Meadows, Thinking in
+  Systems.
+
+  We are all monkeys, remember? You may be the top dog, but I bet you watch your
+  authority figures. Just as your people watch you. What are you absorbing?
+  What are you disseminating?
+
+  You are also /in/ the system. You are bound by its laws, even if you created
+  it. Especially if you created it. But if you created it, you may have power
+  to change the rules. You may even have the greatest power; the power to
+  set/reset its goals.
+
+  How will you wield your power?
+* Food for thought
+  *Practice.* Or, applied systems thinking.
+  - Forgsen, Humble, Kim: [[https://www.goodreads.com/en/book/show/35747076-accelerate][Accelerate: Building and Scaling High-Performing Technology Organizations]]
+  - Donella Meadows: [[https://www.chelseagreen.com/product/thinking-in-systems/][Thinking in Systems]]
+  - Marianne Belotti: [[https://www.youtube.com/watch?v=XoEfV0kXXDY][We Killed These Things With Fire]]
+  - John Allspaw: [[https://www.youtube.com/watch?v=xA5U85LSk0M&t=0s][How Your Systems Keep Running Day After Day]]
+
+  *Perspective.* Or, 80 IQ points.
+  - Joe Armstrong:
+    - [[https://www.youtube.com/watch?v=ed7A7r6DBsM][The How and Why of Fitting Things Together]], and
+    - [[https://www.youtube.com/watch?v=lKXe3HUG2l4][The Mess We're In]]
+  - Alan Kay:
+    - [[https://www.youtube.com/watch?v=YyIQKBzIuBY][Programming and Scaling]], and
+    - [[https://www.youtube.com/watch?v=oKg1hTOQXoY][The Computer Revolution hasn't happened yet]]
+
+  *Zeitgeist.*: Or, stories from now.
+  - Dan Luu:
+    - [[https://danluu.com/people-matter/][Individuals Matter]]
+    - [[https://danluu.com/culture/][Culture Matters]]
+    - [[https://danluu.com/wat/][Normalization of Deviance]]
+  - Tiger Global: "[[https://www.readthegeneralist.com/briefing/tiger-global][value in the software asset class (was) mispriced]]"
+     (i.e. "You're still thinking too small")
+
+  *Satire.* Or, a mirror to the culture.
+  - [[https://en.wikipedia.org/wiki/Yes_Minister][Yes Minister]]
+  - [[https://en.wikipedia.org/wiki/The_Office][The Office]]
+  - [[https://en.wikipedia.org/wiki/Blackadder][Blackadder]]
+  - [[https://en.wikipedia.org/wiki/A_Bit_of_Fry_%26_Laurie][A Bit of Fry and Laurie]]
+  - [[https://en.wikipedia.org/wiki/The_Great_Dictator][The Great Dictator]]
+* Acknowledgments
+  Thanks to Julia and Radhika for writing feedback.

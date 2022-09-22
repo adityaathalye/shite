@@ -1,37 +1,479 @@
+/* --------------------------------------------------
+ * DESIGN NOTES
+ * --------------------------------------------------
+ * Use the "Every Layout" system!
+ * cf. https://every-layout.dev/
+ */
+
+/* --------------------------------------------------
+/* TYPEFACE DECLARATIONS
+* -------------------------------------------------- */
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code&family=Gentium+Book+Plus:ital,wght@0,400;0,700;1,400&family=Oswald:wght@200&display=swap');
+
 :root {
-  color: #1a2639;
-  background-color: #f0ece2;
-  font-family: sans-serif;
+    /* --------------------------------------------------
+     * MEASURE: Basis for all proportions.
+     * -------------------------------------------------- */
+    --measure: 72ch;            /* Max character width of a line. */
+
+    /* --------------------------------------------------
+     * MODULAR SCALE: Measures for rows and columns.
+     *
+     * - Rows: baseline + 3 larger and 3 smaller heights should suffice.
+     *
+     * - Columns: intended to support 1, 2, and 3 column fluid layouts,
+     *   for small, medium, wide wide screen layouts respectively. E.g.
+     *   prose may occupy 3 narrow columns on a widescreen monitor, but
+     *   on a smartphones, it may get a single full-width column.
+     * -------------------------------------------------- */
+
+    /* Proportion for modular grid. */
+    --ratio: 1.5;
+
+    /* Scale measure map to height and width of square cell */
+    --scale-xxxxxs: calc(var(--scale-xxxxs) / var(--ratio));
+    --scale-xxxxs: calc(var(--scale-xxxs) / var(--ratio));
+    --scale-xxxs: calc(var(--scale-xxs) / var(--ratio));
+    --scale-xxs: calc(var(--scale-xs) / var(--ratio));
+    --scale-xs: calc(var(--scale-s) / var(--ratio));
+    --scale-s: calc(var(--scale-base) / var(--ratio));
+    --scale-base: 1rem;         /* Set baseline grid. */
+    --scale-l: calc(var(--scale-base) * var(--ratio));
+    --scale-xl: calc(var(--scale-l) * var(--ratio));
+    --scale-xxl: calc(var(--scale-xl) * var(--ratio));
+    --scale-xxxl: calc(var(--scale-xxl) * var(--ratio));
+
+    /* Aliases for column widths */
+    --col-w-full-bleed: calc(var(--measure) * var(--ratio));
+    --col-w-full: var(--measure);
+    --col-w-midi: calc(var(--col-w-full) / var(--ratio));
+    --col-w-half: calc(var(--col-w-full) / 2);
+    --col-w-narrow: calc(var(--col-w-midi) / var(--ratio));
+    --col-w-quarter: calc(var(--col-w-full) / 4);
+    --col-w-eighth: calc(var(--col-w-full) / 8);
+
+    /* --------------------------------------------------
+     * FONTS: Standard fonts, faces, and sane fallbacks.
+     * -------------------------------------------------- */
+    /* Typesetting defaults.
+     *
+     * We really like to pair a narrow, tall sans-serif with a gentle serif.
+     * Oswald (tall sans-serif) for titles and headings pairs pleasingly with
+     * Gentium Book Plus (serif) for prose. And Fira Code composes nicely with
+     * those two.
+     *
+     * Also we rely on the so-called "system font stack" as a fallback to our
+     * preferred fonts. c.f. https://systemfontstack.com/
+     */
+    --headings-font-family: 'Oswald', -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif;
+    --body-prose-family: 'Gentium Book Plus', Iowan Old Style, Apple Garamond, Baskerville, Times New Roman, Droid Serif, Times, Source Serif Pro, serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, serif;
+    --body-code-family: 'Fira Code', Menlo, Consolas, Monaco, Liberation Mono, Lucida Console, monospace;
+    line-height: var(--scale-l);
+    font-size: var(--scale-l);
+
+    /* --------------------------------------------------
+     * EMBELLISHMENTS: borders, colours etc.
+     * --------------------------------------------------*/
+    --color-light: #f0ece2;
+    --color-mid: #dfd3c3;
+    --color-dark: #1a2639;
+    --color-emphasis: black;
+    --color-masthead:  #ef9f2c;
+    --color-background: var(--color-light);
+    --color-links: var(--color-emphasis);
+    --color-body-text: var(--color-dark);
+    --color-code: var(--color-emphasis);
+    --color-quotes: var(--color-emphasis);
+
+    color: var(--color-body-text);
+    background-color: var(--color-background);
 }
-/* Find all the fancily named colours at:
-            https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#Color_keywords */
+
+* {
+  max-width: var(--col-w-full-bleed);
+}
+
+html,
+body,
+div,
+header,
+main,
+input,
+button {
+  font-family: var(--body-prose-family);
+  font-size: var(--scale-base);
+  font-weight: normal;
+  font-style: normal;
+  max-width: none;
+}
+
 body {
-  /* Default background colour for all content inside the page body. */
-  background-color: lightyellow;
-  /* Constrain body width. */
-  max-width: 72ch;
-  /* Prevent content from sticking to inside edges of body. */
-  padding: 1.5rem;
-  /* Position body in the middle of the screen. */
-  margin-top: 1.5rem;
+  margin: var(--scale-xxs);
+  overflow-x: hidden;
+}
+
+main {
+  margin: var(--scale-s);
+}
+
+footer {
+  margin: var(--scale-s);
+}
+
+pre {
+  padding: var(--scale-s);
+  border-radius: var(--scale-xxxxs);
+  background-color: var(--color-light);
+  overflow-x: auto;
+}
+
+code {
+  color: var(--color-code) !important;
+  font-size: var(--scale-s);
+  line-height: var(--scale-base);
+  font-family: var(--body-code-family);
+  font-weight: bold;
+}
+
+figure {
+  margin: 0;
+  padding: var(--scale-s);
+  border-radius: var(--scale-xxxxs);
+  background-color: var(--color-light);
+  color: var(--color-emphasis) !important;
+}
+
+figure > img {
+  border: thin solid;
+  border-color: var(--color-mid);
+}
+
+figure > figcaption {
+  padding: var(--scale-xxs);
+  font-family: var(--headings-font-family);
+  font-size: var(--scale-s);
+  line-height: var(--scale-l);
+  font-weight: bold;
+  background-color: var(--color-mid);
+  border: thin solid;
+  border-color: var(--color-body-text);
+}
+
+blockquote {
+  color: var(--color-quotes) !important;
+  margin: var(--scale-base);
+  font-style: italic;
+}
+
+a {
+  color: var(--color-links);
+  text-underline-offset: var(--scale-xxxs);
+}
+
+a:hover {
+  color: var(--color-masthead);
+  background: var(--color-dark);
+}
+
+a[href^="http"]::after {
+  content: " \2924";
+  font-size: var(--scale-s);
+  vertical-align: super;
+}
+
+hr {
+  margin: 0;
+  background-color: var(--color-dark);
+  height: var(--scale-xxxxs);
+}
+
+h1 {
+  font-size: var(--scale-l);
+  line-height: var(--scale-xl);
+}
+
+h2 {
+  font-weight: normal;
+  font-style: italic;
+  font-size: var(--scale-l);
+  line-height: var(--scale-xl);
+}
+
+h3 {
+  font-size: var(--scale-base);
+  line-height: var(--scale-base);
+  font-style: italic;
+}
+
+nav {
+  flex-wrap: wrap;
+  gap: var(--space, var(--scale-base));
+  justify-content: flex-start;
+}
+
+img {
+  max-width: 100%;
+}
+
+table {
+  font-family: var(--headings-font-family);
+  table-layout: fixed;
+  border-collapse: collapse;
+  text-align: left;
+  border: collapse;
+}
+
+thead {
+  background: var(--color-light);
+}
+
+th, td {
+  padding: var(--scale-xxxs);
+  border-bottom: thin dashed;
+  border-color: var(--color-dark);
+}
+
+table > caption {
+  padding: var(--scale-s);
+  border-radius: var(--scale-xxxxs);
+  background-color: var(--color-light);
+  border-bottom: var(--scale-xxxs);
+  border-bottom-style: solid;
+  border-bottom-color: var(--color-mid);
+}
+
+/* --------------------------------------------------
+ * GENERAL-PURPOSE COMPOSABLE LAYOUTS
+ * --------------------------------------------------
+ * High-level structural building blocs of the content layout.
+ */
+
+.center {
+  box-sizing: content-box;
   margin-left: auto;
   margin-right: auto;
+  max-width: var(--col-w-full);
 }
-a {
-  color: darkred;
+
+.box {
+  padding: var(--scale-s);
+  border-radius: var(--scale-xxxxs);
+  background-color: var(--color-mid);
 }
-nav {
+
+.box * {
+  color: inherit;
+}
+
+.box.invert {
+  background-color: var(--color-background);
+}
+
+.box.invert.thin {
+  padding: none;
+  border: none;
+  max-height: var(--scale-xxxs);
+}
+
+.cluster {
   display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: var(--space, var(--scale-base));
+  justify-content: flex-start;
+  align-items: center;
 }
-#index-page {
-  background-color: lightyellow;
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
-#about-page {
-  background-color: azure;
+
+.stack > * {
+  margin-top: 0;
+  margin-bottom: 0;
 }
-#resume-page {
-  background-color: whitesmoke;
+
+.stack > * + * {
+  margin-top: var(--scale-base);
+}
+
+.with-sidebar,
+.with-sidebar-narrow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--scale-base);
+  max-width: var(--col-w-full);
+}
+
+.with-sidebar > :first-child {
+  flex-basis: 0;
+  flex-grow: 6;
+}
+
+.with-sidebar > :last-child {
+  flex-basis: 0;
+  flex-grow: 3;
+
+}
+
+.with-sidebar-narrow > :first-child {
+  flex-basis: 0;
+  flex-grow: 2;
+}
+
+.with-sidebar-narrow > :last-child {
+  flex-basis: 0;
+  flex-grow: 7;
+
+}
+
+/* --------------------------------------------------
+ * SPECIAL CASE STYLES
+ * --------------------------------------------------
+ * To specify content styles in a _very targeted_ way, for the exact elements
+ * we care about. i.e. as close to the "bottom" of the CSS cascade as can be.
+ */
+
+.box.icon,
+.box.icon img {
+  color: var(--color-dark);
+  background-color: var(--color-masthead);
+  max-width: var(--scale-xxxl);
+}
+
+.site-header {
+  font-family: var(--headings-font-family);
+  font-size: var(--scale-xxxl);
+  line-height: var(--scale-xxxl);
+  color: var(--color-dark);
+}
+
+.site-header\:nav-items * {
+  font-family: var(--headings-font-family);
+  font-size: var(--scale-base);
+  line-height: var(--scale-base);
+  background-color: var(--color-masthead);
+}
+
+.title {
+  font-family: var(--headings-font-family);
+  font-size: var(--scale-xl);
+  line-height: var(--scale-xxl);
+}
+
+.table-of-contents {
+  font-family: var(--headings-font-family);
+  line-height: var(--scale-base);
+}
+
+.toc-heading\:h1 {
+  font-size: var(--scale-base);
+  line-height: var(--scale-base);
+  font-weight: bold;
+}
+
+.toc-heading\:h2 {
+  font-weight: bold;
+  font-size: var(--scale-s);
+  line-height: var(--scale-s);
+  padding-left: var(--scale-base);
+}
+
+.toc-heading\:h3 {
+  font-style: italic;
+  font-size: var(--scale-s);
+  line-height: var(--scale-s);
+  padding-left: var(--scale-l);
+}
+
+.summary {
+  font-style: italic;
+}
+
+.post-meta {
+  font-family: var(--headings-font-family);
+  font-size: var(--scale-s);
+  line-height: var(--scale-s);
+  font-weight: bold;
+}
+
+.tag-index-items {
+  font-family: var(--headings-font-family);
+  font-size: var(--scale-base);
+}
+
+.tag-index-item {
+  background-color: var(--color-masthead);
+  text-underline-offset: var(--scale-xs);
+}
+
+.tag-index-item\:count {
+  font-size: var(--scale-xs);
+  font-weight: bold;
+  background-color: var(--color-dark);
+  color: var(--color-light);
+  line-height: var(--scale-base);
+  padding: var(--scale-xxxxxs);
+}
+
+.post-index-item * {
+  font-family: var(--headings-font-family);
+  font-size: var(--scale-base);
+}
+
+.post-index-item\:date {
+  font-size: var(--scale-s);
+  line-height: var(--scale-xxl);
+  font-weight: bold;
+  color: var(--color-dark);
+}
+
+.post-index-item\:title {
+  font-size: var(--scale-l);
+  line-height: var(--scale-xl);
+}
+
+.post-index-item\:tag {
+  font-size: var(--scale-s);
+  font-weight: bold;
+  line-height: var(--scale-s);
+  background: var(--color-masthead);
+}
+
+.post-index-item\:hr {
+  height: 0;
+  color: var(--color-light);
+}
+
+.footnotes,
+.footer,
+.footer * {
+  font-family: var(--headings-font-family);
+  font-weight: bold;
+  font-size: var(--scale-s);
+  line-height: var(--scale-base);
+}
+
+.footer hr,
+section.footnotes hr {
+  height: 0;
+  color: var(--color-light);
+}
+
+.footnote-back {
+  font-size: var(--scale-xs);
+  margin-left: var(--scale-base);
+}
+
+.footnote-back::before {
+  content: "# ";
+
+}
+
+a.site-feed {
+  background: url("../img/Feed-icon.svg") no-repeat 100% 0;
+  background-size: var(--scale-base);
+  background-position: left;
+  padding-left: var(--scale-l);
 }

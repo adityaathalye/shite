@@ -10,11 +10,24 @@
     source ./bin/templates.sh
     source ./bin/templating.sh
     source ./bin/events.sh
+    source ./bin/metadata.sh
     source ./bin/hotreload.sh
 
-    # Orient for local editing and publishing in my preferred browser.
-    declare -r browser_name=${1:-"Mozilla Firefox"}
-    declare -r base_url=${2:-"file://$(pwd)"}
+    # Check for various requirements and dependencies
+    __ensure_min_bash_version "4.4"
+    # Events and streaming
+    __ensure_deps "inotifywait" "stdbuf"
+    # Events and Content Processing
+    __ensure_deps "gawk" "pandoc" "tidy"
+    # GUI / Browser actions
+    __ensure_deps "xdotool" "xdg-open"
+
+    # Cue shite for everyday local editing and publishing
+    base_dir="$(pwd)"
+    SHITE_HOTRELOAD=${1:-"yes"}
+    browser_name=${2:-"Mozilla Firefox"}
+    base_url=${3:-"file://${base_dir}/public"}
+    SHITE_DEBUG_TEMPLATES="debug"
 
     # Set globally-relevant information that we inject into components,
     # and that we may also use to control site build behaviour.
@@ -22,17 +35,32 @@
     # index.org (and/or index.html) at
     # the root of `sources`, using our little metadata parser from templating.sh
     declare -A shite_global_data=(
-        [title]="A static shite from shell"
-        [author]="Yours Truly"
-        [description]="In which we work our way to world domination the hard way."
-        [keywords]="blog, world domination, being awesome"
+        [title]="Eval / Apply is pure magic"
+        [title_icon]="static/img/Lisp_logo.svg"
+        [author]="Aditya Athalye"
+        [description]="Evaling and Applying forever."
+        [keywords]="systems thinking,functional programming,architecture,software design,technology leadership,devops,clojure"
+        [base_url]="${base_url}"
     )
 
     # Oh yeah!
-    shite_hot_build_reload \
-        "./" \
-        "${shite_global_data[title]}" \
-        ${browser_name} \
-        ${base_url} \
-        > /dev/null
+    if [[ ${SHITE_HOTRELOAD} == "yes" ]]
+    then # Run hotreload in streaming mode, with a
+        ( firefox --new-tab "${base_url}/index.html" & )
+        shite_hot_build_reload "${base_dir}" "${browser_name}" "${base_url}" \
+                               > /dev/null
+
+    else # Run backgrounded hotreload in timeout mode, and trigger full rebuild
+        # by updating mtime of all sources
+        shite_hot_build_reload "${base_dir}" "${browser_name}" "${base_url}" \
+                               > /dev/null &
+
+        > "${base_dir}/sources.txt"
+        find "${base_dir}/sources" -depth -type f -print \
+             >> "${base_dir}/sources.txt"
+
+        # xargs, why u no work with `touch`? :thinking-face:
+        cat "${base_dir}/sources.txt" |
+            while read -r f; do sleep 1; touch -m "${f}"; done;
+    fi
 )
