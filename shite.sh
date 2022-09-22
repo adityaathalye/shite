@@ -43,22 +43,24 @@
         [base_url]="${base_url}"
     )
 
-    __hotreload() {
-        shite_hot_build_reload "${base_dir}" "${browser_name}" "${base_url}" \
-                               > /dev/null
-    }
-
     # Oh yeah!
     if [[ ${SHITE_HOTRELOAD} == "yes" ]]
     then # Run hotreload in streaming mode, with a
         ( firefox --new-tab "${base_url}/index.html" & )
-        __hotreload
+        shite_hot_build_reload "${base_dir}" "${browser_name}" "${base_url}" \
+                               > /dev/null
 
     else # Run backgrounded hotreload in timeout mode, and trigger full rebuild
         # by updating mtime of all sources
-        __hotreload &
-        find "${base_dir}/sources" -type f |
-            # xargs, why u no work with `touch`? :thinking-face:
-            while read -r f; do touch -m ${f}; done
+        shite_hot_build_reload "${base_dir}" "${browser_name}" "${base_url}" \
+                               > /dev/null &
+
+        > "${base_dir}/sources.txt"
+        find "${base_dir}/sources" -depth -type f -print \
+             >> "${base_dir}/sources.txt"
+
+        # xargs, why u no work with `touch`? :thinking-face:
+        cat "${base_dir}/sources.txt" |
+            while read -r f; do sleep 1; touch -m "${f}"; done;
     fi
 )

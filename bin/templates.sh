@@ -92,7 +92,7 @@ shite_template_common_header() {
               target="_blank" rel="noreferrer noopener">
               who did this?
            </a>
-           <a href="${shite_global_data[base_url]}/about.html#main">is he unhireable?</a>
+           <!-- <a href="${shite_global_data[base_url]}/about.html#main">is he unhireable?</a> -->
            <a href="#site-footer">contact? feed? newsletter?</a>
         </nav>
       </div>

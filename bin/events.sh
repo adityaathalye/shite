@@ -21,7 +21,7 @@ __shite_events_detect_changes() {
 
     local inotifywait_cmd=$(if [[ ${SHITE_HOTRELOAD} == "yes" ]]
                             then printf "%s" 'inotifywait -m'
-                            else printf "%s" 'inotifywait -m --timeout 1'
+                            else printf "%s" 'inotifywait -m --timeout 10'
                             fi)
     # WATCH A DIRECTORY
     ${inotifywait_cmd} -r --exclude '/\.git/|/\.#|/#|.*(swp|swx|\~)$' \
