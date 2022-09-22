@@ -19,8 +19,12 @@ __shite_events_detect_changes() {
     local watch_dir="$(realpath -e ${1:-$(pwd)})"
     local watch_events=${2}
 
+    local inotifywait_cmd=$(if [[ ${SHITE_HOTRELOAD} == "yes" ]]
+                            then printf "%s" 'inotifywait -m'
+                            else printf "%s" 'inotifywait -m --timeout 1'
+                            fi)
     # WATCH A DIRECTORY
-    inotifywait -m -r --exclude '/\.git/|/\.#|/#|.*(swp|swx|\~)$' \
+    ${inotifywait_cmd} -r --exclude '/\.git/|/\.#|/#|.*(swp|swx|\~)$' \
                 --timefmt "%s" \
                 --format '%T,%:e,%w,%f' \
                 $([[ -n ${watch_events} ]] && printf "%s %s" "-e" ${watch_events})  \

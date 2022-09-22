@@ -182,7 +182,7 @@ shite_templating_publish_sources() {
             # transform content url_slug -to-> html file name
             local html_url_slug="${url_slug%\.*}.html"
             # transform content url_slug -to-> directory root for the html content
-            local html_url_slug_root="$(dirname ${url_slug})"
+            local url_slug_root="$(dirname ${url_slug})"
 
             __shite_templating_set_page_data \
                 "${watch_dir}/sources/${url_slug}" \
@@ -212,7 +212,7 @@ shite_templating_publish_sources() {
                     fi
 
                     # Idempotent. Make the slug's root directory IFF it does not exist.
-                    mkdir -p "${watch_dir}/public/${html_url_slug_root}"
+                    mkdir -p "${watch_dir}/public/${url_slug_root}"
 
                     # Proc known types of content files, e.g. compile org blog
                     # to HTML, and write it to the public directory
@@ -253,6 +253,9 @@ shite_templating_publish_sources() {
                     ;;
                 *:*:generic ) ;&
                 *:*:static )
+                    # Idempotent. Make the slug's root directory IFF it does not exist.
+                    mkdir -p "${watch_dir}/public/${url_slug_root}"
+
                     # Overwrite public versions of any modified generic, or static
                     # files, or create them if they don't exist.
                     cp -u \

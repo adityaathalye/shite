@@ -19,7 +19,7 @@ production is "works on my machine(s)" :)
 - [Usage](#usage)
     - [Hot-reloaded shite editing](#hot-reloaded-shite-editing)
     - [Manually invoked page builds](#manually-invoked-page-builds)
-    - [Debug flags](#debug-flags)
+    - [Environment Variables and Debug flags](#environment-variables-and-debug-flags)
 - [Design and Internals](#design-and-internals)
     - [File and URL naming scheme](#file-and-url-naming-scheme)
     - [Code organisation](#code-organisation)
@@ -196,12 +196,14 @@ In a clean new terminal session:
   away (assuming nothing broke of course).
 - Edit files the usual way, as explained in
 
-## Debug flags
+## Environment Variables and Debug flags
 
 These flags alter the behaviour of the system.
 
-- Setting `SHITE_DEBUG` to "debug" will suppress browser hotreload. Commands
-  will be generated, but streamed to stdout instead of being executed.
+- Setting `SHITE_HOTRELOAD` to "yesplease" will run the event system in "monitor"
+  mode, which in turn drives hotreload behaviour. Setting it to "debug" will
+  suppress browser hotreload. Commands will be generated, but streamed to stdout
+  instead of being executed.
 - Setting `SHITE_DEBUG_TEMPLATES` to "debug" will cause templates to be sourced
   first, before publishing any templated source content.
 
