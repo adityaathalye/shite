@@ -70,8 +70,8 @@ EOF
 
 shite_template_common_links() {
     cat <<EOF
-<link rel="stylesheet" type="text/css" href="${shite_global_data[base_url]}/static/css/style.css">
-<link href="${shite_global_data[base_url]}/index.xml" rel="alternate" type="application/rss+xml" title="${shite_global_data[title]}">
+<link rel="stylesheet preload" type="text/css" href="${shite_global_data[base_url]}/static/css/style.css" />
+<link href="${shite_global_data[base_url]}/index.xml" rel="alternate" type="application/rss+xml" title="${shite_global_data[title]}" />
 EOF
 }
 
