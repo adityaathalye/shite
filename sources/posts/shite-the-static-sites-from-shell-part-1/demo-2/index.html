@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- Some basic hygiene meta-data -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>A Shtatic Shite</title>
+        <meta name="author" content="Yours Truly">
+        <meta name="description" content="In which we work our way to world domination the hard way.">
+        <!-- Some bare bones style information. Ignore details, it's just for show. -->
+        <!-- Read https://every-layout.dev for true CSS enlightenment. -->
+        <style>
+         :root {
+             color: #1a2639;
+             background-color: #f0ece2;
+             font-family: sans-serif;
+         }
+         /* Find all the fancily named colours at:
+            https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#Color_keywords */
+         body {
+             /* Default background colour for all content inside the page body. */
+             background-color: lightyellow;
+             /* Constrain body width. */
+             max-width: 72ch;
+             /* Prevent content from sticking to inside edges of body. */
+             padding: 1.5rem;
+             /* Position body in the middle of the screen. */
+             margin-top: 1.5rem;
+             margin-left: auto;
+             margin-right: auto;
+         }
+         a {
+             color: darkred;
+         }
+         nav {
+             display: flex;
+             gap: 1rem;
+             margin-top: 1rem;
+             margin-bottom: 1rem;
+         }
+         #index-page {
+             background-color: lightyellow;
+         }
+         #about-page {
+             background-color: azure;
+         }
+         #resume-page {
+             background-color: whitesmoke;
+         }
+        </style>
+    </head>
+    <body id="index-page">
+        <header id="site-header">
+            <h1>A "Hello, World" website by Yours Truly.</h1>
+            <nav>
+                <span><a href="index.html">Blog</a></span>
+                <span><a href="about.html">About</a></span>
+                <span><a href="resume.html">Resume</a></span>
+            </nav>
+            <hr>
+        </header>
+        <main>
+            <h1>Blog posts</h1>
+            <article id="article-hello-world">
+                <h2>Hello, world.</h2>
+                <details>
+                    <summary>
+                        In which we greet the world.
+                    </summary>
+                    <p>Hello, world.</p>
+                    <p>I'm here.</p>
+                    <p>And I'm going to take you head-on...</p>
+                    <nav>
+                        <span><sub>^ <a href="#article-hello-world">title</a></sub></span>
+                        <span><sub>^ <a href="#site-header">menu</a></sub></span>
+                    </nav>
+                </details>
+            </article>
+            <article id="article-wtf-world">
+                <h2>Wtf, world?!</h2>
+                <details>
+                    <summary>
+                        In which we marvel at the various insanties of life and the living.
+                    </summary>
+                    <p>Wtf, world.</p>
+                    <p>I'm here.</p>
+                    <p>And I'm just... How do you even work?</p>
+                    <nav>
+                        <span><sub>^ <a href="#article-hello-world">title</a></sub></span>
+                        <span><sub>^ <a href="#site-header">menu</a></sub></span>
+                    </nav>
+                </details>
+            </article>
+            <article id="article-goodbye-world">
+                <h2>Goodybe, world.</h2>
+                <details>
+                    <summary>
+                        In which we bid adieu to the world.
+                    </summary>
+                    <p>Goodbye, world.</p>
+                    <p>It was nice being here.</p>
+                    <p>I hope we meet again...</p>
+                    <nav>
+                        <span><sub>^ <a href="#article-goodbye-world">title</a></sub></span>
+                        <span><sub>^ <a href="#site-header">menu</a></sub></span>
+                    </nav>
+                </details>
+            </article>
+        </main>
+        <footer>
+            <hr>
+            <p>Copyright, Yours Truly.</p>
+            <p>All content is MIT licensed, except where specified otherwise.</p>
+        </footer>
+    </body>
+</html>

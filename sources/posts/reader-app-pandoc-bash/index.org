@@ -1,0 +1,75 @@
+# SHITE_META
+#+title: Poor man's Reader App with Pandoc & Bash
+#+summary: Every so often, I want to avoid opening a website in a browser, for ... reasons.
+#+author: Adi
+#+date: 2022-02-10
+#+tags: functional_programming bash unix random
+#+include_toc: no
+# SHITE_META
+/Throwback, June 27, 2020./
+
+Every so often, I want to avoid opening a website in a browser, for ... reasons.
+
+Curl alone presents too much html. I want to try and read stuff.
+
+Today, I was playing with Igor Chubin's *awesome* terminal services (wttr.in,
+cht.sh etc.), and it hit me:
+
+"WAIT, there's pandoc, what if I just ... "
+
+#+hugo: more
+
+---
+
+...
+...
+... and an hour later... a terrible idea manifested itself.
+
+#+begin_src shell
+     www_to_md() {
+         pandoc --wrap=none -f html -t markdown "${1}"
+     }
+
+     drop_noise() {
+         # remove pesky divs
+         grep -v -E "(<div|</div).*[>]?|*.>" |
+             # squeeze multiple blank lines into one
+             cat -s
+     }
+
+     cache_site() {
+         local sitecache="${1:?'Fail. Path to create cache.'}"
+         local mdfilename="${2:-'this.md'}"
+         local evict_cache_qmark="${3:-no}"
+
+         mkdir -p "${sitecache}"
+
+         if [[ -f "${sitecache}/${mdfilename}" && "${evict_cache_qmark}" == "no" ]]
+         then tee
+         else tee "${sitecache}/${mdfilename}"
+         fi
+     }
+
+     panwww() {
+         local siteurl="${1}"
+         local evict_cache_qmark="${2:-no}"
+         local sitename="${siteurl/http*:\/\//www.}"
+         local sitecache="/tmp/panwwwcache/${sitename}"
+         local mdfilename="this.md"
+
+         if [[ -f "${sitecache}/${mdfilename}" && "${evict_cache_qmark}" == "no" ]]
+         then local cmd="cat ${sitecache}/${mdfilename}"
+         else local cmd="www_to_md ${siteurl}"
+         fi
+
+         $cmd | drop_noise | cache_site "${sitecache}" "${mdfilename}" "${evict_cache_qmark}"
+     }
+#+end_src
+
+so that ...
+
+#+begin_src shell
+     panwww "https://www.recurse.com/" | less # fetches site the first time
+     panwww "https://www.recurse.com/" | less # looks up "cache"
+     panwww "https://www.recurse.com/" "refetch" | less
+#+end_src

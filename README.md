@@ -40,6 +40,7 @@ production is "works on my machine(s)" :)
         - [Hot deployment with local hot reload](#hot-deployment-with-local-hot-reload)
         - [More creature comforts](#more-creature-comforts)
 - [Contributing](#contributing)
+- [License](#license)
 
 <!-- markdown-toc end -->
 
@@ -567,3 +568,14 @@ Together we can whistle silly tunes, and co-yak-shave our respective yaks, in
 our own special ways.
 
 May The Source be with us.
+
+# License
+
+This work is dual-licensed under the MIT license and the CC By-SA 4.0 license.
+
+- The Bash source code for making shite is licensed under the MIT license.
+- My website's content which I've included in this project, for demo purposes,
+  commit is licensed under the Creative Commons Attribution-ShareAlike 4.0
+  International License (CC By-SA 4.0).
+
+SPDX-License-Identifier: mit OR cc-by-sa-4.0

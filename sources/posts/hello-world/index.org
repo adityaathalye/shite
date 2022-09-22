@@ -1,0 +1,131 @@
+# SHITE_META
+#+title: In the beginning, was the domain name
+#+summary: How this blog came to be is a minor miracle. Long story short, I conned myself into believing nobody will find /and/ read it. But you're here, aren't you? And you're reading this. Aren't You? Confucamus. Well, here's how you got here.
+#+author: Adi
+#+tags: hello_world howto whyto
+#+date: 2021-11-10
+# SHITE_META
+
+You see, I've been... was... e-sober for a measurable fraction of the
+Internet era.
+
+It's been over ten years since I took down my last (and first) blog. Eight
+since I nuked my FB with extreme prejudice, discovering in the bargain a fine
+capacity for smug satisfaction, when the chagrin of aghast friends and sundry
+affected me not one whit. Nary a tweet-song has erupted, five years and
+counting.
+
+The WWW had gotten A Bit Too Much. I wanted to say nothin' to nobody on it.
+I was content writing the occasional long email to friends and randoms.
+I was /fine/. /Everything was./
+
+Mother nature, though. She tests us.
+
+Predictably, she sprung A Rather Big Surprise at the least-convenient moment
+in the least-convenient century (for me, at any rate).
+That-which-shall-not-be-named imposed a period of involuntary house arrest.
+
+It was then, in that long dark tea time of the soul, will weakened, that I
+snagged a domain on impulse.
+
+This very domain. Just for my email, mind you. To de-google myself. Or something.
+
+Oh, how little did I know. [[http://garann.com/dev/2013/how-to-blog-about-code-and-give-zero-fucks/][Insidious]] [[https://sites.google.com/site/steveyegge2/you-should-write-blogs][thoughts]] [[https://applieddivinitystudies.com/2020/09/09/journaling/][started]] invading my consciousness
+through my soothingly red-shifted displays. The Feature Creep crept up slowly,
+subtly erecting neon hoardings to subvert the fog my mind had gladly embraced.
+/"Does your domain apologetically redirect to your github?"./
+/"Your site can be more. Do more. So much more."./
+/"If a reader fell upon this site and no form was around to comment in,
+did they make a sound?"./
+Foggy the mind was, yes.
+
+That's when it gripped me. The desire to write. And it started gnawing away
+inside. It was all The Feature Creep's doing, of course, but I didn't know
+it then.
+
+Luckily, my terror of looking like an idiot--nay, an /impostor/--was far more
+potent than The FC's gnawing at my anemic will. I narrowly avoided working up
+the nerve to just point the damn domain to Wordpress and slam publish like it
+was 2005 again.
+
+Days turned to weeks. Weeks glommed into months. Some uncalled for hair loss
+occurred and a year passed. Meanwhile, the domain redirected reliably,
+unaware of the mayhem within and without.
+
+Still The FC gnawed on. The Feature Creep never tires, never lies down, and
+never dies, you see.
+
+Slyly (or so I thought), I fooled it by quietly typing into my Emacs. More
+days turned to weeks turned to months. Words accreted in my org-mode files.
+Wee notes. Snippets. Factoids squirreled away. Mostly harmless bits and bobs.
+Someone paying attention might have smelled trouble brewing and stopped right
+there. But, oh how little did I know.
+
+Unwittingly, I started penning lofty thoughts too. I caught on soon enough,
+but I kept doing it, despite now being acutely aware that I'd wake up feeling
+dirty the morning after. My confidence, though. My, did it grow supreme. It
+took perverse delight in jotting down opinions way above my pay grade because,
+after all, nobody would find out. It was all on my computer. Even if I
+didn't /shred/ it all, bitrot would certainly destroy every last trace of
+my misadventures. And I'd safely take my little secret life to my grave.
+Yes, I'd get away with it.
+
+But then my partner found out and started telling me things, whispering words
+of encouragement (somehow, /"egged on"/ seems more apt).
+The fault is all mine though; why we're here. For shortly after, in a
+momentary lapse of judgment, I also told a friend.
+And then, fatally, I failed to continue keeping mum before other friends.
+Now they want to read it all, and not privately, but "on your bloody blog,
+dummy". That's when I /knew/. The Feature Creep had me dead to rights
+from the get go.
+
+The obvious moral here is if you want to continue /not/ writing on the WWW,
+don't under /any/ circumstance impulse-purchase that domain, and if you do,
+don't secretly type in your computer, and if you do, for the love of your Gods,
+don't wed or befriend anyone.
+
+Anyhow, it was too late for me. Feeling suitably cornered and wretched,
+much moping around ensued, until it hit me; "Wait a minute, I /am/ an idiot,
+but I also /want/ to be [[https://danluu.com/look-stupid/][less of one]]."
+So this is... also fine. Maybe they will even tell me /How To Not Idiot/, if
+they're still here, reading.
+
+So I submitted. That domain I impulse-bought stopped redirecting, pointing
+to this instead. Then with infinite improbability, your browser pointed to
+that and served this up. And now you know exactly how you got here. And...
+
+You're still reading, aren't you?
+
+Your readership graces this site. To me, writing was thinking. Apparently it
+can also be a process of becoming. So thank you for being here (bows deeply).
+Several word collections are in progress. Please stay as long as you wish.
+
+I'll pause here to doff my hat to some heroes that I draw inspiration from;
+[[https://bellmar.medium.com/][bellmar]] & [[https://danluu.com][danluu]] & [[https://jvns.ca/][b0rk]] & [[https://www.gwern.net/index][gwern]] & [[https://aphyr.com/tags/writing][aphyr]] & [[https://www.kitchensoap.com/][allspaw]] & [[https://xkcd.com/][randall]] & [[https://twitter.com/foone][foone]],
+and a hundred more... Much to learn, have I.
+But we here now, an' we gon' try. We gon' try, to eval/apply.
+
+There will be some technical words, some code play, some HowTos, some WhyTos,
+pondering-upons of some real doozies like "Systems, Scale, Value",
+"Technical Debt is a CDO", "Envelope of control", "Why was the misbehaving
+system behaving itself?" and so forth. No pundering at all, if you're
+wondering.
+
+Enroute, maybe your eye catches something iffy and twitches. Perhaps a whiff
+of bull causes your nostrils to flare slightly. Maybe something really gets
+your goose and your brain screams "NO. Don't. Type. You *promised* you're
+done with these Internet randos who are SO BLOODY WRONG.".
+
+That's why I'm helping you by not having a comment form.
+
+But I'll be delighted to hear from you at /weblog (at) evalapply (dot) org/
+if it strikes your fancy! (Or /youresobloodywrong (at) evalapply (dot) org/
+if it's just /that/ kind of a day and you can't stand it any more.
+I know the feeling. I'm here, listening :).
+
+Thank you for swinging by!
+
+And now, /[[https://xkcd.com/386/][Duty Calls]]/.
+
+#+attr_html: :alt What do you want me to do? LEAVE? Then they'll keep being wrong!
+[[https://imgs.xkcd.com/comics/duty_calls.png]]

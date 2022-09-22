@@ -1,0 +1,213 @@
+# SHITE_META
+#+title: What makes Functional Programs and Systems "Functional"?
+#+summary: In which we ponder the Functional Nature of Life, The Universe, and Everything. Please feel free to follow through the weeds, or jump straight to the bottom for my 2 nano BTC on the matter. (Or my current state of mind, at any rate.)
+#+author: Adi
+#+date: 2022-02-22
+#+tags: meta functional_programming architecture systems
+#+include_toc: yes
+# SHITE_META
+
+Disclaimer: I live in the Land of Lisp, meditate in the Church of Alonzo, and am ever-wary of The State. Only converts /might/ find some entertainment value.
+
+#+begin_quote
+/"For the love of State is the root of all evil: which while some coveted after,/
+/they have erred from Lambda the Ultimate, and pierced themselves through with/
+/many sorrows."/
+
+--- self.
+#+end_quote
+
+* Is it already suffusing your very being?
+  Because so-called "Functional Programming" started becoming pretty sexy over
+  the 2010s. By the 2020s, it started infiltrating all the things, small and big
+  and hyperscaled.
+
+  Now you can't get people to shut up about their declarative infrastructure-as-code
+  as-YAML microservices-first infinitely elastic shared-nothing event-sourced
+  map-reducing lambda architecture marvels.
+
+  Now your VCs and your board nod sagely when these words flash past in your slick
+  OKR plan vision strategy slide decks. Now they further /"Hey, quick question"/
+  you to same-page on your strategy for blockchain and smart contracts. And
+  general web3 readiness. So does every novice hire it seems, no matter their role.
+
+  Now---and be honest, OK?---don't you feel like everybody should just mentally
+  lie down for a few minutes in their metaverse, pass around the meta-ayahuasca,
+  and after the purge just ask simple meta-questions about FP and life for a
+  change? Because, for the love of lambda, we haven't even gotten a breather
+  from the fast-nearing AI supremacy?
+
+  No? OK, consider the following incomplete list of traits commonly attributed
+  to the "Functional" paradigm of programming languages and of systems. Alongside,
+  consider:
+
+  - Which traits does your pet programming language (or system) provide by default?
+  - Which traits do you create yourself in your programs (and systems)?
+  - Which traits draw the hard line between "Functional" and other kinds of
+    programs (and systems)?
+  - Which traits /really/ matter?
+  - Why would you even want any of it in the first place?
+
+  And will we really achieve world domination with FP? (Yes, we will.)
+* Is it Mathematics?
+  Is it about writing "pure" functions?
+
+  This is a bit of a tautology. A function is "pure" by definition. It specifies
+  a fixed mapping of an input domain to an output domain. When invoked, it
+  changes nothing about the state of the world. Which begs the question, how can
+  a thing that /does/ nothing be computationally useful? (Spoiler: it isn't in
+  isolation, unless of course, you figure out a way to use the computational
+  uselessness to turn staggeringly larger amounts of electricity into progressively
+  smaller fragments of your imagination, on a blockchain somewhere). But I digress...
+
+  Must we further also have "first-class" functions?
+
+  Ones that we can pass around as values? This lets us describe all manner of
+  deferred computations, including un-computable absurdities like infinite sequences,
+  and partial applications that will sit around forever if we don't complete them.
+
+  And do we absolutely /need/ the solid ground of Lambda Calculus or Category
+  Theory to /pre-exist/?
+
+  That's an easy one to refute, but these things have become rather holy grail-y
+  now. If you don't know your monad laws, I'm sorry you're not permitted near
+  functions any more. Oh, and what about proofs? These are in the process of
+  holy-grailing too...
+* Is it being "declarative"?
+  Reduce/ravel/plan/derive/goal-seek?
+
+  To be "declarative" is to want to write down a set of constraints or rules
+  or input-output relationships, and leave it to the system to figure out not
+  only /what operations/ to perform, but also /how/ and /when/ to perform them.
+
+  The declarative world is thrice-removed from the "procedural" world, where we
+  have to tell the computer the what, how, and when in excruciating detail.
+
+  SQL, Prolog, APL are seen as "highly declarative" languages. CSS is also a
+  highly declarative language (which, I feel, is why people have a really hard
+  time with it---CSS is a /constraint mechanism/ but our minds are strongly
+  conditioned for procedural thinking).
+
+  And maybe AI is the currently-ultimate expression of being "declarative". We
+  declare that we don't even know what to declare, and write a meta-declaration
+  and hope to Lambda that it will figure out the declaration that we should have
+  fed to the computer in the first place.
+* Is it being "data-oriented"?
+  viz., choosing to work in terms of inert "literal" entities like JSON or EDN
+  or XML or some structured binary encoding, instead of "live" objects with
+  internal state? Asynchronous message-passing instead of synchronous remote
+  procedure calls (whether through object graphs, or across computer networks)?
+
+  Is it about adhering to the principle of referential transparency; i.e. the
+  equivalence of evaluated functions and literal data?
+* Is it about "Statelessness"?
+  No machine registers? No place-oriented "mutable" state? No pointers? No
+  shared references? No side effects? Yes laziness? Yes append-only storage?
+  Yes event sourcing?
+* Is it about "managed" environments?
+  Language mechanisms that relieve us of the burden and perils of malloc/free?
+
+  Garbage collection? Immutable persistent data structures? Type-directed
+  compile-time memory access/use control? Multi-Version Concurrency Control?
+
+  Kubernetes?
+* Is it about following some discipline, and maybe automating it?
+  viz. a /system/ or a design philosophy of doing things, such as:
+
+  - An accountant-like state management practice.
+  - Carefully manipulating state only when absolutely necessary.
+  - Hard-wiring FP traits into a programming language / system.
+  - Choosing a strict single-process, non-branching, forward-looping-only
+    method of flow control.
+  - Having standard, highly general purpose compositional interfaces oriented
+    around streaming data flow?
+  - Eiffel-like Design-By-Contract? (Which is surprisingly "functional".)
+  - Continuation-passing style?
+  - ... etc?
+* My 2 nano BTC on the matter
+  I think all of our popular programming systems are object-oriented /and/
+  imperative by default, whether explicitly or implicitly. Now they all seem
+  to be adding "functional" looking features too. But to me, the functional-ness
+  of a language (or a system) is not about the feature set, but fundamentally
+  about its default (automatic) relationship with The State (of the world).
+** *The "Object-Oriented" way* inexorably pushes us to clone reality.
+   We ingest and manage as much state and behaviour as possible, in order to
+   emulate the world. This, by construction, requires us to operate based on
+   theories and assumptions (internal state) doomed to always lag and diverge
+   from reality. In other words, it's a synchronization problem mixed with the
+   impossible ideal of wanting to make the actual run-time look like the apparent
+   run-time. Concurrency quickly reveals the difficulties of trying this.
+** *The "Imperative" way* is more like doing open heart surgery.
+   We have to get in there and manually orchestrate control flow, interrupt things,
+   and get the whole of it to mutate in-place /while it is running/. The race
+   condition is always imminent---will we close first, or will it stop first?
+   We never /really/ know if the seemingly routine procedure will cause something
+   totally unrelated to blow up in our faces this time around. Meanwhile we have
+   very sharp instruments in hand, and have to do a lot of it by /fingerspitzengefühl/
+   because half the time we literally can't see where to cut or clamp or suture.
+   I didn't train for this but I hope you have. For at least 10 years. You have,
+   right? ... Right?
+** *The "Functional" way* wants to completely invert these models.
+   It tries to expel all system state from inside to the outside. In so doing, it
+   immerses itself in world-state and tries to be a new conduit for different
+   parts of outside reality to communicate, hoping to make it behave to our liking.
+   This, by construction, forces us to think explicitly in terms of events
+   (discrete sensing and sequencing of world updates, i.e. facts), messaging
+   (encoding and transmitting facts as data), and time (asynchronicity, consistency,
+   consensus).
+
+   The functional way is also totally different from how we experience the world.
+   The world is a concurrent, recurrent, parallel, fractal distributed system of
+   systems. And it is also stochastic and full of discontinuities. We have evolved
+   to form just-about-good-enough models of reality in our heads, in very bounded
+   contexts, to the extent necessary for survival. These internal models smooth
+   over all sorts of discontinuities, resist change while survival odds feel good,
+   and determine how we behave regardless of what might actually be out there.
+   We learn imperatively by poking and prodding the world around us while it hums
+   along. I think this is why it takes serious effort to learn the "functional"
+   way. We have to upend our entire mental model of how to do things in the world.
+** *Maybe pure data at rest* is the only truly "functional" thing?
+   Maybe not. Like a pure function, pure data at rest does nothing and so is
+   useless to us when dormant. Besides, it is "pure" /only/ for the duration
+   entropy permits its complete un-corrupted recovery. Ultimately, the laws of
+   Physics will always win. To muddy the waters a bit more, even the purest of
+   pure functional systems contain state; signals in flight or some in-progress
+   computation.
+
+   The only saving grace is that in a highly functional system, any run-time
+   state is entirely recoverable, reproducible, discrete, and isolated.
+** *All said, everything mutates sooner or later.*
+
+   I don't know how to navigate this, except to remind myself about The Thing
+   That Actually Matters... to always remember that The State is the frenemy.
+
+   So while it pleases me that so many wish to eagerly embrace the Functional Way,
+   it is good to be soberly mindful of scopes, lifetimes, margins, error budgets,
+   and bounds of reality (state) and of data (information about reality). Good
+   situational awareness will lead us to build highly functional systems that
+   keep The State where it belongs, and still do useful things with it.
+** And all /that/ said, I leave you with this prayer:
+   #+begin_quote
+   O Lambda the Ultimate, \\
+   bless the reader of these words.
+
+   That their core be functional, \\
+   and their functions be pure.
+
+   That their data be immutable, \\
+   so they may know the value of values.
+
+   That their systems be composable, \\
+   so they may grow and scale with grace.
+
+   That their States only mutate \\
+   in pleasantly surprising ways.
+
+   For otherwise nothing lives. \\
+   Nothing evolves.
+
+   In the name of the alpha, \\
+   the beta, and the eta...
+
+   (λx.x x) (λx.x x)
+   #+end_quote

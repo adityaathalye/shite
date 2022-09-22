@@ -1,0 +1,78 @@
+# SHITE_META
+#+title: people > culture > values > strategy > technology
+#+summary: Technology is—and ought to be—the /byproduct/ of far more important, powerful, and deep-rooted aspects of organisations — including wholesale societies. The pandemic of technology-solutionism gleefully embraced and amplified by all and sundry makes me believe that people seem to have decided it's the other way around.
+#+author: Adi
+#+date: 2022-02-11
+#+tags: organisation_design systems culture
+#+include_toc: no
+# SHITE_META
+
+Here is a chain of causality that appeals to my sensibilities about the location of technology, in context of organisations. /"Technology solutionism"/ is the (apparently irressistible) urge to invert the chain of causality.
+
+The premise...
+
+ ---> People create culture.
+
+ ------> Culture shapes values.
+
+ ---------> Values inform strategy.
+
+ ------------> Technology is Strategy actualised.
+
+The implication...
+
+| Worst case                                         | Best case                                           |
+|----------------------------------------------------+-----------------------------------------------------|
+| > Destructive technology results                   | > Constructive technology results                   |
+| > from violent strategy                            | > from enlightened strategy                         |
+| > borne of pathological values                     | > borne of generative values                        |
+| > normalized by vile culture                       | > normalized by alive culture                       |
+| > catalysed by fear-based /leadership/ (verb-form) | > catalysed by trust-based /leadership/ (verb-form) |
+| > enabled by hapless bystanders                    | > co-created by highly engaged participants         |
+| Unfortunately widespread, easily achieved.         | Fortunately achievable, though high-effort.         |
+| Hallmark of negative performance.                  | Hallmark of elite performance.                      |
+
+Wouldn't it be nice if the "Best case" happened most of the time?
+
+Wouldn't you like to be the sort of leader who makes it happen? A person of
+whom people genuinely say "/I did some of the best work of my life because of
+their leadership./"? Isn't that what good leadership is all about?
+
+I've had one or two of those in my life so far. Enough to /believe/.
+
+Here's the thing, though.
+- It requires a lot of /self/-work, but you can't go it alone.
+- There are no roads, but there are landmarks, GPSes, and gyroscopes.
+- There are no formulas, but there are stories, clues, and feedback loops.
+- There are few such leaders, but there are many followers, and leadership is
+  teachable. Anyone going on this quest will discover the surprising array of
+  people who want to rally around to help them succeed. I know I would!
+
+There are many places to look. Here's just one such bag full of some pretty
+good clues.
+- /Westrum's typology of organizational culture/ (table below), as [[https://cloud.google.com/architecture/devops/devops-culture-westrum-organizational-culture][presented here]]
+  in context of Google's DORA research, but which is generally applicable to any
+  team within any organisation, as well as to any org of any size in any industry.
+- Dr. Ron Westrum in conversation with Gene Kim at the /Idealcast/, for aural
+  accompaniment during the day's perambulations:
+  - Part 1: [[https://itrevolution.podbean.com/e/the-sociology-and-typologies-of-organizations-and-technical-maestros-with-dr-ron-westrum/][The Sociology and Typologies of Organizations, and Technical Maestros]]
+  - Part 2: [[https://itrevolution.podbean.com/e/patterns-of-generative-cultures-how-they-can-be-destroyed-and-the-importance-of-trust-with-dr-ron-westrum/][Patterns of Generative Cultures: How They Can Be Destroyed and the Importance of Trust]]
+
+#+CAPTION: Table: *The Westrum organizational typology model: How organizations process information* (Source: Ron Westrum, "[[https://qualitysafety.bmj.com/content/13/suppl_2/ii22.short][A typology of organisation culture]])," /BMJ Quality & Safety 13, no. 2 (2004), doi:10.1136/qshc.2003.009522.)/
+| Pathological                  | Bureaucratic              | Generative               |
+|-------------------------------+---------------------------+--------------------------|
+| Power oriented                | Rule oriented             | Performance oriented     |
+| Low cooperation               | Modest cooperation        | High cooperation         |
+| Messengers "shot"             | Messengers neglected      | Messengers trained       |
+| Responsibilities shirked      | Narrow responsibilities   | Risks are shared         |
+| Bridging discouraged          | Bridging tolerated        | Bridging encouraged      |
+| Failure leads to scapegoating | Failure leads to justice  | Failure leads to inquiry |
+| Novelty crushed               | Novelty leads to problems | Novelty implemented      |
+
+Happy generative acculturing! _\\//
+
+---
+
+P.S. If you're on quest to build a generative software organization, and you wish
+you had some /eval/apply/ assistance, I will be delighted to play /Watson/ while
+you /Sherlock/. Email me at /sherlockseekingwatson (at) evalapply (dot) org/.

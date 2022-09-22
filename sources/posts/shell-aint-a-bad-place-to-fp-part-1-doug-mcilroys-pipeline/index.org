@@ -1,0 +1,395 @@
+# SHITE_META
+#+title: Shell ain't a bad place to FP: part 1/N: McIlroy's Pipeline
+#+summary: Or, the one in which we "take apart" Douglas McIlroy's pipeline from 1986. Doing so teaches an object lesson about the essence of modular, composable, functional architecture.
+#+author: Adi
+#+date: 2022-03-11
+#+tags: bash unix functional_programming architecture
+#+include_toc: yes
+# SHITE_META
+
+Things start to really heat up when it dawns on us, how a good set of standard
+parts can be used to express totally different ideas /just by composing them in
+different ways/.
+
+(Edit 2022-03-10: speaking of lessons, how about the one in the appendix?!)
+
+#+begin_quote
+"Designing is /fundamentally/ about taking things apart. It's about taking
+things apart /in such a way/ that they can be put back together. i.e.
+Separating into things that can be composed."
+
+--- Rich Hickey, "[[https://www.youtube.com/watch?v=QCwqnjxqfmY][Design, Composition, and Performance]]", 2013
+
+#+begin_src shell
+     tr -cs A-Za-z '\n' | tr A-Z a-z | sort | uniq -c | sort -rn | sed 10q
+#+end_src
+
+--- Douglas McIlroy, [[https://dl.acm.org/doi/10.1145/5948.315654][Communications of the ACM]], 1986
+#+end_quote
+
+Previously: [[https://evalapply.org/posts/shell-aint-a-bad-place-to-fp-part-0-intro/][Shell ain't a bad place to FP: part 0/N]]
+
+* The Pipeline that Douglas Built
+  Douglas McIlroy famously (infamously?) wrote the following in reply to a
+  problem posed by Jon Bentley for his column /"Programming pearls: a literate
+  program"/ (/Communications of the ACM/ magazine, June 1986, Vol. 29, No. 6).
+
+  I first heard of it some years ago in [[https://leancrew.com/all-this/2011/12/more-shell-less-egg/][More Shell Less Egg]], and saw it again
+  in the book [[https://www.oreilly.com/library/view/classic-shell-scripting/0596005954/][Classic Shell Scripting]] (which taught me much of my shell-fu).
+  The original was not online then. Now I see the ACM has kindly [[https://dl.acm.org/doi/10.1145/5948.315654][published it]]
+  along with the rest of their archives!
+
+  Here it is, lightly paraphrased:
+  #+BEGIN_SRC shell
+    # Problem statement (word frequency):
+    #
+    # - Read a file of text
+    # - Determine the n most frequently-used words
+    # - Print out a sorted list of all the words, along with their frequencies
+
+    # Douglas McIlroy's answer
+
+    # 1. Transliterate complement (-c) of words into newlines,
+    # squeezing out (-s) duplicates
+    tr -cs A-Za-z '\n' |
+        # 2. Transliterate uppercase to lowercase
+        tr A-Z a-z |
+        # 3. Sort to bring identical words together
+        sort |
+        # 4. Replace each run of duplicate words with
+        # a single representative, and include a count
+        uniq -c |
+        # 5. Sort reverse (-r), numeric (-n)
+        sort -rn |
+        # 6. Pass through stream editor; quit after printing the
+        # the first 10 lines received
+        sed 10q
+  #+END_SRC
+
+  Here I am, punching the Bash manual page through it...
+
+  #+begin_src shell
+    man bash |
+        tr -cs A-Za-z '\n' | tr A-Z a-z |
+        sort | uniq -c | sort -rn |
+        sed 10q
+  #+end_src
+
+  ... and here are the top 10 words by frequency.
+  #+begin_src text
+  4200 the
+  1822 is
+  1251 to
+  1221 a
+  1147 of
+   869 if
+   805 and
+   570 shell
+   570 in
+   563 command
+  #+end_src
+
+  "/Coolcoolcoolcool nodoubt nodoubt... So, uh... that's it?/"
+* Take Apart! Semantics/Idioms -> Functions
+  It's worth observing that the /same/ tools composed in /different/ ways express
+  /totally different/ concepts. ~sort~ just sorts. ~uniq~ just returns uniques.
+  /But/ ~sort | uniq~ is an idiom for /set of things/. Whereas ~sort | uniq -c |
+  sort -rn~ is an idiom for /frequency distribution/.
+
+  Now...
+
+  What if we use Bash functions to name the idioms we see in McIlroy's pipeline?
+  #+begin_src shell
+    flatten_paragraphs() {
+        # English-only for easy explanation, but can be more general
+        tr -cs A-Za-z '\n'
+    }
+
+    tokenise_lowercase() {
+        # Transliterate uppercase to lowercase
+        tr A-Z a-z
+    }
+
+    frequencies() {
+        # Produce frequency distribution of input
+        sort | uniq -c | sort -rn
+    }
+
+    take_n() {
+        # Given a number n, return those many lines of input
+        # or 10 lines by default, if n is not specified.
+        sed ${1:-10}q
+    }
+  #+end_src
+
+  And what if we update the pipeline with /function calls/ like this?
+
+  #+begin_src shell
+    man bash |
+        flatten_paragraphs |
+        tokenise_lowercase |
+        frequencies |
+        take_n 10
+  #+end_src
+
+  Yes, we get the same result!
+
+  #+begin_src text
+  4200 the
+  1822 is
+  1251 to
+  1221 a
+  1147 of
+   869 if
+   805 and
+   570 shell
+   570 in
+   563 command
+  #+end_src
+
+  Yes, yes, /*YES*/! Functions + pipes = mind blown!
+* Play! Semantics -> Functions -> "Ooh, what if I..."
+  Now that we lifted out a couple of text processing functions, we can try to
+  make /more/ text processing functions. Here are some examples.
+
+  (Edit 2022-03-10: the "clever" mkfifo-ery contains dangers I did not know of.
+  More at the bottom, in the appendix.)
+
+  #+begin_src shell
+    sort_dictionary() {
+        sort -b -d -k2
+    }
+
+    sort_rhyme() {
+        rev | sort -b -d | rev
+    }
+
+    # eliminate stop-words
+    drop_stopwords() {
+        local stopwords=${1:-"the,is,to,a,of,if,and,in,or,be,by,not,with,for,when,it"}
+        local grep_pattern=$(tr , '\|' <<<"${stopwords}")
+        grep -v -E ${grep_pattern}
+    }
+
+    # n-grams
+
+    butlast_n() {
+        # utility for picking appropriate collection of n-grams
+        head -n -${1:-0}
+    }
+
+    bigram() {
+        # we need intermediate state, but we can make it stream,
+        # instead of accumulating in temp files
+        mkfifo bigram_buffer
+
+        tee >(tail +2 > bigram_buffer) |
+            paste - bigram_buffer |
+            # take all but the last entry as it is not a bigram
+            butlast_n 1
+
+        rm bigram_buffer
+    }
+
+    trigram() {
+        # we need intermediate state, but we can make it stream,
+        # instead of accumulating in temp files
+        mkfifo trigram_buffer_one trigram_buffer_two
+
+        tee >(tail +2 > trigram_buffer_one) |
+            tee >(tail +3 > trigram_buffer_two) |
+            paste - trigram_buffer_one trigram_buffer_two |
+            # take all but the last 2 entries as they are not trigrams
+            butlast_n 2
+
+        rm trigram_buffer_one trigram_buffer_two
+    }
+  #+end_src
+  Clearly there is a lot to explore about functions and pipelines and other
+  techniques in this code. We will do deep dives in upcoming posts. For now
+  just know that Bash functions...
+  - name a group of shell statements,
+  - can be composed with pipes
+  - thus intermix with regular shell tools, and
+  - can help create domain-specific abstractions out of domain-agnostic ones.
+
+  But before we go there, indulge me and my /Oh, and One More Thing (TM)/ ...
+* Compose Again! Semantics -> Functions -> Play -> Grand New Pipeline
+  What's the point of making a text processing library of functions if we don't
+  process any text?
+
+  Well...
+  - Start a new shell session.
+  - Copy-paste all the Bash functions above into it.
+  - Then copy-paste this pipeline and
+  - Hit Enter!
+  #+begin_src shell
+    # I assume you have Bash version 4+.
+    man bash |
+        # pre-process
+        flatten_paragraphs |
+        tokenise_lowercase |
+        drop_stopwords |
+        # cache raw pre-processed data, if we need to re-analyse later
+        tee /tmp/bash_manpage_raw_tokens.txt |
+        # cache various views or compressions of the raw data
+        tee >(sort_dictionary | uniq > /tmp/bash_manpage_sorted_as_dictionary.txt) |
+        tee >(sort_rhyme | uniq > /tmp/bash_manpage_sorted_as_rhyme.txt) |
+        # accumulate various analyses of the OG raw data
+        tee >(frequencies > /tmp/bash_manpage_token_freqs.txt) |
+        tee >(bigram | frequencies > /tmp/bash_manpage_bigram_freqs.txt) |
+        tee >(trigram | frequencies > /tmp/bash_manpage_trigram_freqs.txt) |
+        take_n
+  #+end_src
+
+  And why not experiment?!
+
+  Reorder it! Remove parts of it! Change parts of it! Give it 10 GiB of input!
+
+  Play and learn!!!
+
+  (#protip: The shell can auto-complete functions. Type /flat/ and hit /TAB/,
+  and you should get a completion for /flatten_paragraphs/.)
+* Addendum: Remarkable aspects of Doug's O.G. pipeline
+  The UNIX tools philosophy is clearly at work. ~sort~ just sorts, ~uniq~ just
+  returns uniques, pipes connect parts. Ho hum.
+
+  The things I /do/ find remarkable are:
+  - Now the year is 2022, i.e. McIlroy wrote the program about 4 /decades/ ago.
+    It continues to edify, meaning the ideas it contains have a timeless quality.
+
+  - /It also works as-is/, on my cheap Thinkpad running a GNU Linux (Ubuntu),
+    even though the original code was written for a UNIX that might live only
+    in a museum today (or maybe in your bank). Odds look good that come 2036, it
+    will continue to still work as-is on mainstream boxen.
+
+  - It is plain text, and so eminently portable. (I slapped it into the org-mode
+    file of this blog post, evaluated it via org-babel, and captured the results
+    inline. How? Because Emacs org-babel can simply "shell out"; i.e. make a
+    standard request to a standard shell to evaluate the program and have the
+    shell process return any result in a standard way.)
+
+  - I bet it runs /way/ faster now because my box is a supercomputer v/s the
+    UNIX boxen of that era.
+
+  - Pipes remove the burden of explicit state handling. Oh, also, Douglas McIlroy
+    invented UNIX pipes.
+
+  - The entire composition is itself a function.
+
+  - ~map~ (tokenise), ~filter~ (uniquify), ~reduce~ (frequency distribution),
+    and early termination (~take~ first 10) are /automatic/, needing no special
+    machinery.
+
+  - It is an abstract computation that is independent of data source/sink. We
+    can hook into any I/O combination of sockets, or fifo pipes, or files on
+    disk without modifying the pipeline code---much like Clojure transducers
+    or monadic I/O in Haskell land.
+
+  - /Most importantly/, a rank amateur like me could figure out each part /and/
+    the whole in one sitting. It is eminently doable because:
+    - each sub part is understandable in isolation /and/
+    - the whole is amenable to incremental as well as large-scale adaptation,
+    - in playful, interactive, low-risk ways.
+
+  I was clueless then and had to dig through manpages and flail about at the
+  command line. It took me a while to grok the function of each tool and how
+  it is applied to the text processing problem.
+
+  If you haven't already, I'd say bear that small cost, because it teaches a
+  priceless lesson in modular, composable, functional architecture.
+
+  Plus, why not step up one's shell-fu?
+* Appendix: an unexpected masterclass!
+  My head is exploding. Prof. McIlroy emailed me some remarks. (There is a
+  backstory, but first the important stuff.)
+** The danger lurking in the pipes
+   #+begin_src text
+     (Emails redacted to stymie spambots.)
+
+     ----- Original message -----
+     From: Douglas McIlroy <Email at his web page. Link posted below.>
+     To: Aditya Athalye <Email at this web page. See footer.>
+     Subject: Musings on your blog
+     Date: Wednesday, March 09, 2022 8:16 PM
+
+     Aditya,
+
+     A reader might complain that the bigram example in your blog
+     can be done more efficiently, with a similar amount of typing,
+     by a sed script instead of mkfifo, tee, and paste:
+
+     sed -n '1bx; H; g; s/\n/ /p; s/.* //; :x; h'
+
+     A slightly different example is immune to this charge:
+
+     trap "rm -f fifo" 0 HUP TERM PIPE INT
+     mkfifo fifo
+     sort |
+     uniq |
+     tee >(rev | sort >fifo) |
+     join -o 1.1 - fifo >palindromes
+
+     But ... join can't move until rev|sort produces output, so
+     essentially the whole word list piles up in its input pipe.
+     If there's not enough buffer space, deadlock will occur.
+
+     The moral of this tale is that loops in the (undirected)
+     graph of a pipe network pose a hazard of deadlock if some
+     pipe queue necessarily suffers unbounded growth. This
+     hazard manifests in the palindrome example but not in
+     the bigram example.
+
+     Sidelight. Buffering by C's stdio package can cause
+     deadlock in a feedback loop. A process that buffers its
+     output will starve if it needs feedback from stuff that's
+     waiting in its output buffer. stdio's buffering is evil!
+   #+end_src
+
+   Prof. McIlroy also pointed me to his notes on coroutine-based programs
+   (examples of stream processing in Unix).
+
+   #+begin_src text
+     In case you haven't already seen it,
+     https://www.cs.dartmouth.edu/~doug/sieve/sieve.pdf
+     exhibits some unusual plumbing.
+   #+end_src
+
+   The PDF is available at [[https://www.cs.dartmouth.edu/~doug/][his Dartmouth College home page]],
+   which has other fun stuff too.
+** Backstory
+   I habitually cold-email people if something they did or said moved me in some
+   constructive way. So, I wrote a little thank you note to Prof. McIlroy after
+   posting this blog entry (nobody thinks straight at 3 AM).
+
+   He replied! We exchanged a couple of emails. /"That was *so cool*!"/ thought I,
+   and went back to life as usual.
+
+   Yesterday he emailed these follow-up remarks! A nice little masterclass in
+   Unix programming that I'm so pleased to share here, with Prof. McIlroy's
+   gracious permission.
+** Postscript
+   Wow, this is one of the best emails I've ever received! The reader's
+   complaints are warranted and deserved.
+
+   I was fooling around with mkfifo and accidentally discovered it "worked"
+   after a fashion. "What's the buffering story?" crossed my mind, but I didn't
+   find out. I'm also slapping my forehead for not using ~trap~ to auto-clean
+   the pipes. And needless to say, [[https://github.com/adityaathalye/shite/blob/5f87aa0df095a1b5af914117aaa34bf63c67ec4d/shite_utils.sh#L155][my sed-fu]] is weak. Brown belt at best :)
+
+   I rue the fact that I haven't paid due attention to The Machine. I can write
+   Clojure to make a living, but can't write C to save my life :))
+
+   So now this excellent complaint leaves me no choice, but to crack open my
+   long-unused copies of the K&R book and The Unix Programming Environment.
+
+   /Thank you so much for taking the time to teach me, Professor!/
+
+   ---
+
+   Next up: Part 2/N: Deep-dive into bash functions and function design techniques
+   - Using functions to craft one’s own Bytes-sized UNIX tools
+   - Using them interactively like regular UNIX tools
+   - maybe more...
+
+   The ol' noodle is noodlin' over it. Stay tooned!
