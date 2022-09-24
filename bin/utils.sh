@@ -39,3 +39,15 @@ __ensure_min_bash_version() {
 
     [[ $(printf "%s\n" ${semver} ${bashver} | sort -V | head -1) == ${semver} ]]
 }
+
+__html_escape() {
+    # Use to escape HTML when making XML files like RSS feeds or Sitemaps.
+    # It could be a sed one-liner, but it could also be a very badly behaved
+    # sed one-liner, causing all manner of breakages and bugs. But we have jq,
+    # and jq is neat! Thanks to: https://stackoverflow.com/a/71191653
+    #
+    # echo "\"'&<>" | jq -Rr @html
+    # &quot;&apos;&amp;&lt;&gt;
+
+    jq -Rr @html
+}

@@ -429,12 +429,8 @@ table > caption {
   padding: var(--scale-xxxxxs);
 }
 
-.post-index-item * {
-  font-family: var(--headings-font-family);
-  font-size: var(--scale-base);
-}
-
 .post-index-item\:date {
+  font-family: var(--headings-font-family);
   font-size: var(--scale-s);
   line-height: var(--scale-xxl);
   font-weight: bold;
@@ -442,14 +438,21 @@ table > caption {
 }
 
 .post-index-item\:title {
+  font-family: var(--headings-font-family);
   font-size: var(--scale-l);
   line-height: var(--scale-xl);
 }
 
+p.post-index-item\:summary {
+  font-family: var(--body-prose-family);
+  font-style: italic;
+}
+
 .post-index-item\:tag {
+  font-family: var(--headings-font-family);
   font-size: var(--scale-s);
-  font-weight: bold;
   line-height: var(--scale-s);
+  font-weight: bold;
   background: var(--color-masthead);
 }
 

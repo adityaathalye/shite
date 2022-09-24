@@ -241,12 +241,12 @@ EOF
 # We also generate tag / topic HTML listings where appropriate.
 
 shite_template_indices_tags_nav() {
-    local posts_meta_file=${1:?"Fail. We expect posts metadata file."}
+    local posts_meta_file=${1:?"Fail. We expect posts metadata file, tab-separated fields."}
 
     cat <<EOF
 <nav class="cluster box tag-index-items">
 $(cat ${posts_meta_file} |
-     cut -d ',' -f3 | tr ' ' '\n' |
+     cut -f3 | tr ' ' '\n' |
      sort | uniq -c |
      while read -r tag_count tag_name
      do cat <<TAGITEM
@@ -265,7 +265,7 @@ EOF
 shite_template_indices_posts_list() {
     # Given a metadata list for posts, emit a corresponding HTML list to use
     # as an index. We presume the incoming list is clean and sorted.
-    while IFS=',' read -r first_published html_slug tags title
+    while IFS=$'\t' read -r first_published html_slug tags title summary
     do cat <<POSTITEM
 <div class="post-index-item with-sidebar-narrow">
   <div class="post-index-item:date">
@@ -276,6 +276,7 @@ shite_template_indices_posts_list() {
        class="post-index-item:title">
        ${title}
     </a>
+    <p class="post-index-item:summary">${summary}</p>
     <div class="cluster">
     $(for tag in ${tags}
       do printf "%s\n" \
@@ -291,7 +292,7 @@ POSTITEM
 }
 
 shite_template_indices_append_tags_posts() {
-    local posts_meta_file=${1:?"Fail. We expect posts metadata file."}
+    local posts_meta_file=${1:?"Fail. We expect posts metadata file, tab-separated fields."}
     # Wrap in the section wrapper.
     cat <<EOF
 <div class="stack">
@@ -311,7 +312,7 @@ EOF
 }
 
 shite_template_indices_tags_root_index() {
-    local posts_meta_file=${1:?"Fail. We expect posts metadata file."}
+    local posts_meta_file=${1:?"Fail. We expect posts metadata file, tab-separated fields."}
 
     cat <<EOF |
 <div class="title">Yes, Your Grace. As you wish, Your Grace. 'tis all here.</div>
@@ -325,12 +326,14 @@ EOF
 
 shite_template_indices_tag_page_index() {
     local tag_name=${1:?"Fail. We expect the tag for which to generate the page."}
-    local posts_meta_file=${2:?"Fail. We expect posts metadata file."}
+    local posts_meta_file=${2:?"Fail. We expect posts metadata file, tab-separated fields."}
 
     cat ${posts_meta_file} |
-        # Filter tag according to the post meta CSV record
-        # of the shape first_published,html_slug,tags,title
-        stdbuf -oL grep -E -e "^[[:digit:]-]+,.*/index.html,.*${tag_name}.*,.*$" |
+        # Filter tag according to the post meta TSV record
+        # of the shape first_published$'\t'html$'\t'slug$'\t'tags$'\t'title
+        # NOTE: We have to use PCRE (-P) instead of EGREP (-E), because apparently
+        # EGREP doesn't have a pattern for the tab characters alone. Bah.
+        stdbuf -oL grep -P -e "^[[:digit:]-]+\t.*/index.html\t.*${tag_name}.*\t.*$" |
         shite_template_indices_posts_list |
         cat <<EOF
 <div class="stack">

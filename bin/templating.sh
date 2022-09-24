@@ -227,8 +227,9 @@ shite_templating_publish_sources() {
                     if [[ "${file_type}:${content_type}" == "org:rootindex" ]]
                     then local posts_meta_file="${watch_dir}/posts_meta.csv"
 
-                         # PER TAG index pages of posts
-                         cut -d, -f3 ${posts_meta_file} |
+                         # PER TAG index pages of posts, from tab-separated records
+                         # of post metadata
+                         cut -f3 ${posts_meta_file} |
                              tr ' ' '\n' | grep -v "^$" | sort -u |
                              while read -r tag_name
                              do local tag_dir="${watch_dir}/public/tags/${tag_name}"

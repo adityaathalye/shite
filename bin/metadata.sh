@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 __shite_metadata_make_posts_index_csv() {
+    # Generate tab-separated list of post metadata
     local watch_dir=${1:?"Fail. We expect watch dir."}
     local posts_meta_file=${2:-"posts_meta.csv"}
 
@@ -16,16 +17,17 @@ __shite_metadata_make_posts_index_csv() {
             then
                 __shite_templating_set_page_data "${source_file}"
 
-                # Construct CSV record
-                printf "%s" \
-                       "${shite_page_data[date]}," \
-                       "${url_slug_root}/index.html," \
-                       "${shite_page_data[tags]}," \
-                       "${shite_page_data[title]}"
-                printf "\n"
+                # Construct TSV record
+                printf "%s\t" \
+                       "${shite_page_data[date]:?\"Fail. Date missing.\"}" \
+                       "${url_slug_root:?\"Fail. URL slug missing.\"}/index.html" \
+                       "${shite_page_data[tags]:?\"Fail. Tags missing.\"}" \
+                       "${shite_page_data[title]:?\"Fail. Title missing.\"}"
+                printf "%s\n" "${shite_page_data[summary]:?\"Fail. Summary missing.\"}"
             fi
         done |
         stdbuf -oL grep -v "^$" |
+        __html_escape | # for XML reasons
         sort -r -d -u -o "${watch_dir}/${posts_meta_file}"
 }
 
