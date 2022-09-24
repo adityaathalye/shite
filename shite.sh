@@ -25,8 +25,8 @@
     # Cue shite for everyday local editing and publishing
     base_dir="$(pwd)"
     SHITE_HOTRELOAD=${1:-"yes"}
-    browser_name=${2:-"Mozilla Firefox"}
-    base_url=${3:-"file://${base_dir}/public"}
+    base_url=${2:-"file://${base_dir}/public"}
+    browser_name=${3:-"Mozilla Firefox"}
     SHITE_DEBUG_TEMPLATES="debug"
 
     # Set globally-relevant information that we inject into components,
