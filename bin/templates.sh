@@ -346,7 +346,22 @@ EOF
 }
 
 # ####################################################################
-# TODO: RSS FEED
+# TODO: RSS FEED AND SITEMAP
+#
+# IMPORTANT: When making any of these XML files, we MUST make text html/xml safe
+# Free text from title summary and tags must all be escaped.
+#
+# It could be a sed one-liner, but it could also be a very badly
+# behaved sed one-liner, causing all manner of breakages and bugs.
+#
+# But we have jq, and jq is neat! Thanks to: https://stackoverflow.com/a/71191653
+#
+# echo "\"'&<>" | jq -Rr @html
+# &quot;&apos;&amp;&lt;&gt;
+#
+# Maybe do this at the time of writing the metadata file, so xml generation can
+# just play dumb?
+#
 # ####################################################################
 
 shite_template_rss_items() {
@@ -382,4 +397,21 @@ shite_template_rss_feed() {
 </channel>
 </rss>
 EOF
+}
+
+shite_template_sitemap() {
+    # Ref. sample XML sitemap:
+    # https://www.sitemaps.org/protocol.html#sitemapXMLExample
+    cat <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>http://www.example.com/</loc>
+    <lastmod>2005-01-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+</urlset>
+EOF
+
 }
