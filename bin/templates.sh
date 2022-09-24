@@ -314,8 +314,11 @@ shite_template_indices_tags_root_index() {
     local posts_meta_file=${1:?"Fail. We expect posts metadata file."}
 
     cat <<EOF |
-<div class="title">Yes, m'lorx. As you wish m'lorx. It is all here.</div>
-<p><em>“I want to stay as close to the edge as I can without going over. Out on the edge you see all kinds of things you can't see from the center.”</em> ― Kurt Vonnegut</p>
+<div class="title">Yes, Your Grace. As you wish, Your Grace. 'tis all here.</div>
+<p><em>“I want to stay as close to the edge as I can without going over.
+Out on the edge you see all kinds of things you can't see from the center.”</em>
+ ― Kurt Vonnegut
+</p>
 EOF
     shite_template_indices_append_tags_posts "${posts_meta_file}"
 }
