@@ -75,13 +75,10 @@ cat "${watch_dir}/sources/${url_slug}" |
 - It does not _demand_ any server process for local publishing.
 - It is quite small.
   ```shell
-  # The complete "business logic" is 200-is lines as of this comment,
+  # The complete "business logic" is 300-ish lines as of this comment,
   # counted as all lines except comments and blank lines.
   grep -E -v "\s?\#|^$" \
-      bin/events.sh \
-      bin/hotreload.sh \
-      bin/templating.sh \
-      bin/utils.sh |
+      ./bin/{events,metadata,templating,utils,hotreload}.sh |
      wc -l
   ```
 - It is Bash-ful.
