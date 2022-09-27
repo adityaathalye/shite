@@ -71,7 +71,9 @@ EOF
 shite_template_common_links() {
     cat <<EOF
 <link rel="stylesheet preload" type="text/css" href="${shite_global_data[base_url]}/static/css/style.css" />
-<link href="${shite_global_data[base_url]}/index.xml" rel="alternate" type="application/rss+xml" title="${shite_global_data[title]}" />
+<link href="${shite_global_data[base_url]}/${shite_global_data[feed_xml]}"
+      rel="alternate" type="application/rss+xml"
+      title="${shite_global_data[title]}" />
 EOF
 }
 
@@ -115,7 +117,8 @@ shite_template_common_footer() {
   <hr>
   <div class="cluster">
     <span>
-      <a class="site-feed" href="${shite_global_data[base_url]}/index.xml">
+      <a class="site-feed"
+         href="${shite_global_data[base_url]}/${shite_global_data[feed_xml]}">
          Get fed
       </a>.
     </span>
@@ -241,12 +244,12 @@ EOF
 # We also generate tag / topic HTML listings where appropriate.
 
 shite_template_indices_tags_nav() {
-    local posts_meta_file=${1:?"Fail. We expect posts metadata file."}
+    local posts_meta_file=${1:?"Fail. We expect posts metadata file, tab-separated fields."}
 
     cat <<EOF
 <nav class="cluster box tag-index-items">
 $(cat ${posts_meta_file} |
-     cut -d ',' -f3 | tr ' ' '\n' |
+     cut -f3 | tr ' ' '\n' |
      sort | uniq -c |
      while read -r tag_count tag_name
      do cat <<TAGITEM
@@ -265,17 +268,18 @@ EOF
 shite_template_indices_posts_list() {
     # Given a metadata list for posts, emit a corresponding HTML list to use
     # as an index. We presume the incoming list is clean and sorted.
-    while IFS=',' read -r first_published html_slug tags title
+    while IFS=$'\t' read -r first_published url_slug_root tags title summary
     do cat <<POSTITEM
 <div class="post-index-item with-sidebar-narrow">
   <div class="post-index-item:date">
     ${first_published}
   </div>
   <div class="stack">
-    <a href=${shite_global_data[base_url]}/${html_slug}#main
+    <a href=${shite_global_data[base_url]}/${url_slug_root}/index.html#main
        class="post-index-item:title">
        ${title}
     </a>
+    <p class="post-index-item:summary">${summary}</p>
     <div class="cluster">
     $(for tag in ${tags}
       do printf "%s\n" \
@@ -291,7 +295,7 @@ POSTITEM
 }
 
 shite_template_indices_append_tags_posts() {
-    local posts_meta_file=${1:?"Fail. We expect posts metadata file."}
+    local posts_meta_file=${1:?"Fail. We expect posts metadata file, tab-separated fields."}
     # Wrap in the section wrapper.
     cat <<EOF
 <div class="stack">
@@ -311,30 +315,39 @@ EOF
 }
 
 shite_template_indices_tags_root_index() {
-    local posts_meta_file=${1:?"Fail. We expect posts metadata file."}
+    local posts_meta_file=${1:?"Fail. We expect posts metadata file, tab-separated fields."}
 
     cat <<EOF |
-<div class="title">Yes, m'lorx. As you wish m'lorx. It is all here.</div>
-<p><em>“I want to stay as close to the edge as I can without going over. Out on the edge you see all kinds of things you can't see from the center.”</em> ― Kurt Vonnegut</p>
+<div class="title">Yes, Your Grace. As you wish, Your Grace. 'tis all here.</div>
+<p><em>“I want to stay as close to the edge as I can without going over.
+Out on the edge you see all kinds of things you can't see from the center.”</em>
+ ― Kurt Vonnegut
+</p>
 EOF
     shite_template_indices_append_tags_posts "${posts_meta_file}"
 }
 
 shite_template_indices_tag_page_index() {
     local tag_name=${1:?"Fail. We expect the tag for which to generate the page."}
-    local posts_meta_file=${2:?"Fail. We expect posts metadata file."}
+    local posts_meta_file=${2:?"Fail. We expect posts metadata file, tab-separated fields."}
 
     cat ${posts_meta_file} |
-        # Filter tag according to the post meta CSV record
-        # of the shape first_published,html_slug,tags,title
-        stdbuf -oL grep -E -e "^[[:digit:]-]+,.*/index.html,.*${tag_name}.*,.*$" |
+        # Filter tag according to the post meta TSV record
+        # of the shape first_published$'\t'html$'\t'slug$'\t'tags$'\t'title
+        # NOTE: We have to use PCRE (-P) instead of EGREP (-E), because apparently
+        # EGREP doesn't have a pattern for the tab characters alone. Bah.
+        stdbuf -oL grep -P -e "^[[:digit:]-]+\tposts/.*\t.*${tag_name}.*\t.*$" |
         shite_template_indices_posts_list |
         cat <<EOF
 <div class="stack">
   <div class="title">All the posts tagged #${tag_name}</div>
   <nav class="cluster post-meta">
-    <span>&larr; <a href="${shite_global_data[base_url]}/index.html">back home</a></span>
-    <span>&uarr; <a href="${shite_global_data[base_url]}/tags/index.html#main">all the tags</a></span>
+    <span>
+      &larr; <a href="${shite_global_data[base_url]}/index.html">back home</a>
+    </span>
+    <span>
+      &uarr; <a href="${shite_global_data[base_url]}/tags/index.html#main">all the tags</a>
+    </span>
   </nav>
 <hr>
   $(cat -)
@@ -343,40 +356,118 @@ EOF
 }
 
 # ####################################################################
-# TODO: RSS FEED
+# TODO: RSS FEED AND SITEMAP
+#
+# IMPORTANT: When making any of these XML files, we MUST make text html/xml safe
+# Free text from title summary and tags must all be escaped.
+#
+# It could be a sed one-liner, but it could also be a very badly
+# behaved sed one-liner, causing all manner of breakages and bugs.
+#
+# But we have jq, and jq is neat! Thanks to: https://stackoverflow.com/a/71191653
+#
+# echo "\"'&<>" | jq -Rr @html
+# &quot;&apos;&amp;&lt;&gt;
+#
+# Maybe do this at the time of writing the metadata file, so xml generation can
+# just play dumb?
+#
 # ####################################################################
 
-shite_template_rss_items() {
-    # Given an input stream of metadata (e.g. JSON), return XML
+__shite_template_rss_feed_items() {
+    # Given an input stream of metadata (e.g. TSV, or JSON), return XML
     # for a collection of RSS feed items
-    while read shite_post_meta
+    # NOTE: all dates must be RFC822 compliant. Use date -R to ensure this. e.g.
+    # $ date -u -R -d"2022-04-29"
+    # Fri, 29 Apr 2022 00:00:00 +0000
+    while IFS=$'\t' read -r first_published url_slug_root tags title summary
     do
         cat <<EOF
 <item>
-  <title>${shite_data[title]}</title>
-  <link>${shite_data[title]}</link>
-  <link>$(shite_data_get link ${shite_post_meta})</link>
-  <description>$(shite_data_get description ${shite_post_meta})</description>
+  <title>${title}</title>
+  <link>${shite_global_data[base_url]}/${url_slug_root}/index.html</link>
+  <pubDate>$(date -u -R -d"${first_published}")</pubDate>
+  <guid>${shite_global_data[base_url]}/${url_slug_root}/</guid>
+  <description>${summary}</description>
 </item>
 EOF
     done
 }
 
 shite_template_rss_feed() {
-    # pinched from https://www.xul.fr/en-xml-rss.html
-    <<EOF
-<?xml version="1.0" ?>
-<rss version="2.0">
-<channel>
-  <title>$(shite_data_get title)</title>
-  <link>$(shite_data_get url)</link>
-  <description>$(shite_data_get description)</description>
-  <image>
-      <url>$(shite_data_get icon)</url>
-      <link>$(shite_data_get homeurl)</link>
-  </image>
-  $(cat -)
-</channel>
+    local posts_meta_file=${1:?"Fail. We expect posts metadata file, tab-separated fields."}
+
+    # Made based on the OG xml generated by hugo.
+    # Also cf. https://www.xul.fr/en-xml-rss.html
+    # NOTE: use date -R, as lastBuildDate MUST be RFC822 compatible. e.g.
+    #   <pubDate>Wed, 02 Oct 2002 08:00:00 EST</pubDate>
+    #   <pubDate>Wed, 02 Oct 2002 13:00:00 GMT</pubDate>
+    #   <pubDate>Wed, 02 Oct 2002 15:00:00 +0200</pubDate>
+    # cf. https://validator.w3.org/feed/docs/error/InvalidRFC2822Date.html
+    cat <<EOF |
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+  <channel>
+    <title>${shite_global_data[title]}</title>
+    <link>${shite_global_data[base_url]}/</link>
+    <description>${shite_global_data[description]}</description>
+    <generator>shite -- https://github.com/adityaathalye/shite</generator>
+    <language>en-gb</language>
+    <lastBuildDate>$(date -R)</lastBuildDate>
+    <atom:link href="${shite_global_data[base_url]}/${shite_global_data[feed_xml]}"
+               rel="self"
+               type="application/rss+xml"/>
+    <image>
+        <title>${shite_global_data[title]}</title>
+        <url>${shite_global_data[base_url]}/${shite_global_data[title_icon_png]}</url>
+        <link>${shite_global_data[base_url]}/</link>
+    </image>
+    $(cat ${posts_meta_file} | __shite_template_rss_feed_items)
+  </channel>
 </rss>
+EOF
+    xmllint -  # validate feed
+}
+
+__shite_template_sitemap_items() {
+    # Given an input stream of metadata (e.g. TSV, or JSON), return XML
+    # for a collection of sitemap url items.
+    while IFS=$'\t' read -r first_published url_slug_root tags title summary
+    do
+        cat <<EOF
+<loc>${shite_global_data[base_url]}/${url_slug_root}/</loc>
+<changefreq>yearly</changefreq>
+<priority>0.8</priority>
+EOF
+    done
+}
+
+shite_template_sitemap() {
+    # Ref. sample XML sitemap:
+    # https://www.sitemaps.org/protocol.html#sitemapXMLExample
+    local posts_meta_file=${1:?"Fail. We expect posts metadata file, tab-separated fields."}
+
+    cat <<EOF |
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>${shite_global_data[base_url]}/</loc>
+    <lastmod>$(date -Is)</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  $(cat ${posts_meta_file} | __shite_template_sitemap_items)
+</urlset>
+EOF
+    xmllint - # validate sitemap
+}
+
+shite_template_robots_txt() {
+    # cf. https://en.wikipedia.org/wiki/Robots_exclusion_standard
+    cat <<EOF
+User-agent: *
+Allow: /
+
+Sitemap: ${shite_global_data[base_url]}/${shite_global_data[sitemap_xml]}
 EOF
 }

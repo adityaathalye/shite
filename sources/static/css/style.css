@@ -175,7 +175,19 @@ a:hover {
   background: var(--color-dark);
 }
 
-a[href^="http"]::after {
+/* Neat solution to the problem of showing an icon /only/ for external links */
+/* ref: https://stackoverflow.com/a/5379820 */
+a[href]:not(:where(
+              /* exclude hash only links */
+              [href^="#"],
+              /* exclude relative but not double slash only links */
+              [href^="/"]:not([href^="//"]),
+              /* domains to exclude */
+              [href^="file:///"],
+              [href*="//localhost"],
+              [href*="//adityaathalye.github.io/shite-demo"],
+              [href*="//evalapply.org"],
+            ))::after  {
   content: " \2924";
   font-size: var(--scale-s);
   vertical-align: super;
@@ -369,21 +381,21 @@ table > caption {
 
 .toc-heading\:h1 {
   font-size: var(--scale-base);
-  line-height: var(--scale-base);
+  line-height: var(--scale-l);
   font-weight: bold;
 }
 
 .toc-heading\:h2 {
   font-weight: bold;
   font-size: var(--scale-s);
-  line-height: var(--scale-s);
+  line-height: var(--scale-base);
   padding-left: var(--scale-base);
 }
 
 .toc-heading\:h3 {
   font-style: italic;
   font-size: var(--scale-s);
-  line-height: var(--scale-s);
+  line-height: var(--scale-base);
   padding-left: var(--scale-l);
 }
 
@@ -417,12 +429,8 @@ table > caption {
   padding: var(--scale-xxxxxs);
 }
 
-.post-index-item * {
-  font-family: var(--headings-font-family);
-  font-size: var(--scale-base);
-}
-
 .post-index-item\:date {
+  font-family: var(--headings-font-family);
   font-size: var(--scale-s);
   line-height: var(--scale-xxl);
   font-weight: bold;
@@ -430,14 +438,21 @@ table > caption {
 }
 
 .post-index-item\:title {
+  font-family: var(--headings-font-family);
   font-size: var(--scale-l);
   line-height: var(--scale-xl);
 }
 
+p.post-index-item\:summary {
+  font-family: var(--body-prose-family);
+  font-style: italic;
+}
+
 .post-index-item\:tag {
+  font-family: var(--headings-font-family);
   font-size: var(--scale-s);
-  font-weight: bold;
   line-height: var(--scale-s);
+  font-weight: bold;
   background: var(--color-masthead);
 }
 
