@@ -5,15 +5,15 @@ The little hot-reloadin' static site generator from shell. Assumes Bash 4.4+.
 
 WARNING: Here be yaks!
 
-`shite`'s scope, (mis)feature set, polish will always be production-grade, where
-production is "works on my machine(s)" :)
+`shite`'s job is to help me make my website: https://evalapply.org
+Thus, `shite`'s scope, (mis)feature set, polish will always be production-grade,
+where production is "works on my machine(s)" :)
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
 
 - [shite](#shite)
 - [Introduction](#introduction)
-    - [Example](#example)
     - [Dreams and desires](#dreams-and-desires)
     - [Backstory](#backstory)
 - [Usage](#usage)
@@ -90,16 +90,6 @@ have to give a shite if this little shite maker fails to make your shite work.
 
 And last but not least, I hereby decree that all texsht herein be read in Sean
 Connery voish.
-
-## Example
-
-The demo shite looks like this:
-
-| Index page                                                  | About page                                                  | Resume page                                                   |
-| ----------------------------------------------------------- | ----------------------------------------------------------- | -----------------------------------------------------------   |
-| ![Index page](sample/demo-screenshots/shite-demo-index.png) | ![About page](sample/demo-screenshots/shite-demo-about.png) | ![Resume page](sample/demo-screenshots/shite-demo-resume.png) |
-
-But it could look like anything, if one writes one's own plain-ol' HTML and CSS.
 
 ## Dreams and desires
 
