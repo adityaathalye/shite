@@ -381,21 +381,21 @@ table > caption {
 
 .toc-heading\:h1 {
   font-size: var(--scale-base);
-  line-height: var(--scale-base);
+  line-height: var(--scale-l);
   font-weight: bold;
 }
 
 .toc-heading\:h2 {
   font-weight: bold;
   font-size: var(--scale-s);
-  line-height: var(--scale-s);
+  line-height: var(--scale-base);
   padding-left: var(--scale-base);
 }
 
 .toc-heading\:h3 {
   font-style: italic;
   font-size: var(--scale-s);
-  line-height: var(--scale-s);
+  line-height: var(--scale-base);
   padding-left: var(--scale-l);
 }
 
