@@ -18,7 +18,7 @@
     # Events and streaming
     __ensure_deps "inotifywait" "stdbuf"
     # Events and Content Processing
-    __ensure_deps "gawk" "pandoc" "tidy"
+    __ensure_deps "gawk" "pandoc" "tidy" "xmllint"
     # GUI / Browser actions
     __ensure_deps "xdotool" "xdg-open"
 
@@ -41,6 +41,8 @@
         [description]="Evaling and Applying forever."
         [keywords]="systems thinking,functional programming,architecture,software design,technology leadership,devops,clojure"
         [base_url]="${base_url}"
+        [feed_xml]="index.xml"
+        [sitemap_xml]="sitemap.xml"
     )
 
     # Oh yeah!

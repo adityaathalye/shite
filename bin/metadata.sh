@@ -20,7 +20,7 @@ __shite_metadata_make_posts_index_csv() {
                 # Construct TSV record
                 printf "%s\t" \
                        "${shite_page_data[date]:?\"Fail. Date missing.\"}" \
-                       "${url_slug_root:?\"Fail. URL slug missing.\"}/index.html" \
+                       "${url_slug_root:?\"Fail. URL slug missing.\"}" \
                        "${shite_page_data[tags]:?\"Fail. Tags missing.\"}" \
                        "${shite_page_data[title]:?\"Fail. Title missing.\"}"
                 printf "%s\n" "${shite_page_data[summary]:?\"Fail. Summary missing.\"}"
@@ -33,13 +33,14 @@ __shite_metadata_make_posts_index_csv() {
 
 shite_metadata_rebuild_indices() {
     # NOTE: gah, ugly hack :/
-    # Use any change to the root index.org source as a trigger to
-    # rebuild the public root index page, tag indices, rss feed.
-    # - Collect all list-type pages (posts for now)
-    # - Use post metadata to create post index to feed into the
-    #   root index template
-    # - Use tags metadata to create tag index to feed into the
-    #   root index template
+    # Use any change to the root index.org source content file as a trigger to
+    # rebuild an index metadata file, which we use to rebuild public root index
+    # page, tag indices, rss feed etc.
+
+    # TODO: Exclude redirect urls. These should not appear in site nav, nor in
+    # feeds or so forth. Perhaps require front-matter to explicitly mark a URL
+    # as a redirect URL and/or parse the index.html page <head> for redirect meta,
+    # viz. <meta http-equiv="refresh" content="5; URL=new/fully-qualified/url" />
 
     while IFS=',' read -r timestamp event_type watch_dir sub_dir url_slug file_type content_type
     do

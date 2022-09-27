@@ -246,6 +246,18 @@ shite_templating_publish_sources() {
                          shite_template_indices_tags_root_index ${posts_meta_file} |
                              __shite_templating_wrap_page_html \
                                  > "${watch_dir}/public/tags/index.html"
+
+                         # FEEDs and SITEMAP etc.
+                         shite_template_rss_feed \
+                             ${posts_meta_file} \
+                             > "${watch_dir}/public/${shite_global_data[feed_xml]}"
+
+                         shite_template_sitemap \
+                             ${posts_meta_file} \
+                             > "${watch_dir}/public/${shite_global_data[sitemap_xml]}"
+
+                         shite_template_robots_txt \
+                             > "${watch_dir}/public/robots.txt"
                     fi
                     ;;
                 DELETE:*:static|MOVED_FROM:*:static )
