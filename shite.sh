@@ -37,6 +37,7 @@
     declare -A shite_global_data=(
         [title]="Eval / Apply is pure magic"
         [title_icon]="static/img/Lisp_logo.svg"
+        [title_icon_png]="static/img/Lisp_logo.png"
         [author]="Aditya Athalye"
         [description]="Evaling and Applying forever."
         [keywords]="systems thinking,functional programming,architecture,software design,technology leadership,devops,clojure"
