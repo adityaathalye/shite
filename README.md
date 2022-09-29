@@ -9,6 +9,8 @@ WARNING: Here be yaks!
 Thus, `shite`'s scope, (mis)feature set, polish will always be production-grade,
 where production is "works on my machine(s)" :)
 
+![much write. such Bash. very hotreload. wow.](demo/shite-demo-02-hotreload-content-edits-5fps-1024px.gif "much write. such Bash. very hotreload. wow.")
+
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
 
@@ -16,9 +18,14 @@ where production is "works on my machine(s)" :)
 - [Introduction](#introduction)
     - [Dreams and desires](#dreams-and-desires)
     - [Backstory](#backstory)
-- [Usage](#usage)
+- [Usage Demo](#usage-demo)
     - [Hot-reloaded shite editing](#hot-reloaded-shite-editing)
-    - [Manually invoked page builds](#manually-invoked-page-builds)
+        - [hotreload begins](#hotreload-begins)
+        - [hotreload content edits](#hotreload-content-edits)
+        - [hotreload style edits](#hotreload-style-edits)
+        - [hotreload template edits](#hotreload-template-edits)
+        - [hot rebuild indices and feeds](#hot-rebuild-indices-and-feeds)
+    - [Full site builds](#full-site-builds)
     - [Environment Variables and Debug flags](#environment-variables-and-debug-flags)
 - [Design and Internals](#design-and-internals)
     - [File and URL naming scheme](#file-and-url-naming-scheme)
@@ -130,7 +137,14 @@ SSG Jamstack bespoke templating building etc. magic. Now I am on the dark
 path of making this. It is being blogged about at:
 [shite: static sites from shell: part 1/2](https://www.evalapply.org/posts/shite-the-static-sites-from-shell-part-1/)
 
-# Usage
+# Usage Demo
+
+I use shite mainly in "hotreload" mode, mainly to write posts (in orgmode) and
+live preview them (in Firefox). Less mainly, to hot-preview modifications to
+styles and/or page templates. Least mainly, after labouring on a post interminably,
+I use it in "don't hotreload" mode to do a full site rebuild.
+
+shite demo examples below.
 
 ## Hot-reloaded shite editing
 
@@ -139,59 +153,80 @@ it must automatically translate to HTML, be published locally to `public`, and
 cause an appropriate page navigation or reload action in the web browser, where
 my site is open.
 
-The "hot-reloaded" workflow expects the website to be open in a browser tab, and
-that the site's tab be visible. It won't work if the site is open but the tab is
-not active.
+### hotreload begins
 
-- Open Mozilla Firefox and navigate to, say, the public `index.html`. I can go
-  straight to the file on disk `file:///path/to/shite/public/index.html`. No need
-  for a server.
+![invoke shite in hotreload mode](demo/shite-demo-01-hotreload-begins-5fps-1024px.gif "invoke shite in hotreload mode")
 
-- Call the "main" script in a clean new terminal session or tmux pane.
-  ``` shell
-  ./shite.sh
-  ```
+Call the "main" script in a clean new terminal session or tmux pane.
 
-- In your Emacs or Vim, open some content file under `sources`. Edit, save, and
-  watch the content appear in the browser. (Yes specifying Emacs/Vim is goofy,
-  because I trigger _hot_ actions based on inotify events. Apparently different
-  editors do file updates differently. I use Emacs or Vim, so I watch for the
-  events they cause, so it works on my machine. :)).
+``` shell
+./shite.sh
+```
 
-- Go to some static asset, like a CSS stylesheet. Alter a thing, like background
-  color value. Save and watch the color change in the browser.
+It helpfully opens the index file in Firefox, according to the defaults I've set
+in `shite_global_data` array in `./shite.sh`.
 
-- Tweak some template fragment in `templates.sh`---say, blog post template. Then
-  switch to some blog post content file and modify it to trigger page build with
-  the modified template (e.g. hit space and save).
+### hotreload content edits
 
-## Manually invoked page builds
+![hotreload content edits](demo/shite-demo-02-hotreload-content-edits-5fps-1024px.gif "hotreload content edits")
 
-In a clean new terminal session:
+In your Emacs or Vim, open some content file under `sources`. Edit, save, and
+watch the content appear in the browser. (Yes specifying Emacs/Vim is goofy,
+because I trigger _hot_ actions based on inotify events. Apparently different
+editors do file updates differently. I use Emacs or Vim, so I watch for the
+events they cause, so it works on my machine. :)).
 
-- CD to the root of this project
-- Source the dev utility code into the environment. This will bring in all the
-  business logic, templates, as well as dev utility functions.
-  ```bash
-  source ./bin/utils_dev.sh
-  ```
-- Hit `shitTABTAB` or `__shiTABTAB` at the command line for autocompletions.
-- Call the convenience function to publish the whole site
-  ``` shell
-  shite_build_all_html_static
-  ```
-- Open the public directory in your file browser, open index.html and click
-  away (assuming nothing broke of course).
-- Edit files the usual way, as explained in
+Frequently the browser remembers the scroll position, which is neat. Sometimes
+the hotreload is, well, shite. So I just hit space and save the content file to
+trigger hotreload again.
+
+### hotreload style edits
+
+![hotreload style edits](demo/shite-demo-03-hotreload-style-edits-5fps-1024px.gif "hotreload style edits")
+
+Go to some static asset, like a CSS stylesheet. Alter a thing, like background
+color value. Save and watch the color change in the browser.
+
+### hotreload template edits
+
+![hotreload template edits](demo/shite-demo-04-hotreload-template-updates-5fps-1024px.gif "hotreload template edits")
+
+Tweak some template fragment in `templates.sh`---say, blog post template. Then
+switch to some blog post content file and modify it to trigger page build with
+the modified template (e.g. hit space and save).
+
+### hot rebuild indices and feeds
+
+![hot rebuild indices and feeds](demo/shite-demo-05-hotreload-rebuild-indices-feeds-5fps-1024px.gif "hot rebuild indices and feeds")
+
+This is a hack. The root index.org page under sources is special. If I modify it,
+then it means I want to rebuild posts lists for the index page, for tags, and
+also rebuild related meta-files like the RSS feed, sitemap, robots.txt etc.
+
+## Full site builds
+
+![full site build](demo/shite-demo-06-dont-hotreload-full-site-rebuild-5fps-1024px.gif "full site build")
+
+In a clean new terminal session call `shite.sh` with "no", and optionally
+with the `base_url` of the deployment environment:
+
+Rebuild full site for "local" file:/// navigation. Truly "serverless" :)
+``` shell
+./shite.sh "no"
+```
+
+Rebuild full site for publication under my domain.
+``` shell
+./shite.sh "no" "https://evalapply.org"
+```
 
 ## Environment Variables and Debug flags
 
 These flags alter the behaviour of the system.
 
-- Setting `SHITE_HOTRELOAD` to "yesplease" will run the event system in "monitor"
-  mode, which in turn drives hotreload behaviour. Setting it to "debug" will
-  suppress browser hotreload. Commands will be generated, but streamed to stdout
-  instead of being executed.
+- Setting `SHITE_HOTRELOAD` to "yes" will run the event system in "monitor" mode,
+  which in turn drives hotreload behaviour. Setting it to "no" will suppress
+  browser hotreload.
 - Setting `SHITE_DEBUG_TEMPLATES` to "debug" will cause templates to be sourced
   first, before publishing any templated source content.
 
