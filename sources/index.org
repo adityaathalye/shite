@@ -8,21 +8,30 @@
 
 **Oh _eval/apply_, you beautiful thing...**
 
-/At once, the essence of cognition, a system of thinking,/
-/and an engine to compute anything./ Lisp [fn:1].
-/Simultaneously a philosophy, a strategy framework, and a/
-/gun in a knife fight./ OODA [fn:2].
-/Holistically a state of being, a path to excellence, and a/
-/catalyst of growth for self and kind./
-Flow [fn:3]. /Fundamentally a.../
+#+begin_quote
+At once, the essence of cognition, a system of thinking,
+and an engine to compute anything. Lisp [fn:1].
+Simultaneously a philosophy, a strategy framework, and a
+gun in a knife fight. OODA [fn:2].
+Holistically a state of being, a path to excellence, and a
+catalyst of growth for self and kind.
+Flow [fn:3]. Fundamentally a...
+#+end_quote
 
 Oh, hello!
 
-/... Lowers face and arms, directed vaguely toward Betelgeuce./
+#+begin_quote
+... Lowers face and arms, directed vaguely toward Betelgeuse.
+#+end_quote
 
 Pardon my rambling. It's dark out here and I didn't see you arrive!
-Have a dekko, please. And if it strikes your fancy, write to
-/weblog (at) evalapply (dot) org/.
+
+My blog is about thinking and /"learning generously"/, in public [fn:4].
+And (unless I missed a memo) it doesn't have to be dry prose on wrinkled parchment,
+right? ... right? :) So, please [[#tags-index-list][have a dekko]], and
+[[#site-footer][write to me]] if it strikes your fancy.
+
+May The Source be with us.
 
 \\//_ :)
 
@@ -33,3 +42,5 @@ Have a dekko, please. And if it strikes your fancy, write to
 #+attr_html: :alt Maybe if I spin it back and forth really fast I can do some kind of pulse-width modulation.
 [[https://imgs.xkcd.com/comics/focus_knob.png]]
 ...
+[fn:4] Writing = Thinking for me. /Learn generously/ is a "self-directive" at
+the [[#site-footer][Recurse Center]].
