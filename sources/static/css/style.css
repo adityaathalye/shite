@@ -42,6 +42,8 @@
     --scale-xl: calc(var(--scale-l) * var(--ratio));
     --scale-xxl: calc(var(--scale-xl) * var(--ratio));
     --scale-xxxl: calc(var(--scale-xxl) * var(--ratio));
+    --scale-xxxl\+s: calc(var(--scale-xxxl) + var(--scale-s));
+    --scale-xxxl\+base: calc(var(--scale-xxxl) + var(--scale-base));
 
     /* Aliases for column widths */
     --col-w-full-bleed: calc(var(--measure) * var(--ratio));
@@ -159,6 +161,13 @@ figure > figcaption {
   border-color: var(--color-body-text);
 }
 
+.figcaption {
+  margin: 0;
+  font-family: var(--headings-font-family);
+  font-size: var(--scale-s);
+  font-weight: bold;
+}
+
 blockquote {
   color: var(--color-quotes) !important;
   margin: var(--scale-base);
@@ -181,7 +190,7 @@ a[href]:not(:where(
               /* exclude hash only links */
               [href^="#"],
               /* exclude relative but not double slash only links */
-              [href^="/"]:not([href^="//"]),
+              [href^="./"],[href^="/"]:not([href^="//"]),
               /* domains to exclude */
               [href^="file:///"],
               [href*="//localhost"],
@@ -213,7 +222,7 @@ h2 {
 
 h3 {
   font-size: var(--scale-base);
-  line-height: var(--scale-base);
+  line-height: var(--scale-l);
   font-style: italic;
 }
 
@@ -320,12 +329,12 @@ table > caption {
 
 .with-sidebar > :first-child {
   flex-basis: 0;
-  flex-grow: 6;
+  flex-grow: 7;
 }
 
 .with-sidebar > :last-child {
   flex-basis: 0;
-  flex-grow: 3;
+  flex-grow: 2;
 
 }
 
@@ -347,6 +356,10 @@ table > caption {
  * we care about. i.e. as close to the "bottom" of the CSS cascade as can be.
  */
 
+.homepage\:main {
+  max-width: var(--col-w-midi);
+}
+
 .box.icon,
 .box.icon img {
   color: var(--color-dark);
@@ -354,18 +367,32 @@ table > caption {
   max-width: var(--scale-xxxl);
 }
 
+.box.icon\:homepage {
+  color: var(--color-dark);
+  background-color: var(--color-masthead);
+}
+
 .site-header {
   font-family: var(--headings-font-family);
-  font-size: var(--scale-xxxl);
-  line-height: var(--scale-xxxl);
   color: var(--color-dark);
 }
 
-.site-header\:nav-items * {
+.site-header\:title {
+  font-weight: bold;
+  font-size: var(--scale-xl);
+  line-height: var(--scale-xxl);
+}
+
+.site-header\:nav-items *,
+.homepage-header\:nav-items * {
   font-family: var(--headings-font-family);
   font-size: var(--scale-base);
   line-height: var(--scale-base);
   background-color: var(--color-masthead);
+}
+
+.homepage-header\:nav-items * {
+  text-align: center;
 }
 
 .title {
@@ -377,6 +404,12 @@ table > caption {
 .table-of-contents {
   font-family: var(--headings-font-family);
   line-height: var(--scale-base);
+}
+
+.toc-heading\:h1,
+.toc-heading\:h2,
+.toc-heading\:h3 {
+  margin: 0;
 }
 
 .toc-heading\:h1 {
@@ -393,6 +426,7 @@ table > caption {
 }
 
 .toc-heading\:h3 {
+  font-weight: bold;
   font-style: italic;
   font-size: var(--scale-s);
   line-height: var(--scale-base);
@@ -406,7 +440,7 @@ table > caption {
 .post-meta {
   font-family: var(--headings-font-family);
   font-size: var(--scale-s);
-  line-height: var(--scale-s);
+  line-height: var(--scale-base);
   font-weight: bold;
 }
 
@@ -468,6 +502,17 @@ p.post-index-item\:summary {
   font-weight: bold;
   font-size: var(--scale-s);
   line-height: var(--scale-base);
+}
+
+.email {
+  font-family: var(--headings-font-family);
+  font-weight: bold;
+  font-size: var(--scale-s);
+  line-height: var(--scale-base);
+  color: var(--color-masthead);
+  background-color: var(--color-dark);
+  padding: var(--scale-xxs);
+  border-radius: var(--scale-xxxxxs);
 }
 
 .footer hr,

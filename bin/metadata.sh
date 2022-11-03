@@ -5,8 +5,10 @@ __shite_metadata_make_posts_index_csv() {
     local watch_dir=${1:?"Fail. We expect watch dir."}
     local posts_meta_file=${2:-"posts_meta.csv"}
 
-    # Look up only published posts, and then infer org-mode source files for those
-    find ${watch_dir}/public/posts/ -type f -name index.html |
+    # Look up only published posts, and then infer org-mode source files
+    # for those. A post is defined as /post/post-slug/index.{org,html}. So, we
+    # want to exclude files directly under /post/ (e.g. /post/index.{org,html}).
+    find ${watch_dir}/public/posts/ -mindepth 2 -type f -name index.html |
         sed -E -e 's;(.*)/public/(.*)/index.html;\1,\2;' |
         # Write metadata for each source file into a CSV record
         while IFS=',' read -r watch_dir url_slug_root
@@ -45,7 +47,7 @@ shite_metadata_rebuild_indices() {
     while IFS=',' read -r timestamp event_type watch_dir sub_dir url_slug file_type content_type
     do
         case "${sub_dir}:${url_slug}" in
-            sources:index.org|public:posts/*/index.html )
+            sources:posts/index.org|public:posts/*/index.html )
                 __shite_metadata_make_posts_index_csv ${watch_dir}
             ;;
         esac
