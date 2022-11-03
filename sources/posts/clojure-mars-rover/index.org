@@ -1,0 +1,635 @@
+# SHITE_META
+#+title: A Clojure view of "Mars Rover"
+#+summary: Here I illustrate how Clojurists (including Yours Truly) like to solve problems and model things using hammocks, pure functions, and the "it's just data" ideology. Also, while the *problem* focuses on "design in the small" of application logic, many ideas in the *solution* can—and do—scale all the way to "design in the large" of whole systems.
+#+author: Adi
+#+date: 2022-10-19
+#+tags: clojure functional_programming software_design architecture
+#+include_toc: yes
+# SHITE_META
+
+* Reading guide
+
+  - Follow the post for a detailed breakdown of my Clojurish thought process,
+    and the resulting code at each step.
+
+  - Or, [[#recap][skip here to read the whole code at one go]].
+
+  - I assume basic familiarity with Clojure (functions, hashmaps, namespaces,
+    multimethods, code naming and calling conventions etc.).
+* The Problem Statement
+
+The so-called /"Mars Rover"/ problem is one of those evergreen software design
+interview questions, attributed to ThoughtWorks since the mid-2000s. It is
+perhaps second only to /FizzBuzz/ [fn:1] in its genere-defining significance.
+The question is available all over the Internet. For completeness, I've copied
+it here from its [[https://code.google.com/archive/p/marsrovertechchallenge/][archive page at code.google.com]].
+
+#+html: <details class="box invert stack">
+#+html: <summary>
+#+html: <code>A squad of robotic rovers are to be landed by NASA on a plateau on Mars...</code>
+#+html: <hr>
+#+html: </summary><code>
+... This plateau, which is curiously rectangular, must be navigated by the
+rovers so that their on-board cameras can get a complete view of the surrounding
+terrain to send back to Earth.
+
+A rover's position and location is represented by a combination of x and y
+co-ordinates and a letter representing one of the four cardinal compass points.
+The plateau is divided up into a grid to simplify navigation.
+
+An example position might be 0, 0, N, which means the rover is in the bottom
+left corner and facing North.
+
+In order to control a rover, NASA sends a simple string of letters. The possible
+letters are \"L\", \"R\" and \"M\". \"L\" and \"R\" makes the rover spin 90
+degrees left or right respectively, without moving from its current spot. \"M\"
+means move forward one grid point, and maintain the same heading.
+
+Assume that the square directly North from (x, y) is (x, y+1).
+
+INPUT:
+
+The first rover-start-position-line of input is the upper-
+right coordinates of the plateau, the lower-left coordinates
+are assumed to be 0,0.
+
+The rest of the input is information pertaining to the rovers
+that have been deployed. Each rover has two lines of input. The
+first rover-start-position-line gives the rover's position, and
+the second rover-start-position-line is a series of instructions
+telling the rover how to explore the plateau.
+
+The position is made up of two integers and a letter separated
+by spaces, corresponding to the x and y co-ordinates and the
+rover's orientation.
+
+Each rover will be finished sequentially, which means that the
+second rover won't start to move until the first one has finished
+moving.
+
+OUTPUT
+
+The output for each rover should be its final co-ordinates
+and heading.
+
+INPUT AND OUTPUT
+
+Test Input:
+
+#+begin_src text
+5 5
+1 2 N
+LMLMLMLMM
+3 3 E
+MMRMMRMRRM
+#+end_src
+
+Expected Output:
+
+#+begin_src text
+1 3 N
+5 1 E
+#+end_src
+#+html: </code></details>
+* Move 0: Use a hammock
+  Before we even consider firing up a REPL, we recline on our hammock [fn:2]
+  to consider the all-important question; /"Well what's the *actual* problem?"/.
+  - Is it to parse input commands?
+  - Is it to physically move a rover?
+  - Is it to calculate how to move the rover?
+  - Is it also something unstated?
+
+  Hammocks engender naps. Naps engender diffuse-mode brainwork.
+** Teasing apart the Essential and the Incidental
+   After a suitable amount of snoozing, tossing, turning, note-scribbling, I'd
+   argue that the /essential/ job is to calculate a (safe) path, given some
+   intial conditions and sequence of commands.
+
+   Why?
+
+   Well, because it occurred to me that if we had such a calculator, almost
+   anything could use it, including simulators or the rover's body-doubles back
+   on Earth, at mission control.
+
+   This implies that the problem of reading and parsing input (input source and
+   format could be anything), and that of actually moving a Rover (or Rover-ish
+   thing) are both /incidental/ problems.
+** Framing the essential "problem domain"
+   After we remove all trace of the inessential, the basic shape of our problem
+   domain looks like this:
+   #+begin_src text
+     Directions are cardinal compass points:
+       N, S, E, W
+
+     Position is defined as the composite of:
+       [X Coordinate, Y Coordinate, Cardinal Direction]
+
+     Rotations are defined as:
+       L := 90 deg left, in-place
+       R := 90 deg right, in-place
+
+     Movement is defined as:
+       M := advance 1 unit, in the current direction
+
+     The core problem is defined as:
+       Describe motion in terms of our definitions.
+   #+end_src
+   From this, it follows that our /solution/ domain consists of answers to
+   questions like:
+   - What are the different entities in our system? (directions, coordinates)
+   - What are the different operations? (move, rotate)
+   - What are the given rules of the system? (plateau is rectangular,
+     rotate in place by 90°, move one unit)
+   - What are the design decisions we must make? e.g.
+     - Detect collisions or be dumb?
+     - What to do with nonsensical input like commands that can move us
+       off-grid (and maybe off a cliff)?
+     - etc.
+** Sidelight: how the design space opens up
+   It shouldn't surprise me any more but it invariably does... the unreasonable
+   effectiveness of devoting quality "hammock time" to extract the essentials
+   of a problem space.
+
+   The exercise illuminates design choices not just in-app, but also system-wide.
+   At the very least the act of subtraction helps prevent permanent lock-out of
+   future choices.
+
+   For example, the whole rover-mover could very well be a single program.
+
+   Or...
+
+   We could model the calculations in a slow, energy-inefficient, high-level
+   language—in context of the rover's power budget constraints. Then implement
+   the model as a custom chip in the rover. Then wire chip output to a
+   drivetrain, and feed the chip input from some sort of signal processor.
+   This way NASA retains ability to in-source the mission-critical calculator,
+   and impose API contracts on subsystem vendors for signal I/O.
+
+   Either way, it turns out we can express our core problem in terms of pure
+   data and functions, i.e. this is the /"functional core"/ of our program
+   design. Whereas the input/output pieces become our program's /"imperative
+   shell"/ [fn:3].
+* Move 1: Identify the shape of core data
+  Where to begin? Well, what is the smallest but very important domain entity we
+  can model? I'd say it is directions, and immediately adjacent to that,
+  rotations.
+** Directions
+   Directions can simply be keywords ~:N~, ~:W~, ~:S~, ~:E~.
+
+   That's it. It's /boring/. Boring is good.
+** Rotations
+   We can define rotations in terms of pre-calculated hash-tables, because we
+   know exactly how the rover must rotate.
+   #+begin_src clojure
+     (ns mars.rover)
+
+     ;; Each rotation is 90 degrees. Thus we can define the
+     ;; meaning of left-rotation and right-rotation like so:
+
+     (def rot-L {:N :W
+                 :S :E
+                 :W :S
+                 :E :N})
+
+     (def rot-R {:N :E
+                 :S :W
+                 :W :N
+                 :E :S})
+
+     (comment
+       (rot-L :N) ; => :W
+       (rot-L (rot-L :N)) ; => :S
+       ((comp rot-L rot-L rot-R rot-R) :N) ; => :N
+       )
+   #+end_src
+
+   What if we had a precision stepper motor capable of 0.1° turns, you ask?
+   Well, we could /still/ pre-calculate all L-side and R-side rotations as
+   hard-coded hash-tables.
+
+   Think about it.
+
+   Once  we send a stepper motor into space, we can't swap it out for a better
+   motor. So we can even hard-wire the rotations lookup table in a ROM. The
+   fastest function call is no function call.
+** Position
+   We define "position" as ~x,y~ coordinates plus current direction. We can
+   certainly model it as a tuple ~[x y d]~, because ~x,y,d~ is a sensible-enough
+   convention to make standard system-wide.
+
+   /However/, a hashmap ~{:x X :y Y :d D}~ is much better: more descriptive,
+   better data access, more flexible for future change [fn:4].
+* Move 2: Model the domain operations
+  Our model has just three explicit operations: rotate left, rotate right,
+  and move. The functions that calculate the result of the operations almost
+  write themselves, because of the way we set up our core data.
+** Rotate in place
+   We can calculate rotation in terms of position ~{:x X :y Y :d D}~ , like so.
+   #+begin_src clojure
+     (defn L
+       "Return a left-rotate relative to the current direction
+        at the current coordinates."
+       [position]
+       (update position :d rot-L))
+
+     (defn R
+       "Return a right-rotate relative to the current direction
+        at the current coordinates."
+       [position]
+       (update position :d rot-R))
+
+     (comment
+       (L {:x 1 :y 3 :d :N})
+       ;; => {:x 1 :y 3 :d :W}
+
+       (R (L {:x 1 :y 3 :d :N}))
+       ;; => {:x 1 :y 3 :d :N}
+
+       ((comp R R L L) {:x 1 :y 3 :d :N})
+       ;; => {:x 1 :y 3 :d :N}
+       )
+   #+end_src
+
+   A reader might complain that the word ~position~ doesn't convey the fact that
+   it is written as a hashmap. We can address this complaint in one or more ways:
+   - Provide handy "Rich Comment" blocks [fn:5] along with the code, as I've
+     done here, and everywhere else.
+   - Write the function signature with destructuring:
+     #+begin_src clojure
+       (defn R
+         [{:keys [x y d] :as position}]
+         (update position :d rot-R))
+     #+end_src
+     This can be useful, but can also be a matter of taste.
+
+     In this case, I find destructuring /extra/. Mainly because we don't use
+     ~x, y, d~ in the function body, and slightly because bindings are created,
+     for ~x, y, d~, which adds some overhead (however negligible) at runtime and
+     I don't like to make my program do throwaway work.
+   - Write a specification for ~positon~. This would be my preferred option,
+     as compared to destructuring. A specification is more general-purpose,
+     complete, and useful---we can use in tests and validations.
+   - Tell everyone that "Well, in Clojure, it's almost always a hashmap.", which
+     I'm telling you now :)
+** Move one step
+   To move is to advance one step in the current direction. This means we have
+   to choose to either increment or decrement either x or y. We are also told to
+   assume "move north" means to go from ~x,y~ to ~x,y+1~. Thus, the plateau is
+   laid out south to north, with the south-west corner at 0,0, and north-east
+   corner at max-x,max-y. So ~M~ can be defined like this, in terms of our
+   ~{:x X :y Y :d D}~ /position/.
+   #+begin_src clojure
+     (defmulti M
+       "Return a position one unit farther in the
+       current direction."
+       :d)
+
+     (defmethod M :N
+       [position]
+       (update position :y inc))
+
+     (defmethod M :S
+       [position]
+       (update position :y dec))
+
+     (defmethod M :E
+       [position]
+       (update position :x inc))
+
+     (defmethod M :W
+       [position]
+       (update position :x dec))
+
+     (comment
+       (M {:x 1 :y 3 :d :N}) ; => {:x 1 :y 4 :d :N}
+       (M {:x 1 :y 3 :d :S}) ; => {:x 1 :y 2 :d :S}
+       (M {:x 1 :y 3 :d :E}) ; => {:x 2 :y 3 :d :E}
+       (M {:x 1 :y 3 :d :W}) ; => {:x 0 :y 3 :d :W}
+       )
+  #+end_src
+** Move Many Steps Safely
+   The problem with ~M~ above is that it could help us increment or decrement
+   our way out of the grid all the way off a cliff. Like, what if we get a bad
+   insruction sequence?
+   #+begin_src clojure
+     ;; Say our given area of operation is 0,0 to 5,5, and our
+     ;; rover starts at 0,0, facing East. This sequence will
+     ;; drive us off-grid:
+     ((comp M M M M M M M R M M M M M M M L)
+      {:x 0 :y 0 :d :E})
+   #+end_src
+   Well one answer is to /throw/ or /panic/ when we see the badness. A nicer
+   answer is to /stay put/. Do nothing. Nada. One way to say "nothing" is to
+   clip all out-of-bounds calculations to the edges of the grid.
+   #+begin_src clojure
+     (defn clip-to-bounds
+       "Clip the given position to at most the boundary of
+       the given max/min x,y coordinates of operation."
+       [{:keys [max-x max-y min-x min-y]
+         :or {min-x 0 min-y 0} :as _bounds}
+        {:keys [x y] :as position}]
+       (assoc position
+              :x (min (max min-x x) max-x)
+              :y (min (max min-y y) max-y)))
+
+     (comment
+       (clip-to-bounds {:max-x 5 :max-y 5}
+                       {:x 0 :y 6 :d :N})
+       ;; => {:x 0, :y 5, :d :N}
+
+       (clip-to-bounds {:max-x 5 :max-y 5}
+                       {:x -1 :y 6 :d :N})
+       ;; => {:x 0, :y 5, :d :N}
+
+       (clip-to-bounds {:max-x 5 :max-y 5}
+                       {:x 6 :y 0 :d :N})
+       ;; => {:x 5, :y 0, :d :N}
+
+       (clip-to-bounds {:max-x 5 :max-y 5}
+                       {:x 6 :y -1 :d :N})
+       ;; => {:x 5, :y 0, :d :N}
+
+       (clip-to-bounds {:max-x 5 :max-y 5}
+                       {:x 6 :y 6 :d :N})
+       ;; => {:x 5, :y 5, :d :N}
+
+       (clip-to-bounds {:max-x 5 :max-y 5}
+                       ((comp M M M M M M M R M M M M M M M L)
+                        {:x 0 :y 0 :d :E}))
+       ;; => {:x 5, :y 5, :d :E}
+       )
+   #+end_src
+** Move Safely Around Other Rovers and Sundry Insurmountable Objects
+   We will just ignore collision detection.
+
+   Our rovers are dumb and only follow outside instructions on a pre-planned
+   route. So if mission control botches it, well, we will probably end up with
+   /far/ fewer rovers and maybe no mission to control anymore.
+* Move 3: Interpret the commands
+  Incoming commands are supposed to tell us to:
+  - Rotate ~:L~ or ~:R~ at the current ~position~, or
+  - Move ~:M~ by one step in the current ~direction~
+
+  So the job is to update the ~{:x X :y Y :d D} position~ in some way (or not).
+
+  We could potentially get unknown or garbled commands. In which case the
+  sanest thing to do may be do nothing. Stay put. We also want to make sure we
+  are always within ~xy-bounds~.
+
+  We can express it like this:
+  #+begin_src clojure
+    (defmulti command-interpreter
+      "Return updated position given a known set of commands,
+      or current position given unknown commands."
+      (fn [xy-bounds position command]
+        command))
+
+    (defmethod command-interpreter :L
+      [xy-bounds position command]
+      (L position))
+
+    (defmethod command-interpreter :R
+      [xy-bounds position command]
+      (R position))
+
+    (defmethod command-interpreter :M
+      [xy-bounds position command]
+      (->> position
+           M
+           (clip-to-bounds xy-bounds)))
+
+    (defmethod command-interpreter :default
+      [xy-bounds position command]
+      position)
+
+    (comment
+      (command-interpreter {:max-x 5 :max-y 5}
+                           {:x 1 :y 3 :d :N}
+                           :M)
+      ;; => {:x 1, :y 4, :d :N}
+
+      (command-interpreter {:max-x 5 :max-y 5}
+                           {:x 1 :y 3 :d :N}
+                           :L)
+      ;; => {:x 1, :y 3, :d :W}
+
+      (command-interpreter {:max-x 5 :max-y 5}
+                           {:x 1 :y 3 :d :N}
+                           :R)
+      ;; => {:x 1, :y 3, :d :E}
+
+      (command-interpreter {:max-x 5 :max-y 5}
+                           {:x 1 :y 3 :d :N}
+                           :LOL)
+      ;; => {:x 1, :y 3, :d :N}
+      )
+  #+end_src
+* Move 4: Can we pretty please move the rover already?
+  Ok it seems we can calculate updated position. Now can we move the rover?
+
+  Arguably, this is a decent place to implement movement, but that means
+  changing the state of the world (moving the rover on the planet). Whenever
+  Clojurists sense the prospect of state and mutation, we head back to our
+  hammocks and ask ourselves if we can turn state into data.
+
+  What if we plan the route before actually traversing it? A route plan would
+  be... what? Just a sequence of position maps! This has several implications:
+
+  1. Movement reduces to mindlessly following the route. Some other onboard
+     component could dumbly transduce deltas between /current/ and /next/
+     ~position~ into signal required to drive stepper motor, rotor, whatever.
+  2. Happily, we also get back some safety: a chance to do collision avoidance
+     (not detection), by comparing plans across rovers.
+  3. Further, we can also ensure the locally-calculated plan obeys some ground
+     rules (pun-intended), like /"Each position must differ from its predecessor
+     in *exactly* one dimension; ~:x~, or ~:y~, or ~:d~. If it differs in any/
+     /other way, abort, because it means something is wrong. Either a command
+     failed to arrive in the transmit sequence, or a bug has occurred onboard."/.
+  #+begin_src clojure
+    (defn calculate-path
+      [{:keys [xy-bounds start-pos commands]}]
+      (reductions (partial command-interpreter xy-bounds)
+                  start-pos
+                  commands))
+
+    (comment
+      (calculate-path
+       {:xy-bounds {:max-x 5 :max-y 5}
+        :start-pos {:x 1 :y 2 :d :N}
+        :commands [:L :M :L :M :L :M :L :M :M]})
+      ;; => ({:x 1, :y 2, :d :N}
+      ;;     {:x 1, :y 2, :d :W}
+      ;;     {:x 0, :y 2, :d :W}
+      ;;     {:x 0, :y 2, :d :S}
+      ;;     {:x 0, :y 1, :d :S}
+      ;;     {:x 0, :y 1, :d :E}
+      ;;     {:x 1, :y 1, :d :E}
+      ;;     {:x 1, :y 1, :d :N}
+      ;;     {:x 1, :y 2, :d :N}
+      ;;     {:x 1, :y 3, :d :N})
+
+      (calculate-path
+       {:xy-bounds {:max-x 5 :max-y 5}
+        :start-pos {:x 3 :y 3 :d :E}
+        :commands [:M :M :R :M :M :R :M :R :R :M]})
+      ;; => ({:x 3, :y 3, :d :E}
+      ;;     {:x 4, :y 3, :d :E}
+      ;;     {:x 5, :y 3, :d :E}
+      ;;     {:x 5, :y 3, :d :S}
+      ;;     {:x 5, :y 2, :d :S}
+      ;;     {:x 5, :y 1, :d :S}
+      ;;     {:x 5, :y 1, :d :W}
+      ;;     {:x 4, :y 1, :d :W}
+      ;;     {:x 4, :y 1, :d :N}
+      ;;     {:x 4, :y 1, :d :E}
+      ;;     {:x 5, :y 1, :d :E})
+      )
+  #+end_src
+* Move 5: Ok, /now/ we can move it.
+  Or more like model the motion of the rover, because I don't know systems
+  programming :D
+
+  #+begin_src clojure
+    (def rover-one
+      ^{:doc "A rover contains information about mission
+    objectives... where it was, what it's been told to do,
+    where it's headed, where it's allowed to operate etc."}
+      (atom {:xy-bounds nil
+             :start-pos nil
+             :commands nil
+             :path nil}))
+
+    (defn init-rover!
+      "Initialise rover with info. about its current mission,
+      viz. bounds of operation, start location, and full path
+      to traverse."
+      [rover
+       {:keys [xy-bounds start-pos commands]
+        :as rover-plan}]
+      (reset! rover
+              {:xy-bounds xy-bounds
+               :start-pos start-pos
+               :commands commands
+               :path (calculate-path rover-plan)}))
+
+    (defn advance-rover!
+      "Keep moving the rover along the calculated path sequence until
+          no more path remains. The path reduces as the rover advances."
+      [rover]
+      (let [pos-before-move (first (:path @rover))]
+        (swap! rover
+               update
+               :path
+               rest)
+        (println "Rover moved from"
+                 pos-before-move
+                 "to"
+                 (first (:path @rover)))))
+
+    (comment
+      (init-rover! rover-one
+                   {:xy-bounds {:max-x 5 :max-y 5}
+                    :start-pos {:x 3 :y 3 :d :E}
+                    :commands [:M :M :R :M :M :R :M :R :R :M]})
+
+      (advance-rover! rover-one)
+      )
+  #+end_src
+* Finally: "Imperative shell" to parse incoming signal
+  Seasoned programmers will recognise the usual icky, tricky, finicky code that
+  must absorb the insanity of data inbound from the wild.
+
+  Someone has to do it. Might as well be us. There are many ways to do it.
+  Here is one way.
+
+  That said, even though we have to do I/O, the general technique is to solve
+  small pieces of the problem /ideally as pure functions/, and compose them into
+  the full solution. Stave off actual state management or I/O to the very end.
+  #+begin_src clojure
+    (defn parse-max-bounds
+      [max-bounds-line]
+      (let [[x y] (clojure.string/split max-bounds-line
+                                        #"\s+")]
+        {:max-x (Integer/parseInt x)
+         :max-y (Integer/parseInt y)}))
+
+    (defn parse-start-position
+      [start-position-line]
+      (let [[x y d] (clojure.string/split start-position-line
+                                          #"\s+")]
+        {:x (Integer/parseInt x)
+         :y (Integer/parseInt y)
+         :d (keyword d)}))
+
+    (defn parse-commands-line
+      [commands-line]
+      (map (comp keyword str)
+           commands-line))
+
+    (defn parse-command-input
+      [[start-position-raw commands-raw]]
+      {:start-pos (parse-start-position start-position-raw)
+       :commands (parse-commands-line commands-raw)})
+
+    (defn ingest-command-data
+      [command-data-file]
+      (let [raw-data (->> command-data-file
+                          slurp
+                          clojure.string/split-lines
+                          (map clojure.string/trim))
+            max-xy-bounds (parse-max-bounds (first raw-data))
+            xy-bounds (assoc max-xy-bounds
+                             :min-x 0
+                             :min-y 0)
+            start-pos-commands-pairs-raw (partition 2 (rest raw-data))]
+        (map (fn [[start-position-raw commands-raw]]
+               {:start-pos (parse-start-position start-position-raw)
+                :commands (parse-commands-line commands-raw)
+                :xy-bounds xy-bounds})
+             start-pos-commands-pairs-raw)))
+
+    (comment
+      (let [_ (spit "rover-commands.txt"
+                    "5 5
+            1 2 N
+            LMLMLMLMM
+            3 3 E
+            MMRMMRMRRM")
+            input-command-data (ingest-command-data "rover-commands.txt")]
+        (map calculate-path input-command-data))
+      )
+  #+end_src
+* Recap
+  The complete code at one go...
+  #+begin_export html
+  <script src="https://gist.github.com/adityaathalye/cefe71a5cd5b729102d6adfcd7a6ab77.js"></script>
+  #+end_export
+* Footnotes
+
+[fn:1] If you know one way to FizzBuzz, here are
+[[https://www.evalapply.org/posts/n-ways-to-fizzbuzz-in-clojure/index.html#main][n ways to FizzBuzz in Clojure]]
+
+[fn:2] [[https://www.youtube.com/watch?v=f84n5oFoZBc][Hammock Driven Development]],
+Rich Hickey's second, "philosophical" talk at the first Clojure Conj,
+in Durham, North Carolina on October 23rd, 2010.
+
+[fn:3] The so-called /"Functional Core, Imperative Shell"/ architecture pattern.
+[[https://www.destroyallsoftware.com/screencasts/catalog/functional-core-imperative-shell][Gary Bernhardt's tutorial]],
+[[https://kumarshantanu.medium.com/organizing-clojure-code-with-functional-core-imperative-shell-2f2ee869faa2][Kumar Shantanu's blog post]],
+[[https://web.archive.org/web/20210513194256/https://clojureverse.org/t/organizing-clojure-code-a-real-problem/7567][The discussion at Clojureverse]]
+
+[fn:4] We can imagine having to implement a latitude-longitude system.
+We could express it as ~[[deg min sec direction] [deg min sec direction]]~.
+/Or/ we could use a map ~{:lat {:deg D :min M :sec S :dir D}
+:lon {:deg D :min M :sec S :dir D}}~. Which is the superior model?
+
+[fn:5] Rich Comment blocks are very handy! See discussions:
+- Stu Halloway's remarks in his excellent talk:
+  /[[https://youtu.be/Qx0-pViyIDU?t=1229][Running With Scissors: Live Coding with Data (at 20m 31s)]]/
+  #+begin_quote
+  "These comments are rich because they provide rich detail about the
+development process and because they were written by a person named Rich."
+  #+end_quote
+- In the [[https://calva.io/rich-comments/][Calva plugin's documentation]]
+- Blog post by [[https://betweentwoparens.com/blog/rich-comment-blocks/#rich-comment][betweentwoparens]]
+- Tutorial by [[https://practical.li/clojure/clojure-cli/projects/rich-comments.html][practical.li]]
