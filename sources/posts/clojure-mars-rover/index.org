@@ -536,11 +536,11 @@ Expected Output:
       )
   #+end_src
 * Finally: "Imperative shell" to parse incoming signal
-  Seasoned programmers will recognise the usual icky, tricky, finicky code that
-  must absorb the insanity of data inbound from the wild.
+  By now, I hope you're sold on the idea that parsing is incidental complexity.
 
-  Someone has to do it. Might as well be us. There are many ways to do it.
-  Here is one way.
+  Seasoned programmers will recognise the usual icky, tricky, finicky code that
+  must absorb the insanity of data inbound from the wild. Someone has to do it.
+  Might as well be us. There are many ways to do it. Here is one way.
 
   That said, even though we have to do I/O, the general technique is to solve
   small pieces of the problem /ideally as pure functions/, and compose them into
@@ -576,7 +576,7 @@ Expected Output:
       (let [raw-data (->> command-data-file
                           slurp
                           clojure.string/split-lines
-                          (map clojure.string/trim))
+                          (mapv clojure.string/trim))
             max-xy-bounds (parse-max-bounds (first raw-data))
             xy-bounds (assoc max-xy-bounds
                              :min-x 0
@@ -589,14 +589,33 @@ Expected Output:
              start-pos-commands-pairs-raw)))
 
     (comment
+      ;; Test Input, as per problem statement:
+
+      ;; 5 5
+      ;; 1 2 N
+      ;; LMLMLMLMM
+      ;; 3 3 E
+      ;; MMRMMRMRRM
+
+      ;; Expected Output:
+
+      ;; 1 3 N
+      ;; 5 1 E
+
       (let [_ (spit "rover-commands.txt"
                     "5 5
-            1 2 N
-            LMLMLMLMM
-            3 3 E
-            MMRMMRMRRM")
-            input-command-data (ingest-command-data "rover-commands.txt")]
-        (map calculate-path input-command-data))
+                1 2 N
+                LMLMLMLMM
+                3 3 E
+                MMRMMRMRRM")
+            input-command-data (ingest-command-data "rover-commands.txt")
+            final-position-as-str (comp (partial clojure.string/join " ")
+                                        (juxt :x :y (comp name :d))
+                                        last
+                                        calculate-path)]
+        (map final-position-as-str
+             input-command-data))
+      ;; => ("1 3 N" "5 1 E")
       )
   #+end_src
 * Recap
