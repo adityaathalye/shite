@@ -58,23 +58,22 @@ shite_template_home_page() {
     <div id="the-very-top" class="stack center box">
       <div class="box invert with-sidebar-narrow">
         $(shite_template_home_page_header)
-      <main id="main">
-        <div class="homepage:main">
-          <h1 class="title">
+        <main id="main">
+          <div class="homepage:main">
+            <h1 class="title">
               Hi, I'm ${shite_global_data[author]} and I
               <em><a href="${shite_global_data[base_url]}/index.html#i-evalapply-for-joy">eval / apply</a></em> for joy...
-          </h1>
+            </h1>
             <img src="${shite_global_data[base_url]}/static/img/pages/index/mugshot.jpg"
                  alt="I Eval/Apply for joy and for work">
             <p class="figcaption">
               <em>hand-waving</em> (n.) A scientifically proven way to
               explain deep thoughts.
             </p>
-          </figure>
-        </div>
+          </div>
+          $(cat -)
+        </main>
       </div>
-        $(cat -)
-      </main>
       $(shite_template_common_footer)
     </div>
   </body>
@@ -89,7 +88,7 @@ shite_template_home_page_header() {
     <hr>
     <a class="box icon:homepage"
        href="${shite_global_data[base_url]}/index.html#main">
-      <img src="${shite_global_data[base_url]}/${shite_global_data[title_icon]}" alt="${shite_global_data[title]}" />
+      <img src="${shite_global_data[base_url]}/${shite_global_data[title_icon]}" alt="${shite_global_data[title]}">
     </a>
     <hr>
     <nav class="stack homepage-header:nav-items">
@@ -123,27 +122,27 @@ shite_template_common_meta() {
     cat <<EOF
 <!-- Some basic hygiene meta-data -->
 <title>${escaped_title}</title>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="author" content="${shite_global_data[author]}" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="${shite_global_data[author]}">
 <meta name="description"
-      content="${escaped_description}" />
-<meta name="keywords" content="${shite_global_data[keywords]}" />
-<meta property="og:title" content="${escaped_title}" />
-<meta property="og:description" content="${escaped_description}" />
-<meta property="og:locale" content="en_GB" />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="${og_url}" />
+      content="${escaped_description}">
+<meta name="keywords" content="${shite_global_data[keywords]}">
+<meta property="og:title" content="${escaped_title}">
+<meta property="og:description" content="${escaped_description}">
+<meta property="og:locale" content="en_GB">
+<meta property="og:type" content="website">
+<meta property="og:url" content="${og_url}">
 EOF
 }
 
 shite_template_common_links() {
     local canonical_url=${shite_page_data[canonical_url]:?"Fail. Every HTML page must have its canonical url."}
     cat <<EOF
-<link rel="stylesheet preload" type="text/css" href="${shite_global_data[base_url]}/static/css/style.css" />
+<link rel="stylesheet preload" type="text/css" as="style" href="${shite_global_data[base_url]}/static/css/style.css">
 <link href="${shite_global_data[base_url]}/${shite_global_data[feed_xml]}"
       rel="alternate" type="application/rss+xml"
-      title="${shite_global_data[title]}" />
+      title="${shite_global_data[title]}">
 <link rel="canonical" href="${canonical_url}">
 EOF
 }
@@ -154,7 +153,7 @@ shite_template_common_header() {
   <div class="box invert stack">
     <div class="with-sidebar site-header">
       <a class="box icon" href="${shite_global_data[base_url]}/index.html#main">
-        <img src="${shite_global_data[base_url]}/${shite_global_data[title_icon]}" alt="${shite_global_data[title]}" />
+        <img src="${shite_global_data[base_url]}/${shite_global_data[title_icon]}" alt="${shite_global_data[title]}">
       </a>
       <div class="stack">
         <div class="site-header site-header:title">${shite_global_data[title]}</div>
@@ -224,7 +223,7 @@ shite_template_common_footer() {
     </a>, the same one used by Wikipedia.</span>
 <span><a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
     <img alt="Creative Commons License" style="border-width:0"
-         src="https://i.creativecommons.org/l/by-sa/4.0/80x15.png" />
+         src="https://i.creativecommons.org/l/by-sa/4.0/80x15.png">
     </a></span>
   </p>
   <hr>
