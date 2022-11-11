@@ -286,10 +286,13 @@ cat <<EOF
   <header>
     <div class="stack">
       <div class="title">${title}</div>
-      <div class="cluster post-meta"><span>&uarr; <a href="#site-header" rel="bookmark">menu</a></span>
-        $(if [[ ${include_toc} == "yes" ]]
-          then printf "%s" "<span>&darr; <a href=\"#blog-post-toc\" rel=\"bookmark\">toc</a></span>"
-          fi)</div>
+      <div class="cluster post-meta">
+           <span>&uarr; <a href="#site-header" rel="bookmark">menu</a></span>
+           <span>&darr; <a href="#blog-post-footer" rel="bookmark">discuss</a></span>
+           $(if [[ ${include_toc} == "yes" ]]
+                then printf "%s" "<span>&darr; <a href=\"#blog-post-toc\" rel=\"bookmark\">toc</a></span>"
+             fi)
+      </div>
       <div class="summary">${summary}</div>
       <div class="cluster post-meta">
         <span class="author">By: ${author}</span>
@@ -312,10 +315,11 @@ cat <<EOF
           cat -
         fi)
   </section>
-  <footer class="footer">
+  <footer id="blog-post-footer" class="footer">
     <nav class="cluster">
       <span>&uarr; <a href="#blog-post" rel="bookmark">title</a></span>
       <span>&uarr; <a href="#site-header" rel="bookmark">menu</a></span>
+      <span>&rarr; <a href="mailto:weblog@evalapply.org">email comments</a></span>
     </nav>
   </footer>
 </article>
