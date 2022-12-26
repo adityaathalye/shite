@@ -1,0 +1,10 @@
+{"id": "0", "type": "frame", "text": "", "color": "", "tags": [], "group": "", "duration_ms": 100}
+{"id": "1", "type": "frame", "text": "", "color": "", "tags": [], "group": "", "duration_ms": 100}
+{"id": "2", "type": "frame", "text": "", "color": "", "tags": [], "group": "", "duration_ms": 100}
+{"id": "3", "type": "frame", "text": "", "color": "", "tags": [], "group": "", "duration_ms": 100}
+{"id": "4", "type": "frame", "text": "", "color": "", "tags": [], "group": "", "duration_ms": 100}
+{"x": 0, "y": 0, "text": "-", "color": "", "tags": [], "group": "", "frame": "0"}
+{"x": 0, "y": 0, "text": "/", "color": "", "tags": [], "group": "", "frame": "1"}
+{"x": 0, "y": 0, "text": "-", "color": "", "tags": [], "group": "", "frame": "2"}
+{"x": 0, "y": 0, "text": "\\", "color": "", "tags": [], "group": "", "frame": "3"}
+{"x": 0, "y": 0, "text": "+", "color": "", "tags": [], "group": "", "frame": "4"}
