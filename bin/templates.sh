@@ -179,7 +179,7 @@ shite_template_common_nav_items() {
     # &#65284; hire
     # </a>
     cat <<EOF
-<a href="${shite_global_data[base_url]}/index.html#the-very-top">
+<a href="${shite_global_data[base_url]}/index.html#main">
    &lambda; about
 </a>
 <a href="${shite_global_data[base_url]}/posts/index.html">
