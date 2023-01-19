@@ -3,7 +3,7 @@
 #+summary: I find myself telling people that they will have to pry org-mode from my cold dead hands. Which befuddles me. Why, as an ingrate software nerd who has soured on software technology — talk about biting the hand that feeds — do I evince such strong sentiment about a software program?!
 #+author: Adi
 #+date: 2022-04-19
-#+tags: howto whyto org_mode local_first notebooks knowledge_management
+#+tags: howto whyto org_mode local_first notebooks knowledge_management tools_for_thought
 #+include_toc: yes
 # SHITE_META
 

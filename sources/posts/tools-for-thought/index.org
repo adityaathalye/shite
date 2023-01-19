@@ -1,0 +1,146 @@
+# SHITE_META
+#+title: Riff: Classifying Tools for Thought
+#+summary: Trying out a classification for "Tools for Thought" as a means of augmenting the human intellect, hot on the heels of recent community conversations about ChatGPT, CoPilot, Stable Diffusion etc...
+#+author: Adi
+#+date: 2023-01-19
+#+tags: meta riff intelligence_augmentation tools_for_thought
+#+include_toc: no
+# SHITE_META
+
+At the risk of badly mangling things smarter people have probably already worked
+out [fn:1] over seven plus decades and counting of the ongoing computer revolution [fn:2],
+here goes.
+
+* Category One: Memory Assistant
+
+I'd box all the note taking tools in here---as persistent store and/or organiser
+and/or search tools. As a user of such a tool, all meaning-making is the job of my
+brain. I must work out the known unknowns, deal with the unknown unknowns when
+they happen etc.
+
+The tool functions like a mechanical memory + ontology + topology assist, which
+helps me do a lot of thinking + learning /over long periods of time/ (like days,
+weeks, years). Things like Ken Iverson's concept of /Notation as a Tool of Thought/ [fn:3]
+would also fall into this category (filed under "methods to compress information
+into symbols and mnemonics and transmit them").
+
+Hell, why be so fancy? I dump it all into my haphazardly organised org files and
+~rgrep~ and its going... fine?
+
+🤷‍♂️
+
+* Category Two: Co-processor
+
+Two intellects working together to arrive at a common model / picture / frame of
+understanding. People on the Internet and in my familiar circle of gentlenerds
+seem to be excited about CoPilot / ChatGPT etc. in this sense.
+
+I can't help but see those as just more of /Category One/ type tools. Why?
+Because co-processors must be capable of communicating understanding of abstract
+models with each other (a kind of "Communicating with Aliens" [fn:4] problem).
+AFAIK, none of these tools are capable of explaining /why/ they're doing what
+they're doing.
+
+The one exception I could concede to is machines that are excellent at /finite
+games/. That too because odds are higher of being able to independently verify
+the machine's meta descriptions, and the outcomes would be reasonably reproducible
+(viz. "I did X, because of heuristic Y, and rules P, Q, R.").
+
+* Category Three: Teacher
+
+One intelligence absorbing greater truths discovered by (or previously absorbed
+by) another intelligence. Where the other intelligence has the metacognition to
+know what they know, and to direct the other intelligence to that level of
+understanding. The magic of beings capable of transferring culture, stories,
+Laplace transforms, rate reaction equations, rules of grammar, interpretation of
+law etc. across minds, and generations.
+
+I'm thinking tribes, coaches, mathematics circles, therapists, the Vulcan Science
+Academy and so forth... the ability to conjure up and communicate /about/ concepts
+like communicating with aliens.
+
+AFAIK, only biology is capable of producing this category of tools of thought.
+
+In this context, I'm fascinated by the work being done on Bioelectric Networks
+by Michael Levin's group [fn:5]. Almost prosaically, in their work/world the
+definition of intelligence is a /mechanical/ one. So much so that they are able
+to model and then produce (though not control or guarantee) biological structures
+capable of progressively more sophisticated kinds of intelligence in the mechanical
+terms they describe.
+
+Which makes me wonder...
+
+Is there something like the Kardashev Scale [fn:6], but for levels/depths/spans
+of Intelligence?
+* Footnotes
+
+[fn:1] These two links capture the overarching context, discovered thanks to
+that fine Gentleman and Scholar, [[http://fogus.me/me/][fogus]].
+
+[[https://www.iosrjen.org/Papers/Conf.19021-2019/Volume-5/6.%2030-33.pdf][Overview of Intelligence Amplification]].
+/Intelligence amplification/ (IA) refers to the effective use of Information
+technology in augmenting human intelligence.
+
+/[[http://www.rheingold.com/texts/tft/][Tools for Thought]]/;
+an "an exercise in retrospective futurism" by Howard Rheingold, who introduced
+the idea as follows.
+#+begin_quote
+*Tools for Thought* is an exercise in retrospective futurism; that is, I wrote it
+in the early 1980s, attempting to look at what the mid 1990s would be like. My
+odyssey started when I discovered Xerox PARC and Doug Engelbart and realized that
+all the journalists who had descended upon Silicon Valley were missing the real
+story. Yes, the tales of teenagers inventing new industries in their garages were
+good stories. But the idea of the personal computer did not spring full-blown
+from the mind of Steve Jobs. Indeed, the idea that people could use computers to
+amplify thought and communication, as tools for intellectual work and social
+activity, was not an invention of the mainstream computer industry nor orthodox
+computer science, nor even homebrew computerists. If it wasn't for people like
+J.C.R. Licklider, Doug Engelbart, Bob Taylor, Alan Kay, it wouldn't have happened.
+But their work was rooted in older, equally eccentric, equally visionary, work,
+so I went back to piece together how Boole and Babbage and Turing and von Neumann
+— especially von Neumann — created the foundations that the later toolbuilders
+stood upon to create the future we live in today. You can't understand where
+mind-amplifying technology is going unless you understand where it came from.
+#+end_quote
+
+[fn:2] [[http://www.vpri.org/pdf/m2007007a_revolution.pdf][The Real Computer Revolution Hasn't Happened Yet]] — Alan Kay,
+Viewpoints Research Institute. See also, [[https://www.youtube.com/watch?v=oKg1hTOQXoY][video]] of
+the talk he delivered at OOPSLA, in 1997.
+
+[fn:3] [[https://www.jsoftware.com/papers/tot.htm][Notation as a Tool of Thought]], by Ken Iverson.
+#+begin_quote
+The thesis of the present paper is that the advantages of executability and
+universality found in programming languages can be effectively combined, in a
+single coherent language, with the advantages offered by mathematical notation.
+#+end_quote
+
+[fn:4] The notion that fell out of JCR Licklider's thinking on how might we make
+an "[[https://en.wikipedia.org/wiki/Intergalactic_Computer_Network][Intergalactic Computer Network]]".
+
+#+begin_quote
+Consider the situation in which several different centers are netted together,
+each center being highly individualistic and having its own special language and
+its own special way of doing things. Is it not desirable, or even necessary for
+all the centers to agree upon some language or, at least, upon some conventions
+for asking such questions as “What language do you speak?” At this extreme, the
+problem is essentially the one discussed by science fiction writers: “how do you
+get communications started among totally uncorrelated “sapient” beings?”
+#+end_quote
+
+[fn:5] Check out /[[https://as.tufts.edu/biology/levin-lab][The Levin Lab]]/ at Tufts University, for some brain-melting science.
+#+begin_quote
+We work at the intersection of developmental biology, computer science, and cognitive
+science. Our goal is to understand degrees of intelligence at multiple scales of
+biological, artificial, and hybrid systems; we use these insights to develop
+interventions in regenerative medicine.
+#+end_quote
+
+[fn:6] The [[https://en.wikipedia.org/wiki/Kardashev_scale][Kardashev Scale]] /"is a method of measuring a civilization's level of
+technological advancement based on the amount of energy it is able to use. The/
+/measure was proposed by Soviet astronomer Nikolai Kardashev in 1964."/
+
+Michael Levin's group proposes this tantalizing [[https://aeon.co/essays/how-evolution-hacked-its-way-to-intelligence-from-the-bottom-up][modular model of cognition]].
+#+begin_quote
+Intelligence is not something that happened at the tail end of evolution, but
+was discovered towards the beginning, long before brains came on the scene.
+#+end_quote
