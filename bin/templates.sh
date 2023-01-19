@@ -31,49 +31,119 @@
 #     shite_template_common_default_page
 
 shite_template_common_default_page() {
-    local maybe_page_id=${shite_page_data[page_id]:+"id=\"${shite_page_data[page_id]}\""}
-    local maybe_canonical_url=${shite_page_data[canonical_url]:+"<link rel=\"canonical\" href=\"${shite_page_data[canonical_url]}\">"}
-
     cat <<EOF
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        $(shite_template_common_meta)
-        $(shite_template_common_links)
-        ${maybe_canonical_url}
-    </head>
-    <body ${maybe_page_id}>
-      <div id="the-very-top" class="stack center box">
-          $(shite_template_common_header)
-          <main id="main">
-            $(cat -)
-          </main>
-          $(shite_template_common_footer)
-      </div>
-    </body>
+<html lang="en" prefix="og: https://ogp.me/ns#">
+  $(shite_template_common_head)
+  <body>
+    <div id="the-very-top" class="stack center box">
+        $(shite_template_common_header)
+        <main id="main">
+          $(cat -)
+        </main>
+        $(shite_template_common_footer)
+    </div>
+  </body>
 </html>
 EOF
 }
 
+
+shite_template_home_page() {
+    cat <<EOF
+<!DOCTYPE html>
+<html lang="en" prefix="og: https://ogp.me/ns#">
+  $(shite_template_common_head)
+  <body id="homepage">
+    <div id="the-very-top" class="stack center box">
+      <div class="box invert with-sidebar-narrow">
+        $(shite_template_home_page_header)
+        <main id="main">
+          <div class="homepage:main">
+            <h1 class="title">
+              Hi, I'm ${shite_global_data[author]} and I
+              <em><a href="${shite_global_data[base_url]}/index.html#i-evalapply-for-joy">eval / apply</a></em> for joy...
+            </h1>
+            <img src="${shite_global_data[base_url]}/static/img/pages/index/mugshot.jpg"
+                 alt="I Eval/Apply for joy and for work">
+            <p class="figcaption">
+              <em>hand-waving</em> (n.) A scientifically proven way to
+              explain deep thoughts.
+            </p>
+          </div>
+          $(cat -)
+        </main>
+      </div>
+      $(shite_template_common_footer)
+    </div>
+  </body>
+</html>
+EOF
+}
+
+shite_template_home_page_header() {
+    cat <<EOF
+<header id="site-header" class="box invert">
+  <div class="stack center">
+    <hr>
+    <a class="box icon:homepage"
+       href="${shite_global_data[base_url]}/index.html#main">
+      <img src="${shite_global_data[base_url]}/${shite_global_data[title_icon]}" alt="${shite_global_data[title]}">
+    </a>
+    <hr>
+    <nav class="stack homepage-header:nav-items">
+      $(shite_template_common_nav_items)
+    </nav>
+    <hr>
+  </div>
+</header>
+EOF
+}
+
+shite_template_common_head() {
+    cat <<EOF
+<head>
+    $(shite_template_common_meta)
+    $(shite_template_common_links)
+</head>
+EOF
+}
+
 shite_template_common_meta() {
+    # NOTE: Free text from title summary and tags must all be escaped.
+
+    local og_url=${shite_page_data[canonical_url]:?"Fail. We need fully-qualified URL for opengraph page meta."}
+    local title="${shite_page_data[title]:-${shite_global_data[title]}}"
+    escaped_title=$(printf "%s" "${title}" | __html_escape)
+
+    local description="${shite_page_data[summary]:-${shite_global_data[description]}}"
+    escaped_description=$(printf "%s" "${description}" | __html_escape)
+
     cat <<EOF
 <!-- Some basic hygiene meta-data -->
+<title>${escaped_title}</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${shite_global_data[title]}</title>
-<!-- <base href="${shite_global_data[base_url]}/./">  -->
 <meta name="author" content="${shite_global_data[author]}">
-<meta name="description" content="${shite_global_data[description]}">
+<meta name="description"
+      content="${escaped_description}">
 <meta name="keywords" content="${shite_global_data[keywords]}">
+<meta property="og:title" content="${escaped_title}">
+<meta property="og:description" content="${escaped_description}">
+<meta property="og:locale" content="en_GB">
+<meta property="og:type" content="website">
+<meta property="og:url" content="${og_url}">
 EOF
 }
 
 shite_template_common_links() {
+    local canonical_url=${shite_page_data[canonical_url]:?"Fail. Every HTML page must have its canonical url."}
     cat <<EOF
-<link rel="stylesheet preload" type="text/css" href="${shite_global_data[base_url]}/static/css/style.css" />
+<link rel="stylesheet preload" type="text/css" as="style" href="${shite_global_data[base_url]}/static/css/style.css">
 <link href="${shite_global_data[base_url]}/${shite_global_data[feed_xml]}"
       rel="alternate" type="application/rss+xml"
-      title="${shite_global_data[title]}" />
+      title="${shite_global_data[title]}">
+<link rel="canonical" href="${canonical_url}">
 EOF
 }
 
@@ -83,19 +153,12 @@ shite_template_common_header() {
   <div class="box invert stack">
     <div class="with-sidebar site-header">
       <a class="box icon" href="${shite_global_data[base_url]}/index.html#main">
-        <img src="${shite_global_data[base_url]}/${shite_global_data[title_icon]}" alt="${shite_global_data[title]}" />
+        <img src="${shite_global_data[base_url]}/${shite_global_data[title_icon]}" alt="${shite_global_data[title]}">
       </a>
       <div class="stack">
-        <div class="site-header">${shite_global_data[title]}</div>
+        <div class="site-header site-header:title">${shite_global_data[title]}</div>
         <nav class="cluster site-header site-header:nav-items">
-           <a href="${shite_global_data[base_url]}/posts/hello-world/index.html#main">how it began</a>
-           <a href="${shite_global_data[base_url]}/index.html#blog-index-list">how it's going</a>
-           <a href="https://github.com/adityaathalye"
-              target="_blank" rel="noreferrer noopener">
-              who did this?
-           </a>
-           <!-- <a href="${shite_global_data[base_url]}/about.html#main">is he unhireable?</a> -->
-           <a href="#site-footer">contact? feed? newsletter?</a>
+          $(shite_template_common_nav_items)
         </nav>
       </div>
     </div>
@@ -104,34 +167,54 @@ shite_template_common_header() {
 EOF
 }
 
+shite_template_common_nav_items() {
+    # TODO: Add dedicated pages and include into nav
+    # <a href="${shite_global_data[base_url]}/talks.html#main">
+    # &#10086; demos
+    # </a>
+    # <a href="${shite_global_data[base_url]}/teaching.html#main">
+    # &#10087; workshops
+    # </a>
+    # <a href="${shite_global_data[base_url]}/work.html#main">
+    # &#65284; hire
+    # </a>
+    cat <<EOF
+<a href="${shite_global_data[base_url]}/index.html#main">
+   &lambda; about
+</a>
+<a href="${shite_global_data[base_url]}/posts/index.html">
+   &#9753; blog
+</a>
+<a href="mailto:hello@evalapply.org">
+   email
+</a>
+<a href="#site-footer">
+   &rlhar; subscribe
+</a>
+EOF
+}
+
 shite_template_common_footer() {
     cat <<EOF
 <footer id="site-footer">
 <hr>
 <div class="box invert footer stack">
-  <p> Write to <em>weblog (at) evalapply (dot) org</em>. Made with
-      <a href="https://www.gnu.org/software/emacs/">GNU Emacs</a>,
-      <a href="https://orgmode.org/">org-mode</a>, and
-      <a href="https://github.com/adityaathalye/shite">shite</a>.
-  </p>
-  <hr>
   <div class="cluster">
-    <span>
-      <a class="site-feed"
-         href="${shite_global_data[base_url]}/${shite_global_data[feed_xml]}">
-         Get fed
-      </a>.
-    </span>
-  <form class="cluster"
-        action="https://buttondown.email/api/emails/embed-subscribe/evalapply"
-        method="post" target="popupwindow"
-        onsubmit="window.open('https://buttondown.email/evalapply','popupwindow')">
-      <input type="email" name="email" id="bd-email">
-    <span>
-      <input type="submit" value="Get occasional newsletter">
-      <em>(thanks, <a href="https://buttondown.email" target="_blank">Buttondown</a>!)</em>
-    </span>
-  </form>
+    <span>&#128231; : <a href="mailto:hello@evalapply.org">hello@evalapply.org</a></span>
+    <a class="site-feed"
+       href="${shite_global_data[base_url]}/${shite_global_data[feed_xml]}">
+       Blog feed
+    </a>
+    <form class="cluster"
+          action="https://buttondown.email/api/emails/embed-subscribe/evalapply"
+          method="post" target="popupwindow"
+          onsubmit="window.open('https://buttondown.email/evalapply','popupwindow')">
+        <input type="email" name="email" id="bd-email">
+      <span>
+        <input type="submit" value="Get occasional newsletter">
+        <em>(thanks, <a href="https://buttondown.email" target="_blank">Buttondown</a>!)</em>
+      </span>
+    </form>
   </div>
   <hr>
   <p>&copy; copyright $(date +%Y), <a href="https://evalapply.org" target="_blank">${shite_global_data[author]}</a>.
@@ -140,11 +223,16 @@ shite_template_common_footer() {
     </a>, the same one used by Wikipedia.</span>
 <span><a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
     <img alt="Creative Commons License" style="border-width:0"
-         src="https://i.creativecommons.org/l/by-sa/4.0/80x15.png" />
+         src="https://i.creativecommons.org/l/by-sa/4.0/80x15.png">
     </a></span>
   </p>
   <hr>
-  <p>
+  <p> Made with
+      <a href="https://www.gnu.org/software/emacs/">GNU Emacs</a>,
+      <a href="https://orgmode.org/">org-mode</a>, and
+      <a href="https://github.com/adityaathalye/shite">shite</a>.
+  </p>
+  <p id="recurse-scout">
   <script async defer src="https://www.recurse-scout.com/loader.js?t=40533398b8c93bb4f3323a170e032e91"></script>
   </p>
 </div>
@@ -198,10 +286,13 @@ cat <<EOF
   <header>
     <div class="stack">
       <div class="title">${title}</div>
-      <div class="cluster post-meta"><span>&uarr; <a href="#site-header" rel="bookmark">menu</a></span>
-        $(if [[ ${include_toc} == "yes" ]]
-          then printf "%s" "<span>&darr; <a href=\"#blog-post-toc\" rel=\"bookmark\">toc</a></span>"
-          fi)</div>
+      <div class="cluster post-meta">
+           <span>&uarr; <a href="#site-header" rel="bookmark">menu</a></span>
+           <span>&darr; <a href="#blog-post-footer" rel="bookmark">discuss</a></span>
+           $(if [[ ${include_toc} == "yes" ]]
+                then printf "%s" "<span>&darr; <a href=\"#blog-post-toc\" rel=\"bookmark\">toc</a></span>"
+             fi)
+      </div>
       <div class="summary">${summary}</div>
       <div class="cluster post-meta">
         <span class="author">By: ${author}</span>
@@ -224,10 +315,11 @@ cat <<EOF
           cat -
         fi)
   </section>
-  <footer class="footer">
+  <footer id="blog-post-footer" class="footer">
     <nav class="cluster">
       <span>&uarr; <a href="#blog-post" rel="bookmark">title</a></span>
       <span>&uarr; <a href="#site-header" rel="bookmark">menu</a></span>
+      <span>&rarr; <a href="mailto:weblog@evalapply.org">email comments</a></span>
     </nav>
   </footer>
 </article>
@@ -283,7 +375,7 @@ shite_template_indices_posts_list() {
     <div class="cluster">
     $(for tag in ${tags}
       do printf "%s\n" \
-           "<a href=\"${base_url}/tags/${tag}/index.html#main\"
+           "<a href=\"${shite_global_data[base_url]}/tags/${tag}/index.html#main\"
                class=\"post-index-item:tag\">#${tag}</a>"
       done)
     </div>

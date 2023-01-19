@@ -140,6 +140,9 @@ __shite_templating_wrap_content_html() {
             shite_template_posts_article
             ;;
         rootindex )
+            cat -
+            ;;
+        blogindex )
             shite_template_indices_append_tags_posts ${posts_meta_file}
             ;;
         * )
@@ -151,7 +154,17 @@ __shite_templating_wrap_content_html() {
 __shite_templating_wrap_page_html() {
     # Given well-formed body HTML content, punch it into the appropriate
     # page template, to emit a complete, well-formed page.
-    shite_template_common_default_page
+
+    local content_type=${1:?"Fail. We expect content type."}
+
+    case ${content_type} in
+        rootindex )
+            shite_template_home_page
+            ;;
+        * )
+            shite_template_common_default_page
+            ;;
+    esac
 }
 
 # ####################################################################
@@ -204,7 +217,8 @@ shite_templating_publish_sources() {
                     # <p>Page moved! Redirecting you in 5s. Hurried? Click here.</p>
                     ;;
                 *:html:blog|*:org:blog|*:md:blog ) ;&
-                *:org:rootindex )
+                *:html:generic|*:org:generic|*:md:generic ) ;&
+                *:org:rootindex|*:org:blogindex )
                     # Handy trick to modify templates, without having to restart
                     # our process each time we change template functions.
                     if [[ ${SHITE_DEBUG_TEMPLATES} == "debug" ]]
@@ -219,12 +233,12 @@ shite_templating_publish_sources() {
                     cat "${watch_dir}/sources/${url_slug}" |
                         __shite_templating_compile_source_to_html ${file_type} |
                         __shite_templating_wrap_content_html ${content_type} ${watch_dir} |
-                        __shite_templating_wrap_page_html \
+                        __shite_templating_wrap_page_html ${content_type} \
                             > "${watch_dir}/public/${html_url_slug}"
 
-                    # We want rootindex page updates to also mean "please hot-build
+                    # We want blogindex page updates to also mean "please hot-build
                     # other site-wide stuff like tags indices, RSS feed etc."
-                    if [[ "${file_type}:${content_type}" == "org:rootindex" ]]
+                    if [[ "${file_type}:${content_type}" == "org:blogindex" ]]
                     then local posts_meta_file="${watch_dir}/posts_meta.csv"
 
                          # PER TAG index pages of posts, from tab-separated records
@@ -238,13 +252,13 @@ shite_templating_publish_sources() {
 
                                 shite_template_indices_tag_page_index \
                                     ${tag_name} ${posts_meta_file} |
-                                    __shite_templating_wrap_page_html \
+                                    __shite_templating_wrap_page_html ${content_type} \
                                         > "${tag_dir}/index.html"
                              done
 
                          # ALL TAGS root index page of posts
                          shite_template_indices_tags_root_index ${posts_meta_file} |
-                             __shite_templating_wrap_page_html \
+                             __shite_templating_wrap_page_html ${content_type} \
                                  > "${watch_dir}/public/tags/index.html"
 
                          # FEEDs and SITEMAP etc.
