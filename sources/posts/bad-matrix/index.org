@@ -1,0 +1,138 @@
+# SHITE_META
+#+title: Bad Matrix
+#+summary: A while ago, someone in the Recurse Center nerdiverse decided we needed a "Bad Print". They made one. Things escalated. Bad Matrix happened.
+#+author: Adi
+#+date: 2022-02-14
+#+tags: riff bash
+#+include_toc: yes
+# SHITE_META
+
+#+html: <video controls>
+#+html: <source src="bad_matrix_demo.webm">
+#+html: </video>
+It would never have seen light of day, but fate intervened. The overlords at
+/NebCorp Heavy Industries and Sundries/ recently chose to emblogginate and
+[[https://proclamations.nebcorp-hias.com/sundries/shit-code-and-performance-art/#bad-print-a-silly-program][resurrect the long-dead Bad Print thread]] (pun intended).
+* Prologue
+Back then, thoughts originally appeared encoded in Haskell, prompting the dear
+reader this way...
+
+#+begin_quote
+you probably didn't know that you needed a bad print function, one that spawns a
+thread for each character in your string and prints the single character before
+quitting... well, now that you know that you needed this, i've written one for you
+
+#+begin_src shell
+$ cat <<EOF >bad-print.hs
+> import qualified Control.Concurrent.Async as A
+> import qualified System.Environment as E
+>
+> main = head <$> E.getArgs >>= A.mapConcurrently putChar
+> EOF
+$ ghc -threaded -rtsopts -with-rtsopts=-N bad-print.hs
+[1 of 1] Compiling Main             ( bad-print.hs, bad-print.o )
+Linking bad-print ...
+
+$ ./bad-print 'hello there, world'
+h telloehre, world
+$ ./bad-print 'oops, i think you meant *hello there, world*'
+oops, i tihnk you meant *hello there ,owrld*
+$ ./bad-print "that's more like it"
+st at'hmore likei t
+#+end_src
+
+i wonder what bad print looks like in your language of choice?
+#+end_quote
+
+... and the original thread begat replies in Rayon, Ruby, Bash, C (repeatedly).
+
+People rapidly converged to ~Thread Per Character~ as the one true performance
+metric for /bad print/. A Bash version claiming to provide /bad print/ for all
+Unixen fetched the indignation of a resident ~ksh~ user, who filed a defect report
+that not every Unix comes with Bash installed by default.
+
+They are, of course, all correct in their own ways.
+
+Yours truly contributed their very forgettable version of /bad print/. Which is
+why it does not feature here. /However/ for equally forgettable reasons --- a large
+volume of coffee may have been involved --- in a fit of wild fancy, that guy flew
+off on a completely uncalled for tangent and brought forth /Bad Matrix/. And this
+guy is not one to shy away from nerdsniping you into code riffing your own bad
+whatever.
+
+So here it is --- /Bad Matrix/ as a function --- copied below in its entirety to
+enjoy safely in your own home, in your own jammies, in your own terminal emulator.
+* Bad Matrix
+#+begin_src bash
+  bad_matrix() {
+      local cols=$(tput cols)
+      local rows=$(tput lines)
+
+      __parse_chars() {
+          LANG="en_US.UTF-8" sed -e 's/\(.\)/\1\n/g' &
+      }
+
+      __maybe_dim() {
+          if [[ $(( ${RANDOM} % 3 )) == 0 ]]
+          then tput dim
+          else tput sgr0
+          fi
+      }
+
+      __colour_me_matrix() {
+          __maybe_dim
+          tput setaf 2
+      }
+
+      __maybe_goto_Y() {
+          local y_pos=$(( ${RANDOM} % ${rows} ))
+          if [[ $(( ${RANDOM} % 2 )) == 0 ]]
+          then tput cup ${y_pos} 0
+          fi
+      }
+
+      __print_chars_slowly() {
+          while read char;
+          do printf "%q" "$char" | sed -e "s/''/ /g" &
+          done
+      }
+
+      __inject_matrix() {
+          local __hundred_common_kanji_apparently="日 一 大 年 中 会 人 本 月 長 国 出 上 十 生 子 分 東 三 行 同 今 高 金 時 手 見 市 力 米 自 前 円 合 立 内 二 事 社 者 地 京 間 田 体 学 下 目 五 後 新 明 方 部 .女 八 心 四 民 対 主 正 代 言 九 小 思 七 山 実 入 回 場 野 開 万 全 定 家 北 六 問 話 文 動 度 県 水 安 氏 和 政 保 表 道 相 意 発 不 党"
+          local __rand_chars=$(( 1 + ${RANDOM} % ${cols} ))
+
+          if [[ $(( ${RANDOM} % 3 )) == 0 ]]
+          then tput el
+          else __maybe_goto_Y
+               __colour_me_matrix
+
+               read -n ${__rand_chars} __character_fragment <<<${__hundred_common_kanji_apparently}
+
+               for c in ${__character_fragment}
+               do sleep 0.05
+                  printf "%s " "${c}" > /dev/tty &
+               done
+          fi
+      }
+
+      __print_line_fragment() {
+          local __rand_chars=$(( 1 + ${RANDOM} % ${cols} ))
+          while read -n ${__rand_chars} line ;
+          do sleep 0.5
+             __maybe_goto_Y
+             __inject_matrix
+             tput dim
+             printf "%s\n" "$( __parse_chars <<<"${line}" | __print_chars_slowly )" &
+          done
+      }
+
+      cat /dev/urandom  | __print_line_fragment
+  }
+#+end_src
+* Epilogue
+The resurrected thread caused a fellow Recurser to emit a ~bad_cat~ in Rust. I'm
+not sure of this choice of tool. Being a famously memory safe language, I worry
+they will be unable to write a truly bad bad cat. But I could be wrong. Interested
+parties may [[https://github.com/MikkelPaulson/badcat/issues][peruse of their issues]] on Github.
+
+/Fin./

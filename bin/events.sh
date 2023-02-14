@@ -31,7 +31,7 @@ __shite_events_detect_changes() {
                 ${watch_dir} |
         # INCLUDE FILES
         # The 'include' filter of inotifywait V3.2+ will obviate this grep
-        stdbuf -oL grep -E -e "(org|md|json|html|css|js|jpg|jpeg|png|svg|pdf)$"
+        stdbuf -oL grep -E -e "(org|md|json|html|css|js|jpg|jpeg|png|svg|pdf|webm)$"
 }
 
 __shite_events_gen_csv() {
