@@ -1,0 +1,184 @@
+# SHITE_META
+#+title: Cold restart whole system after total outage
+#+summary: "What are folks’ views on systems so large where cold-starting the whole system is almost impossible?"... — M'colleague In A Slackroom Next Door.
+#+author: Adi
+#+date: 2023-04-07
+#+updated: 2023-04-07
+#+tags: riff systems complexity meta
+#+include_toc: no
+# SHITE_META
+
+#+begin_quote
+... When all your systems go down because data center blew up or something else
+happened which caused all the fancy microservices, IAM, etc etc are dead.
+
+... I got interested in this (sic) disaster recovery methods when Elon Musk
+started laying off the bird app’s employees and everyone was saying twitter will
+go down and it will be almost impossible to cold start it."
+
+--- M'colleague spake further
+#+end_quote
+
+Nerdsnipe!
+
+And so /of course/ one ends up riffing off a blog-length wall of text. Which you
+can read, right here...
+
+---
+
+Well... a former boss told me this story about his time at a giant US telco,
+back in the mid/late 1990s.
+
+People up-high initiated some major org restructure. In the course of
+housekeeping, he / his team found an absolutely giant shell script (10K LoC types, IIRC).
+
+It was called DISASTER. Yes, in all caps.
+
+There was no documentation, obviously. So they asked around and found nobody knew
+anything inside the org. And then some old timer said to contact "Bill", a
+retired old timer to ask if he knew anything. The moment "Bill" heard that
+someone was planning to trash the script he yelled "Don't do that!!!".
+
+It turned out that the script was the only thing that knew how to bootstrap the
+Telco's entire system from scratch in the event of a total continent-wide
+disaster/outage. Right from finding switches and network equipment/hardware to
+recover/restart, in what sequence etc.
+
+The script was authored sometime in the 1980s.
+
+---
+
+#+begin_quote
+What are folks’ views on systems so large where cold-starting the whole system
+is almost impossible?
+#+end_quote
+
+I'd be surprised if there existed a system where cold-starting it is /impossible/.
+
+I'd agree it would be impossible to restore it to its former shape and state.
+
+Evolution, for example, has shown itself to be surprisingly resilient, having
+come back from near-zero not just once, but several times.
+
+It's a very interesting line of questioning.
+
+Consider what would it take to reboot civilization as we know it? It /is/ a
+system, make no mistake.
+
+One insight that bowls me over is, we would need to recover the ability to make
+precision screws (as in precision threading).
+
+So much of the modern world depends on our mastery over materials (to make a
+precision screw, you need a precision-machined harder material---diamond /
+titanium---to work on a softer material---steel), and our ability to turn rotary
+motion to linear motion (it's stupidly difficult to reliably precision-machine a
+harder material without even more precise linear + rotary motion---lathe/CNC
+machine). Hence, a bootstrap problem.
+
+In fact, I'd recommend looking /way/ outside software to see how people think
+about recovering from catastrophic losses / shutdowns. Electric grid systems,
+supply chains, political succession, military planning, medicine and so forth.
+
+One of the common lessons is to compartmentalise, so that at least something can
+be restored. Another is to have some sort of self-diagnosis going on so that one
+can do something at least while the whole thing is going down. A third is to have
+a seed of a backup---memory and know-how---from which to restore the atomic parts
+of the thing.
+
+None of this works if there is no disaster plan, btw. Even though nothing will
+go as planned, it's important to have the memory and expertise that did the
+planning, becuase that's what's going to be able to think through the as-yet-
+unknown-unknowns, when the inevitable FUBAR situation suddenly happens later.
+
+Apropos long-range planet-scale disaster planning + execution, H.E.B.'s story is
+one of the more interesting stories I came across:
+
+#+begin_quote
+[[https://www.texasmonthly.com/food/heb-prepared-coronavirus-pandemic/][Inside the Story of How H-E-B Planned for the Pandemic]]
+
+The grocer started communicating with its Chinese counterparts in January and
+was running tabletop simulations a few weeks later. (But nothing prepared it for
+the rush on toilet paper.)
+
+--- By Dan Solomon and Paula Forbes, March 26, 2020, Texas Monthly
+#+end_quote
+
+---
+
+Another colleague in the chat remarked up-thread (apropos cold reboot thinking):
+
+#+begin_quote
+I have seen this at <Indian eCommerce Giant> and at <a FAANG>.
+Most of it is related to cached data. Cold starts with empty caches causes too
+much load on databases. And then the failures cascade.
+
+--- Another M'colleague in the Slackroom.
+#+end_quote
+
+Not at all ironically, I've seen this at home. Thanks to the Indian Navy
+background, we keep semi-annually-revised "death files" at home. A very
+practical, not at all morbid (despite the name), response to the uncertainty of
+the human organism's uptime.
+
+On the occurrence of the inevitable, one can't restore the family system to it's
+former state, but one can restore a lot of mechanical functionality.
+
+The same thinking applies --- backups/nominations, succession planning and
+transfers of ownership and control, post-hoc admin action items etc.
+
+---
+
+#+begin_quote
+What are folks’ views on systems so large where cold-starting the whole system
+is almost impossible?
+#+end_quote
+
+Suffice to say, I think of it as systems so /complex/ where cold-starting is
+highly improbable, and restoring to former state is impossible (because, entropy).
+
+Ask a heart surgeon trying to save a person's life. They literally cold-reboot people!
+
+I can be convinced to argue that---barring a few exceptions, like the Internet
+and the WWW---the software systems we create are /tame/ complexity-wise, compared
+to organic / social systems.
+
+In abstract terms, many Google-likes and Apple-likes and Amazon-likes are
+possible. i.e. if you hard-stopped one of those, odds are you can re-create
+things that behave like those. You are guaranteed to never get back exactly
+Google, or Apple, or Aamzon. But you can ground-up create verisimilar entities.
+They've happened, in fact (Yahoo, Nokia, Baidu, Yandex, Alibaba, Samsung,
+etc.).
+
+The Internet/WWW is orders of magnitude harder to recreate. But maybe also
+orders of magnitude harder to prevent permanently...
+
+To prevent the Internet from happening---the entire computer industry for that
+matter---we'd have to go back very far in history and punch people in the face
+just before they got excellent insights. Like electromagnetism, fourier
+transforms, quantum mechanics, and so forth---and that's just the electrical
+engineering parts.
+
+And it still wouldn't guarantee the prevention of some kind of planet-scale
+Inter-networked communication system. (Due to the fallacy of the "Great man"
+hypothesis.)
+
+Tying electrical + quantum mechanical engineering back up-thread to the point
+about precision screws, and rotory control, hard drives present themselves as an
+interesting case study...
+
+#+begin_quote
+[[https://hackaday.com/2020/09/23/hard-disk-drives-have-made-precision-engineering-commonplace/][Hard Disk Drives Have Made Precision Engineering Commonplace]]
+
+Modern-day hard disk drives (HDDs) hold the interesting juxtaposition of being
+simultaneously the pinnacle of mass-produced, high-precision mechanical
+engineering, as well as the most scorned storage…
+#+end_quote
+
+And at this point I realised...
+
+#+begin_quote
+Hey, I just wrote a blog post :p :)
+#+end_quote
+
+and stopped the wall-of-texting. /But/ you and I can keep riffing, if you like
+long-running email conversations...
