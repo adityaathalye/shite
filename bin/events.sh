@@ -18,20 +18,18 @@ __shite_events_detect_changes() {
     # Downstream, we massage this CSV into shite's canonical CSV record.
     local watch_dir="$(realpath -e ${1:-$(pwd)})"
     local watch_events=${2}
-
-    local inotifywait_cmd=$(if [[ ${SHITE_HOTRELOAD} == "yes" ]]
-                            then printf "%s" 'inotifywait -m'
-                            else printf "%s" 'inotifywait -m --timeout 10'
-                            fi)
+    local indefinite=0 # seconds
+    local one_time=10 #seconds
+    local seconds=$([[ ${SHITE_HOTRELOAD} == "yes" ]] && printf ${indefinite} || printf ${one_time})
     # WATCH A DIRECTORY
-    ${inotifywait_cmd} -r --exclude '/\.git/|/\.#|/#|.*(swp|swx|\~)$' \
+    inotifywait -m --timeout ${seconds} -r --exclude '/\.git/|/\.#|/#|.*(swp|swx|\~)$' \
                 --timefmt "%s" \
                 --format '%T,%:e,%w,%f' \
                 $([[ -n ${watch_events} ]] && printf "%s %s" "-e" ${watch_events})  \
                 ${watch_dir} |
         # INCLUDE FILES
-        # The 'include' filter of inotifywait V3.2+ will obviate this grep
-        stdbuf -oL grep -E -e "(org|md|json|html|css|js|jpg|jpeg|png|svg|pdf|webm)$"
+        # Alas, inotifywait prohibits use of --exclude _and_ --include filters together.
+        stdbuf -oL grep -E -e "(org|md|json|csv|html|css|js|jpg|jpeg|png|svg|pdf|webm)$"
 }
 
 __shite_events_gen_csv() {
