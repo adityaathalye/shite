@@ -21,7 +21,8 @@ of abstraction-concretion, of idealism-pragmatism.
 
 My interests include [[./tags/systems/index.html#main][#systems]] thinking,
 understanding and taming [[./tags/complexity/index.html#main][#complexity]],
-software [[./tags/architecture/index.html#main][#architecture]], [[./tags/functional/index.html#main][#functional]] programming,
+software [[./tags/architecture/index.html#main][#architecture]],
+[[./tags/functional_programming/index.html#main][#functional​_​programming]],
 and my favourite programming language, [[./tags/clojure/index.html#main][#clojure]].
 
 Keenly aware that I stand on the shoulders of giants, I'm here to pay it forward...
