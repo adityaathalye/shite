@@ -161,8 +161,11 @@ __shite_templating_wrap_page_html() {
         rootindex )
             shite_template_home_page
             ;;
-        * )
+        blog|blogindex )
             shite_template_common_default_page
+            ;;
+        * )
+            cat -
             ;;
     esac
 }
