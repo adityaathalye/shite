@@ -69,20 +69,20 @@ __shite_templating_get_page_front_matter() {
             # cf. https://orgmode.org/guide/Comment-Lines.html
             sed -n -E \
                 -e '/^\#\s+shite_meta/I,/^\#\s+shite_meta/I{/\#\s+shite_meta.*/Id; s/^\#\+(\w+)\:\s+(.*)/\L\1\E,\2/Ip}'
-        ;;
+            ;;
         md )
             # Multiline processing of Jekyll-style YAML front matter, boxed
             # between `---` separators.
             sed -n -E \
                 -e '/^\-{3,}/,/^\-{3,}/{/^\-{3,}.*/d; s/^(\w+)\:\s+(.*)/\L\1\E,\2/Ip}'
-        ;;
+            ;;
         html )
             # Use HTML meta tags and parse them, according to this convention:
             #    <meta name="KEY" content="VALUE">
             # cf. https://developer.mozilla.org/en-US/docs/Learn/HTML/Introduction_to_HTML/The_head_metadata_in_HTML
             sed -n -E \
                 -e 's;^\s?<meta\s+name="?(\w+)"?\s+content="(.*)">;\L\1\E,\2;Ip'
-        ;;
+            ;;
     esac
 }
 
@@ -116,7 +116,7 @@ __shite_templating_compile_source_to_html() {
 
     case ${file_type} in
         html )
-            pandoc -f html -t html
+            cat -
             ;;
         md )
             pandoc -f markdown -t html
