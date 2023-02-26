@@ -43,6 +43,11 @@ shite_template_common_default_page() {
         </main>
         $(shite_template_common_footer)
     </div>
+    <!-- Cloudflare Web Analytics -->
+    <script defer src='https://static.cloudflareinsights.com/beacon.min.js'
+            data-cf-beacon='{"token": "2a55df7e78f941c29a35207cedd0f66c"}'>
+    </script>
+    <!-- End Cloudflare Web Analytics -->
   </body>
 </html>
 EOF
@@ -76,6 +81,11 @@ shite_template_home_page() {
       </div>
       $(shite_template_common_footer)
     </div>
+    <!-- Cloudflare Web Analytics -->
+    <script defer src='https://static.cloudflareinsights.com/beacon.min.js'
+            data-cf-beacon='{"token": "2a55df7e78f941c29a35207cedd0f66c"}'>
+    </script>
+    <!-- End Cloudflare Web Analytics -->
   </body>
 </html>
 EOF
