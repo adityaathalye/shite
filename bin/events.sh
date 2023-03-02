@@ -29,7 +29,7 @@ __shite_events_detect_changes() {
                 ${watch_dir} |
         # INCLUDE FILES
         # Alas, inotifywait prohibits use of --exclude _and_ --include filters together.
-        stdbuf -oL grep -E -e "(org|md|json|csv|html|css|js|jpg|jpeg|png|svg|pdf|webm)$"
+        stdbuf -oL grep -E -e "(org|md|json|csv|html|css|js|jpg|jpeg|png|svg|ico|pdf|webm)$"
 }
 
 __shite_events_gen_csv() {

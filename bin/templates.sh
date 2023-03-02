@@ -154,6 +154,7 @@ shite_template_common_links() {
       rel="alternate" type="application/rss+xml"
       title="${shite_global_data[title]}">
 <link rel="canonical" href="${canonical_url}">
+<link rel="icon" type="image/vnd.microsoft.icon" href="${shite_global_data[base_url]}/${shite_global_data[favicon]}">
 EOF
 }
 
