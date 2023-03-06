@@ -196,6 +196,7 @@ a[href]:not(:where(
               [href*="//localhost"],
               [href*="//adityaathalye.github.io/shite-demo"],
               [href*="//evalapply.org"],
+              [href*="//www.evalapply.org"],
             ))::after  {
   content: " \2924";
   font-size: var(--scale-s);
