@@ -264,8 +264,8 @@
    The only real hedge we have is the creativity and intelligence of our people.
 * 1,000 words in 1 picture: xkcd summarizes it best.
   #+attr_html: :alt Someday ImageMagick will finally break for good and we'll have a long period of scrambling as we try to reassemble civilization from the rubble.
-  https://imgs.xkcd.com/comics/dependency.png
-  [[https://xkcd.com/2347][XKCD: Dependency]]
+  #+caption: [[https://xkcd.com/2347][XKCD: Dependency]]
+  [[https://imgs.xkcd.com/comics/dependency.png]]
 * Stories of Debt and Destruction
   - [[https://github.com/danluu/post-mortems][A list of Post-mortems]] curated by Dan Luu, Nat Welch and others.
   - A list of /"Events that have the dark debt signature",/ in the aforementioned

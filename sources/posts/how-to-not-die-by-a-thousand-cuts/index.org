@@ -1,6 +1,6 @@
 # SHITE_META
 #+title: How To Not Die By A Thousand Cuts. Or, How To Think About Software Quality.
-#+summary: Not a weighty meandering 300 page Zen dialogue on Motorcycle Maintenance. Merely a meandering blog post in which one contemplates <em>Quality</em> of software products.
+#+summary: Not a weighty meandering 300 page Zen dialogue on Motorcycle Maintenance. Merely a meandering blog post in which one contemplates /Quality/ of software products.
 #+author: Adi
 #+date: 2022-01-20
 #+tags: quality risk systems
