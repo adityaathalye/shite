@@ -123,7 +123,7 @@ and Example. Please join the noodling-over and ambling-off into tangents.
   and I had to choose between these opposite archetypes, I'd rather lose my
   mind working for a Slartibartfast. And if you find yourself under a Vogon...
 
-  Do Panic.
+  /Do/ Panic.
 * Model: A picture is worth a 1,000 % points
   /Scale/ is where it's at, these days. It so obviously /right/ to /want/ to
   /scale/ all the things all the time.
@@ -153,15 +153,14 @@ and Example. Please join the noodling-over and ambling-off into tangents.
   Fortunately, people have an intuitive feel for the aggregate effect of their
   scaling efforts.
 
-  This "effective scaling effect", for lack of better words, is measurable in
-  gut-feels, and I bet, also as hard numbers in terms of *net resources expended*
-  *to convert net inputs into net outputs*. Such a /lens of net effect/ would
-  abstract over systems thinking mechanics of flows, feedback loops, buffers,
-  controls, and relationships.
+  While said effect invokes gut-feels, I bet it could also be described in hard
+  numbers, framed as *net resources expended to convert net inputs into net
+  outputs*. An abstract view that would complement more detailed / subtle
+  systems thinking insights (which get framed as flow, feedback loops, buffers,
+  controls, relationships).
 
-  The following picture is not meant to capture system dynamics, but to think
-  about net effects of system dynamics... a sort of contrast material to compare
-  one's current trajectory.
+  The picture below is offered as one such "contrast material". Compare your
+  current growth trajectory / pattern with it.
 
   #+begin_src text
         NET INPUTS               NET RESOURCES CONSUMED   NET OUTPUTS
@@ -271,11 +270,14 @@ DEATH   | /--                  | |.. .                  | | /--                 
   Resist the slippery slope to the hell of pathological bureaucracies. Strive
   to be a Slartibartfast. A creative, generative leader.
 
-  /"Power over rules is real power."/
+  #+begin_quote
+  "Power over rules is real power."
 
-  /"If you want to understand the deepest malfunctions of systems, pay attention
-  to the rules and to who has power over them."/ - Donella Meadows, Thinking in
-  Systems.
+  "If you want to understand the deepest malfunctions of systems, pay attention
+  to the rules and to who has power over them."
+
+  --- Donella Meadows, Thinking in Systems.
+  #+end_quote
 
   We are all monkeys, remember? You may be the top dog, but I bet you watch your
   authority figures. Just as your people watch you. What are you absorbing?
@@ -295,6 +297,8 @@ DEATH   | /--                  | |.. .                  | | /--                 
   - John Allspaw: [[https://www.youtube.com/watch?v=xA5U85LSk0M&t=0s][How Your Systems Keep Running Day After Day]]
 
   *Perspective.* Or, 80 IQ points.
+  - Jo Freeman:
+    - [[https://www.jofreeman.com/joreen/tyranny.htm][The tyranny of structurelessness]]
   - Joe Armstrong:
     - [[https://www.youtube.com/watch?v=ed7A7r6DBsM][The How and Why of Fitting Things Together]], and
     - [[https://www.youtube.com/watch?v=lKXe3HUG2l4][The Mess We're In]]
@@ -303,6 +307,8 @@ DEATH   | /--                  | |.. .                  | | /--                 
     - [[https://www.youtube.com/watch?v=oKg1hTOQXoY][The Computer Revolution hasn't happened yet]]
 
   *Zeitgeist.*: Or, stories from now.
+  - apenwarr:
+    - [[https://apenwarr.ca/log/20201227][Systems design explains the world: volume 1]]
   - Dan Luu:
     - [[https://danluu.com/people-matter/][Individuals Matter]]
     - [[https://danluu.com/culture/][Culture Matters]]
@@ -317,4 +323,7 @@ DEATH   | /--                  | |.. .                  | | /--                 
   - [[https://en.wikipedia.org/wiki/A_Bit_of_Fry_%26_Laurie][A Bit of Fry and Laurie]]
   - [[https://en.wikipedia.org/wiki/The_Great_Dictator][The Great Dictator]]
 * Acknowledgments
-  Thanks to Julia and Radhika for writing feedback.
+  Thanks to Julia and Radhika for writing feedback. Thanks to /apenwarr/
+  for writing their insightful post on Systems design (linked above),
+  which reminded me of Jo Freeman's essay, which I was remiss to include
+  in the original publication.
