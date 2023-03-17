@@ -3,6 +3,7 @@
 #+summary: In which we ponder the Functional Nature of Life, The Universe, and Everything. Please feel free to follow through the weeds, or jump straight to the bottom for my 2 nano BTC on the matter. (Or my current state of mind, at any rate.)
 #+author: Adi
 #+date: 2022-02-22
+#+updated: 2022-02-22
 #+tags: meta functional_programming architecture systems
 #+include_toc: yes
 # SHITE_META

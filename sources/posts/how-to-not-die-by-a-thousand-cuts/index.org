@@ -3,6 +3,7 @@
 #+summary: Not a weighty meandering 300 page Zen dialogue on Motorcycle Maintenance. Merely a meandering blog post in which one contemplates /Quality/ of software products.
 #+author: Adi
 #+date: 2022-01-20
+#+updated: 2023-03-10
 #+tags: quality risk systems
 #+include_toc: yes
 # SHITE_META

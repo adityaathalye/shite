@@ -288,10 +288,8 @@ local title=${shite_page_data[title]:?"Fail. We expect title of the post."}
 local summary=${shite_page_data[summary]:?"Fail. We expect a summary. Always summarise."}
 local author=${shite_page_data[author]:?"Fail. We expect author."}
 local tags=${shite_page_data[tags]:?"Fail. We expect at least one tag."}
-local first_published=${shite_page_data[date]:?"Fail. We expect date like ${latest_published} (current date)."}
-local republish=${shite_page_data[republish]:-"no"}
-local now_date="$(date -Idate)"
-local latest_published=$(if [[ ${republish} == "yes" && ${now_date} > ${first_published} ]]; then printf "${now_date}"; else printf "${first_published}"; fi)
+local first_published=${shite_page_data[date]:?"Fail. We expect date like $(date -Idate)."}
+local latest_published=${shite_page_data[updated]:?"Fail. We expect date like $(date -Idate)."}
 local include_toc=${shite_page_data[include_toc]:-"no"}
 
 cat <<EOF

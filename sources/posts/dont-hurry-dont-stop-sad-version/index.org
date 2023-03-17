@@ -3,6 +3,7 @@
 #+summary: Here lies melancholy that I put to paper from a particularly deep hole, not too long ago. It may ruin your day, or it may make you feel a little bit understood about your dark moments. Your mileage will vary.
 #+author: Adi
 #+date: 2022-02-14
+#+updated: 2022-02-14
 #+tags: meta mentalhealth
 #+include_toc: no
 # SHITE_META

@@ -3,6 +3,7 @@
 #+summary: FizzBuzz is everywhere. Every programmer passes through its rite of passage, or at least bears witness to another. Over the years, many gentlenerds have taken it upon themselves to discover ever new ways to incant those hoary symbols. I hereby enjoin these few drops of Clojure to that roiling ocean of FizzBuzzery.
 #+author: Adi
 #+date: 2022-03-25
+#+updated: 2022-03-25
 #+tags: clojure functional_programming howto riff
 #+include_toc: yes
 # SHITE_META

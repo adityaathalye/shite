@@ -3,6 +3,7 @@
 #+summary: Newcomers to Clojure so frequently ask this question that an FAQ/Guide is being discussed, to add to the Clojure website. I struggled a lot with the question too, when starting off in Clojureland. Here are my notes and opinions.
 #+author: Adi
 #+date: 2022-04-29
+#+updated: 2022-04-29
 #+tags: clojure howto whyto
 #+include_toc: yes
 # SHITE_META

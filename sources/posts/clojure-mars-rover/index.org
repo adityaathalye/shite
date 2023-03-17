@@ -3,6 +3,7 @@
 #+summary: Here I illustrate how Clojurists (including Yours Truly) like to solve problems and model things using hammocks, pure functions, and the "it's just data" ideology. Also, while the *problem* focuses on "design in the small" of application logic, many ideas in the *solution* can—and do—scale all the way to "design in the large" of whole systems.
 #+author: Adi
 #+date: 2022-10-19
+#+updated: 2022-10-19
 #+tags: clojure functional_programming software_design architecture
 #+include_toc: yes
 # SHITE_META

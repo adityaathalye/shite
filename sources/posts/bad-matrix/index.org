@@ -3,6 +3,7 @@
 #+summary: A while ago, someone in the Recurse Center nerdiverse decided we needed a "Bad Print". They made one. Things escalated. Bad Matrix happened.
 #+author: Adi
 #+date: 2023-02-14
+#+updated: 2023-02-14
 #+tags: riff bash
 #+include_toc: yes
 # SHITE_META

@@ -3,6 +3,7 @@
 #+summary: Or, *Supremely Functional Bash Programming*, an exploration in N parts...
 #+author: Adi
 #+date: 2022-02-23
+#+updated: 2022-02-23
 #+tags: bash unix functional_programming architecture
 #+include_toc: yes
 # SHITE_META

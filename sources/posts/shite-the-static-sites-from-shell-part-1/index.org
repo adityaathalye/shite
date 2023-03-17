@@ -3,6 +3,7 @@
 #+summary: This primer is for people like me, who long dreamed of lovingly hand-crafting our own home on the Internet. We begin our quest by seeing, feeling, and harnessing pure HTML.energy.
 #+author: Adi
 #+date: 2022-03-08
+#+updated: 2022-03-08
 #+tags: design websites frontend bash howto whyto
 #+include_toc: yes
 # SHITE_META

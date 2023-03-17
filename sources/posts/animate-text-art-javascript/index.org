@@ -3,6 +3,7 @@
 #+summary: It is with no small thanks to MDN, StackOverflow, Firefox's support for countless open tabs, JavaScript's support for first-class functions, and first-class supportive colleagues, I learned it is possible for a web front end novice to program "text art animations". Whatever that is even. Because I thoroughly enjoyed doing just that for Hanukkah of Data 2022. Here's how it went down.
 #+author: Adi
 #+date: 2023-01-16
+#+updated: 2023-01-16
 #+tags: hanukkah_of_data text_art javascript functional_programming howto
 #+include_toc: yes
 # SHITE_META

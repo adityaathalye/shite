@@ -3,6 +3,7 @@
 #+summary: Every so often, I want to avoid opening a website in a browser, for ... reasons.
 #+author: Adi
 #+date: 2022-02-10
+#+updated: 2022-02-10
 #+tags: functional_programming bash unix riff
 #+include_toc: no
 # SHITE_META

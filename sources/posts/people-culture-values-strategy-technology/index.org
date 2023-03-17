@@ -3,6 +3,7 @@
 #+summary: Technology is—and ought to be—the /byproduct/ of far more important, powerful, and deep-rooted aspects of organisations — including wholesale societies. The pandemic of technology-solutionism gleefully embraced and amplified by all and sundry makes me believe that people seem to have decided it's the other way around.
 #+author: Adi
 #+date: 2022-02-11
+#+updated: 2022-02-11
 #+tags: organisation_design systems culture
 #+include_toc: no
 # SHITE_META

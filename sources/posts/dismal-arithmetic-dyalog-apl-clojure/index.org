@@ -3,6 +3,7 @@
 #+summary: Dismal arithmetic is just like the arithmetic you learned in school, only simpler: there are no carries, when you add digits you just take the largest, and when you multiply digits you take the smallest. How does code look in the two languages I like a lot; Clojure and APL?
 #+author: Adi
 #+date: 2022-02-25
+#+updated: 2022-02-25
 #+tags: clojure apl functional_programming riff
 #+include_toc: yes
 # SHITE_META

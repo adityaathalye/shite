@@ -3,6 +3,7 @@
 #+summary: Or, the one in which we hand-craft nano Unix tools using Bash functions.
 #+author: Adi
 #+date: 2022-04-27
+#+updated: 2022-04-27
 #+tags: bash unix functional_programming architecture
 #+include_toc: yes
 # SHITE_META

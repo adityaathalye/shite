@@ -3,6 +3,7 @@
 #+summary: Trying out a classification for "Tools for Thought" as a means of augmenting the human intellect, hot on the heels of recent community conversations about ChatGPT, CoPilot, Stable Diffusion etc...
 #+author: Adi
 #+date: 2023-01-19
+#+updated: 2023-01-19
 #+tags: meta riff intelligence_augmentation tools_for_thought
 #+include_toc: no
 # SHITE_META

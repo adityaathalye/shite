@@ -3,6 +3,7 @@
 #+summary: Or, the one in which we "take apart" Douglas McIlroy's pipeline from 1986. Doing so teaches an object lesson about the essence of modular, composable, functional architecture.
 #+author: Adi
 #+date: 2022-03-11
+#+updated: 2022-03-11
 #+tags: bash unix functional_programming architecture
 #+include_toc: yes
 # SHITE_META

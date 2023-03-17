@@ -3,6 +3,7 @@
 #+summary: I've long struggled with the *Technical* Debt metaphor. It was immediately useful when I first heard it. I still think it is useful, albeit as a starting point. The more I worked with software, the more infuriatingly incomplete it started to feel. So I've reframed it as *Software* Debt, for myself. Here's what I'm thinking.
 #+author: Adi
 #+date: 2022-01-20
+#+updated: 2023-03-10
 #+tags: risk complexity bias systems
 #+include_toc: yes
 # SHITE_META

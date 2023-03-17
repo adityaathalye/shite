@@ -3,6 +3,7 @@
 #+summary: Spurred by a conversation with a whip-smart friend and fellow gentlenerd, who unreasonably believed (believes?) they have nothing worth speaking about at the software conferences we like (IN/Clojure, FunctionalConf, local meetups etc).
 #+author: Adi
 #+date: 2022-02-03
+#+updated: 2022-02-03
 #+tags: meta writing speaking
 # SHITE_META
 
