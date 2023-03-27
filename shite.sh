@@ -37,7 +37,7 @@
     declare -A shite_global_data=(
         [title]="Eval / Apply is pure magic"
         [title_icon]="static/img/Lisp_logo.svg"
-        [title_icon_png]="static/img/Lisp_logo.png"
+        [title_icon_png]="static/img/Lisp_logo.svg"
         [favicon]="static/img/favicon.ico"
         [author]="Aditya Athalye"
         [description]="Evaling and Applying forever."
