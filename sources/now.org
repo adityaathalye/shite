@@ -1,0 +1,98 @@
+# SHITE_META
+#+title: Eval/Apply for fun and profit.
+#+summary: A now page inspired by sive.rs/now and nownownow.com
+#+author: Adi
+#+tags: now
+#+date: 2023-03-24
+# SHITE_META
+
+-----
+* What I am doing now
+
+Updated: March 2023
+
+#+begin_quote
+"This is [[https://nownownow.com/about][a now page]], and if you have your own site,
+[[https://nownownow.com/about][you should make one]], too."
+
+--- [[https://sive.rs/now][Derek Sivers]]
+#+end_quote
+
+
+
+*2023 is dedicated to total reinvention.*
+
+A dead past is being firewalled. Accumulated baggage is being tagged for
+eventual garbage collection. The mind's mechanics are being revised. The body is
+being repaired and upgraded. New experiences are being opted into. By learning
+to see with new eyes, a fresh vision of self, world, and life is appearing.
+
+Analogy: adopt "diffuse mode" mindset to reinvent, and "focus mode" mindset
+to then re-build.
+
+*2023 is professional reinvention number three*
+
+My 20s were full of MBA-type work including one failed attempt at a startup.
+My 30s became about software engineering. This fourth decade seems to have
+begun with yet another pivot; toward solo enterprise. Suit and hoodie are
+amalgamating.
+
+Objective: Test one's wits, skills, capabilities, knowledge in the exacting
+crucible of makin' and sellin' stuff.
+
+*2023 is year-long sabbatical number four*
+
+Sabbaticals, for me, have been times of hardcore reading, study, and hands-on
+application of new knowledge. Literally living eval/apply; I learn things and
+test myself by landing paid gigs for what I have learned.
+
+Insight: "How does your company let you take a year-plus long sabbatical?",
+asks the incredulous reader. To which I say, "Well, I've taken those /before/
+getting the next day job."
+
+You see, /two/ companies can give you a year-long sabbatical. Also, making
+these work is almost all about working on personal psychology, not so much
+about working toward a privileged material position.
+
+*Yes, and*
+
+A "Yes, and" improv-style approach is being applied to break into the present,
+and to also break out of the "no, but" style psychological ossification that
+is common experience, after having lived a bit, but not quite enough (but not
+too much either, which engenders a "like, whatever" style of psychological
+regression :).
+
+Experience: I am about a year into the "Yes, and" method of reinvention, and
+I am happy to recommend it to anyone who cares to listen.
+
+*Small is beautiful; the lifelong trend continues*
+
+Career-start was the first time I truly exerted my volitional muscles, and
+chose to work with/at small and medium enterprises and startups. That focus
+continued through the MBA decade, the tech decade, and seems to have brought
+me to the tip of the spear; the company of one (I should read that book!).
+
+Strategy: When re-inventing, known-good working threads need not be discarded.
+They may in fact be the strongest things going for oneself. So, this cycle is
+going to be about building a "[[https://en.wikipedia.org/wiki/Micro_ISV][Micro-ISV]]" business.
+
+*2021 and 2022*
+
+#+begin_quote
+"A rebirth requires a death."
+
+--- Yours truly
+#+end_quote
+
+'nuff said.
+
+*2020*
+
+This was to be /The/ Year Of Reinvention. Certain world events truncated it.
+/But/ it got off to a great start with a back-to-back consulting gig making
+a thing with Clojure, and organising IN/Clojure 2020, and a retreat at the
+[[https://recurse.com][Recurse Center]].
+
+*Pre-2020*
+
+Faded into the mists of time after being cleaved away by intervening events.

@@ -139,7 +139,7 @@ __shite_templating_wrap_content_html() {
         blog )
             shite_template_posts_article
             ;;
-        rootindex )
+        rootindex|rootpages )
             cat -
             ;;
         blogindex )
@@ -160,6 +160,9 @@ __shite_templating_wrap_page_html() {
     case ${content_type} in
         rootindex )
             shite_template_home_page
+            ;;
+        rootpages )
+            shite_template_common_default_page
             ;;
         blog|blogindex )
             shite_template_common_default_page
@@ -221,6 +224,7 @@ shite_templating_publish_sources() {
                     ;;
                 *:html:blog|*:org:blog|*:md:blog ) ;&
                 *:html:generic|*:org:generic|*:md:generic ) ;&
+                *:html:rootpages|*:org:rootpages|*:md:rootpages ) ;&
                 *:org:rootindex|*:org:blogindex )
                     # Handy trick to modify templates, without having to restart
                     # our process each time we change template functions.

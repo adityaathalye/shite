@@ -1,0 +1,43 @@
+# SHITE_META
+#+title: Eval/Apply for fun and profit.
+#+summary: Who or what is this?
+#+author: Adi
+#+tags: about_page
+#+date: 2023-03-24
+# SHITE_META
+
+-----
+* ♥ I /eval/apply/ for joy ♥
+
+To me, ~eval/apply~ is not just a deep concept in computing [fn:1].
+It is also deeply symbolic of the nondual yin/yang nature of thinking-doing,
+of abstraction-concretion, of idealism-pragmatism.
+
+- */Eval/*: Think culture over strategy, humans over technology,
+  systems over hacks, workflows over tools.
+- */Apply/*: Design by /subtraction/ [fn:2], engineer for simplicity,
+  produce output iteratively, ship continuously.
+
+My interests include [[./tags/systems/index.html#main][#systems]] thinking,
+understanding and taming [[./tags/complexity/index.html#main][#complexity]],
+software [[./tags/architecture/index.html#main][#architecture]],
+[[./tags/functional_programming/index.html#main][#functional​_​programming]],
+and my favourite programming language, [[./tags/clojure/index.html#main][#clojure]].
+
+Keenly aware that I stand on the shoulders of giants, I'm here to pay it forward...
+
+Among other things, [[./posts/index.html][I've been writing here]] in the spirit
+of thinking in public. Each year, I try to demo or teach at least one thing I've
+explored, at community-run tech conferences. I love to "learn generously" [fn:3]
+with friends, colleagues, and fellow gentlenerds (like you?).
+
+And—unless I missed a memo—none of it has to feel like reading dry prose on dusty
+wrinkled parchment, right? ... /Right?/
+
+[fn:1] LISP as Maxwell's Equations of Software: [[https://www.gnu.org/software/mes/manual/html_node/LISP-as-Maxwell_0027s-Equations-of-Software.html][GNU Mes manual]].
+
+[fn:2] /"It is not daily increase but daily decrease, hack away the unessential.
+The closer to the source, the less wastage there is."/ --- Bruce Lee
+
+[fn:3] /Learn generously/ is a "self-directive" coined by the gentlepeople
+at my favourite programmers' community, the [[https://recurse.com][Recurse Center]].

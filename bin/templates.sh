@@ -30,65 +30,58 @@
 #     pandoc -f markdown -t html |
 #     shite_template_common_default_page
 
-shite_template_common_default_page() {
+shite_template_standard_page_wrapper() {
     cat <<EOF
 <!DOCTYPE html>
 <html lang="en" prefix="og: https://ogp.me/ns#">
   $(shite_template_common_head)
   <body>
     <div id="the-very-top" class="stack center box">
-        $(shite_template_common_header)
-        <main id="main">
-          $(cat -)
-        </main>
-        $(shite_template_common_footer)
+      $(cat -)
+      $(shite_template_common_footer)
+      <!-- Cloudflare Web Analytics -->
+      <script defer src='https://static.cloudflareinsights.com/beacon.min.js'
+              data-cf-beacon='{"token": "2a55df7e78f941c29a35207cedd0f66c"}'>
+      </script>
+      <!-- End Cloudflare Web Analytics -->
     </div>
-    <!-- Cloudflare Web Analytics -->
-    <script defer src='https://static.cloudflareinsights.com/beacon.min.js'
-            data-cf-beacon='{"token": "2a55df7e78f941c29a35207cedd0f66c"}'>
-    </script>
-    <!-- End Cloudflare Web Analytics -->
   </body>
 </html>
 EOF
 }
 
+shite_template_common_default_page() {
+    cat <<EOF |
+  $(shite_template_common_header)
+  <main id="main">
+    $(cat -)
+  </main>
+EOF
+    shite_template_standard_page_wrapper
+}
 
 shite_template_home_page() {
-    cat <<EOF
-<!DOCTYPE html>
-<html lang="en" prefix="og: https://ogp.me/ns#">
-  $(shite_template_common_head)
-  <body id="homepage">
-    <div id="the-very-top" class="stack center box">
-      <div class="box invert with-sidebar-narrow">
-        $(shite_template_home_page_header)
-        <main id="main">
-          <div class="homepage:main">
-            <h1 class="title">
-              Hi, I'm ${shite_global_data[author]} and I
-              <em><a href="${shite_global_data[base_url]}/index.html#i-evalapply-for-joy">eval / apply</a></em> for joy...
-            </h1>
-            <img src="${shite_global_data[base_url]}/static/img/pages/index/mugshot.jpg"
-                 alt="I Eval/Apply for joy and for work">
-            <p class="figcaption">
-              <em>hand-waving</em> (n.) A scientifically proven way to
-              explain deep thoughts.
-            </p>
-          </div>
-          $(cat -)
-        </main>
-      </div>
-      $(shite_template_common_footer)
+    cat <<EOF |
+<div class="box invert with-sidebar-narrow">
+  $(shite_template_home_page_header)
+  <main id="main">
+    <div class="homepage:main">
+      <h1 class="title">
+        Hi, I'm ${shite_global_data[author]} and I
+        <em><a href="${shite_global_data[base_url]}/about.html#main">eval / apply</a></em> for joy...
+      </h1>
+      <img src="${shite_global_data[base_url]}/static/img/pages/index/mugshot.jpg"
+           alt="I Eval/Apply for joy and for work">
+      <p class="figcaption">
+        <em>hand-waving</em> (n.) A scientifically proven way to
+        explain deep thoughts.
+      </p>
     </div>
-    <!-- Cloudflare Web Analytics -->
-    <script defer src='https://static.cloudflareinsights.com/beacon.min.js'
-            data-cf-beacon='{"token": "2a55df7e78f941c29a35207cedd0f66c"}'>
-    </script>
-    <!-- End Cloudflare Web Analytics -->
-  </body>
-</html>
+    $(cat -)
+  </main>
+</div>
 EOF
+    shite_template_standard_page_wrapper
 }
 
 shite_template_home_page_header() {
@@ -191,16 +184,19 @@ shite_template_common_nav_items() {
     # </a>
     cat <<EOF
 <a href="${shite_global_data[base_url]}/index.html#main">
-   &lambda; about
+   &lambda; home
 </a>
 <a href="${shite_global_data[base_url]}/posts/index.html">
    &#9753; blog
 </a>
-<a href="mailto:hello@evalapply.org">
-   email
+<a href="${shite_global_data[base_url]}/about.html#main">
+   &fnof;() about
+</a>
+<a href="${shite_global_data[base_url]}/now.html#main">
+   &laquo;now&raquo;
 </a>
 <a href="#site-footer">
-   &rlhar; subscribe
+   &nbsp;&#x1f48c; contact
 </a>
 EOF
 }
@@ -208,45 +204,28 @@ EOF
 shite_template_common_footer() {
     cat <<EOF
 <footer id="site-footer">
-<hr>
-<div class="box invert footer stack">
-  <div class="cluster">
-    <span>&#128231; : <a href="mailto:hello@evalapply.org">hello@evalapply.org</a></span>
-    <a class="site-feed"
-       href="${shite_global_data[base_url]}/${shite_global_data[feed_xml]}">
-       Blog feed
-    </a>
-    <form class="cluster"
-          action="https://buttondown.email/api/emails/embed-subscribe/evalapply"
-          method="post" target="popupwindow"
-          onsubmit="window.open('https://buttondown.email/evalapply','popupwindow')">
-        <input type="email" name="email" id="bd-email">
-      <span>
-        <input type="submit" value="Get occasional newsletter">
-        <em>(thanks, <a href="https://buttondown.email" target="_blank">Buttondown</a>!)</em>
+  <hr>
+  <div class="box invert footer stack">
+    <p>&copy; copyright $(date +%Y),
+      <a href="http://adityaathalye.com" target="_blank">${shite_global_data[author]}</a>.
+      <span>All content licensed
+        <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
+          CC BY-SA 4.0
+        </a>, except where noted otherwise.
       </span>
-    </form>
-  </div>
-  <hr>
-  <p>&copy; copyright $(date +%Y), <a href="https://evalapply.org" target="_blank">${shite_global_data[author]}</a>.
-    <span>Except where otherwise noted, content on this site is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
-    Creative Commons Attribution-ShareAlike 4.0 International License
-    </a>, the same one used by Wikipedia.</span>
-<span><a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
-    <img alt="Creative Commons License" style="border-width:0"
-         src="https://i.creativecommons.org/l/by-sa/4.0/80x15.png">
-    </a></span>
-  </p>
-  <hr>
-  <p> Made with
+    </p>
+    <p>
+      Made with
       <a href="https://www.gnu.org/software/emacs/">GNU Emacs</a>,
       <a href="https://orgmode.org/">org-mode</a>, and
       <a href="https://github.com/adityaathalye/shite">shite</a>.
-  </p>
-  <p id="recurse-scout">
-  <script async defer src="https://www.recurse-scout.com/loader.js?t=40533398b8c93bb4f3323a170e032e91"></script>
-  </p>
-</div>
+    </p>
+    <p>
+      <div class="rc-scout">
+        <script async defer src="https://www.recurse-scout.com/loader.js?t=40533398b8c93bb4f3323a170e032e91"></script>
+      </div>
+    </p>
+  </div>
 </footer>
 EOF
 }
@@ -326,12 +305,27 @@ cat <<EOF
           cat -
         fi)
   </section>
-  <footer id="blog-post-footer" class="footer">
+  <footer id="blog-post-footer" class="footer stack">
     <nav class="cluster">
       <span>&uarr; <a href="#blog-post" rel="bookmark">title</a></span>
       <span>&uarr; <a href="#site-header" rel="bookmark">menu</a></span>
       <span>&rarr; <a href="mailto:weblog@evalapply.org">email comments</a></span>
+      <span><a class="site-feed"
+       href="${shite_global_data[base_url]}/${shite_global_data[feed_xml]}">
+       Blog feed</a></span>
     </nav>
+    <hr>
+    <form class="cluster"
+          action="https://buttondown.email/api/emails/embed-subscribe/evalapply"
+          method="post" target="popupwindow"
+          onsubmit="window.open('https://buttondown.email/evalapply','popupwindow')">
+      <span>Occasional newsletter</span>
+      <input type="email" name="email" id="bd-email">
+      <span>
+        <input type="submit" value="Get the eval/apply dispatch">
+        <em>(thanks, <a href="https://buttondown.email" target="_blank">Buttondown</a>!)</em>
+      </span>
+    </form>
   </footer>
 </article>
 EOF

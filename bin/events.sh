@@ -55,10 +55,12 @@ __shite_events_gen_csv() {
         -e "s;(.*),(${base_dir})\/(sources|public)\/(.*\/?),(.*);\1,\2,\3,\4\5;"  \
         -e "s;.*\.(.*)$;\0,\1;" \
         -e "s;.*,sources,index.org,.*;\0,rootindex;"\
+        -e '/,rootindex$/{p ; d}' \
+        -e "s;.*,sources,[-[:alnum:]_]?+\.(org|md|html),.*;\0,rootpages;"\
         -e "s;.*,sources,posts/index.org,.*;\0,blogindex;"\
         -e 's;.*,static\/.*;\0,static;' \
         -e 's;.*,posts\/[-[:alnum:]_]?+\/index\.(org|md|html),.*;\0,blog;' \
-        -e '/,static|blog|rootindex|blogindex|(^$)$/{p ; d}' \
+        -e '/,static|blog|rootindex|rootpages|blogindex|(^$)$/{p ; d}' \
         -e 's;.*;\0,generic;'
 }
 
