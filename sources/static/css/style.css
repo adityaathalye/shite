@@ -8,13 +8,13 @@
 /* --------------------------------------------------
 /* TYPEFACE DECLARATIONS
 * -------------------------------------------------- */
-@import url('https://fonts.googleapis.com/css2?family=Fira+Code&family=Gentium+Book+Plus:ital,wght@0,400;0,700;1,400&family=Oswald:wght@200&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code&family=Gentium+Book+Plus:ital,wght@0,400;0,700;1,400&family=PT+Sans+Narrow&display=swap');
 
 :root {
     /* --------------------------------------------------
      * MEASURE: Basis for all proportions.
      * -------------------------------------------------- */
-    --measure: 72ch;            /* Max character width of a line. */
+    --measure: 80ch;            /* Max character width of a line. */
 
     /* --------------------------------------------------
      * MODULAR SCALE: Measures for rows and columns.
@@ -28,7 +28,7 @@
      * -------------------------------------------------- */
 
     /* Proportion for modular grid. */
-    --ratio: 1.5;
+    --ratio: 1.3;
 
     /* Scale measure map to height and width of square cell */
     --scale-xxxxxs: calc(var(--scale-xxxxs) / var(--ratio));
@@ -67,10 +67,10 @@
      * Also we rely on the so-called "system font stack" as a fallback to our
      * preferred fonts. c.f. https://systemfontstack.com/
      */
-    --headings-font-family: 'Oswald', -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif;
+    --headings-font-family: 'PT Sans Narrow', -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif;
     --body-prose-family: 'Gentium Book Plus', Iowan Old Style, Apple Garamond, Baskerville, Times New Roman, Droid Serif, Times, Source Serif Pro, serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, serif;
     --body-code-family: 'Fira Code', Menlo, Consolas, Monaco, Liberation Mono, Lucida Console, monospace;
-    line-height: var(--scale-l);
+    line-height: var(--scale-xl);
     font-size: var(--scale-l);
 
     /* --------------------------------------------------
@@ -118,10 +118,6 @@ main {
   margin: var(--scale-s);
 }
 
-footer {
-  margin: var(--scale-s);
-}
-
 pre {
   padding: var(--scale-s);
   border-radius: var(--scale-xxxxs);
@@ -132,7 +128,7 @@ pre {
 code {
   color: var(--color-code) !important;
   font-size: var(--scale-s);
-  line-height: var(--scale-base);
+  line-height: var(--scale-l);
   font-family: var(--body-code-family);
   font-weight: bold;
 }
@@ -199,14 +195,14 @@ a[href]:not(:where(
               [href*="//www.evalapply.org"],
             ))::after  {
   content: " \2924";
-  font-size: var(--scale-s);
+  font-size: var(--scale-xs);
   vertical-align: super;
 }
 
 hr {
   margin: 0;
   background-color: var(--color-dark);
-  height: var(--scale-xxxxs);
+  height: var(--scale-xxxxxs);
 }
 
 h1 {
@@ -500,9 +496,13 @@ p.post-index-item\:summary {
 .footer,
 .footer * {
   font-family: var(--headings-font-family);
-  font-weight: bold;
   font-size: var(--scale-s);
   line-height: var(--scale-base);
+  color: var(--color-dark);
+}
+
+.footer {
+  text-align: center;
 }
 
 .email {
