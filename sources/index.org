@@ -1,7 +1,59 @@
 # SHITE_META
-#+title: Eval/Apply for fun and profit.
+#+title: Hi, I'm Aditya Athalye.
+#+subtitle: Sentient Learning Machine & Human General Intelligence.
 #+summary: Stuff I like to nerd about.
 #+author: Adi
 #+tags: index
 #+date: 2021-11-10
 # SHITE_META
+
+*/eval/apply [fn:1] is my credo/*. To */eval/* is to think culture over
+strategy, humans over technology, systems over hacks, workflows over tools. To
+*/apply/* is to Design by /subtraction/ [fn:2], engineer for simplicity, produce
+output iteratively, ship continuously.
+
+*/Learn generously is my favourite directive [fn:3]./* One stands on the shoulders
+of giants. One has received much generosity. One benefits greatly from contributions
+to the public commons. And so the /eval/apply/ credo joins the directive to /learn
+generously/, in all that I [[./posts/index.html][think]], [[https://github.com/adityaathalye/clojure-by-example][teach]], [[https://confengine.com/user/aditya-athalye-1][speak]], [[https://inclojure.org/][organise]], [[https://news.ycombinator.com/submitted?id=adityaathalye][share]], [[https://github.com/adityaathalye/][code]], and work on.
+
+*/I eval/apply for hire./* B2B SaaS founders seeking the massive business leverage
+of healthy engineering systems and culture may [[./work.html#main][read more here]].
+
+*/Thoughtful [[mailto:hello@evalapply.org][email chats]] are welcome!/* Pet [[./posts/index.html#tags-index-list][topics]] include software, systems,
+complexity, architecture, functional programming, and Clojure.
+
+# * /eval/apply [fn:1] inspires me/
+
+# - */Eval/*: Think culture over strategy, humans over technology,
+#   systems over hacks, workflows over tools.
+
+# - */Apply/*: Design by /subtraction/ [fn:2], engineer for simplicity,
+#   produce output iteratively, ship continuously.
+
+# * /eval/apply is my modus operandi/
+
+# - */For joy/*: I try to live the value of /"learn generously"/ [fn:3] in
+#   what I [[https://evalapply.org/posts][think]], [[https://github.com/adityaathalye/clojure-by-example][teach]], [[https://confengine.com/user/aditya-athalye-1][speak]], [[https://inclojure.org/][organise]], [[https://news.ycombinator.com/submitted?id=adityaathalye][share]], [[https://github.com/adityaathalye/][code]].
+
+# - */For hire/*: I do similar things for B2B SaaS founders seeking to create
+#   extreme business leverage through healthy engineering systems and culture.
+#   [[./work.html#main][Learn more]].
+
+# * /Thoughtful [[mailto:hello@evalapply.org][email chats]] are welcome!/
+
+# - Pet [[https://www.evalapply.org/posts/#tags-index-list][topics]] include software, systems, complexity, architecture, functional programming, Clojure.
+
+[fn:1] Computing pioneer Alan Kay dubbed /eval/apply/ the
+[[https://www.gnu.org/software/mes/manual/html_node/LISP-as-Maxwell_0027s-Equations-of-Software.html][Maxwell’s Equations of Software]].
+It is such a stunningly compact and fundamental descriptor of all of computing.
+To me, the concept also embodies similarly powerful non-dualities; think/do,
+diffuse/focus, abstract/concretise. Over time, it became my /way/.
+
+[fn:2] /"It is not daily increase but daily decrease, hack away the unessential.
+The closer to the source, the less wastage there is."/ --- Bruce Lee
+
+[fn:3]  /Learn generously/ is a "[[https://www.recurse.com/self-directives][self-directive]]"
+coined by the gentlepeople at my favourite programmers' community,
+the Recurse Center.
+#+html:<div class="box invert"><div class="footnotes rc-scout"></div></div>

@@ -62,45 +62,13 @@ EOF
 
 shite_template_home_page() {
     cat <<EOF |
-<div class="box invert with-sidebar-narrow">
-  $(shite_template_home_page_header)
+  $(shite_template_common_header "${shite_page_data[title]}")
   <main id="main">
-    <div class="homepage:main">
-      <h1 class="title">
-        Hi, I'm ${shite_global_data[author]} and I
-        <em><a href="${shite_global_data[base_url]}/about.html#main">eval / apply</a></em> for joy...
-      </h1>
-      <img src="${shite_global_data[base_url]}/static/img/pages/index/mugshot.jpg"
-           alt="I Eval/Apply for joy and for work">
-      <p class="figcaption">
-        <em>hand-waving</em> (n.) A scientifically proven way to
-        explain deep thoughts.
-      </p>
-    </div>
     $(cat -)
   </main>
-</div>
+<script async defer src="https://www.recurse-scout.com/loader.js?t=40533398b8c93bb4f3323a170e032e91"></script>
 EOF
     shite_template_standard_page_wrapper
-}
-
-shite_template_home_page_header() {
-    cat <<EOF
-<header id="site-header" class="box invert">
-  <div class="stack center">
-    <hr>
-    <a class="box icon:homepage"
-       href="${shite_global_data[base_url]}/index.html#main">
-      <img src="${shite_global_data[base_url]}/${shite_global_data[title_icon]}" alt="${shite_global_data[title]}">
-    </a>
-    <hr>
-    <nav class="stack homepage-header:nav-items">
-      $(shite_template_common_nav_items)
-    </nav>
-    <hr>
-  </div>
-</header>
-EOF
 }
 
 shite_template_common_head() {
@@ -152,6 +120,8 @@ EOF
 }
 
 shite_template_common_header() {
+    local title=${1:-${shite_global_data[title]}}
+    local subtitle=${shite_page_data[subtitle]:+"<h2>${shite_page_data[subtitle]}</h2>"}
     cat <<EOF
 <header id="site-header">
   <div class="box invert stack">
@@ -160,7 +130,8 @@ shite_template_common_header() {
         <img src="${shite_global_data[base_url]}/${shite_global_data[title_icon]}" alt="${shite_global_data[title]}">
       </a>
       <div class="stack">
-        <div class="site-header site-header:title">${shite_global_data[title]}</div>
+        <h1 class="site-header title">${title}</h1>
+        ${subtitle}
         <nav class="cluster site-header site-header:nav-items">
           $(shite_template_common_nav_items)
         </nav>
@@ -184,19 +155,19 @@ shite_template_common_nav_items() {
     # </a>
     cat <<EOF
 <a href="${shite_global_data[base_url]}/index.html#main">
-   &lambda; home
+   &lambda; hello
 </a>
 <a href="${shite_global_data[base_url]}/posts/index.html">
-   &#9753; blog
+   &#9753; read
 </a>
-<a href="${shite_global_data[base_url]}/about.html#main">
-   &fnof;() about
+<a href="mailto:hello@evalapply.org">
+   &nbsp;&#x2709; write
+</a>
+<a href="${shite_global_data[base_url]}/work.html#main">
+   &fnof;() hire
 </a>
 <a href="${shite_global_data[base_url]}/now.html#main">
-   &laquo;now&raquo;
-</a>
-<a href="#site-footer">
-   &nbsp;&#x1f48c; contact
+   &laquo; now &raquo;
 </a>
 EOF
 }
@@ -206,24 +177,15 @@ shite_template_common_footer() {
 <footer id="site-footer">
   <hr>
   <div class="box invert footer stack">
-    <p>&copy; copyright $(date +%Y),
+    <p>&copy; $(date +%Y),
       <a href="http://adityaathalye.com" target="_blank">${shite_global_data[author]}</a>.
       <span>All content licensed
         <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
           CC BY-SA 4.0
         </a>, except where noted otherwise.
       </span>
-    </p>
-    <p>
-      Made with
-      <a href="https://www.gnu.org/software/emacs/">GNU Emacs</a>,
-      <a href="https://orgmode.org/">org-mode</a>, and
+      Built with
       <a href="https://github.com/adityaathalye/shite">shite</a>.
-    </p>
-    <p>
-      <div class="rc-scout">
-        <script async defer src="https://www.recurse-scout.com/loader.js?t=40533398b8c93bb4f3323a170e032e91"></script>
-      </div>
     </p>
   </div>
 </footer>

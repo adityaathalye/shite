@@ -14,7 +14,7 @@
     /* --------------------------------------------------
      * MEASURE: Basis for all proportions.
      * -------------------------------------------------- */
-    --measure: 80ch;            /* Max character width of a line. */
+    --measure: 72ch;            /* Max character width of a line. */
 
     /* --------------------------------------------------
      * MODULAR SCALE: Measures for rows and columns.
@@ -195,7 +195,7 @@ a[href]:not(:where(
               [href*="//www.evalapply.org"],
             ))::after  {
   content: " \2924";
-  font-size: var(--scale-xs);
+  font-size: var(--scale-xxs);
   vertical-align: super;
 }
 
@@ -369,26 +369,16 @@ table > caption {
   background-color: var(--color-masthead);
 }
 
-.site-header {
+.site-header,
+.site-header * {
   font-family: var(--headings-font-family);
   color: var(--color-dark);
 }
 
-.site-header\:title {
-  font-weight: bold;
-  font-size: var(--scale-xl);
-  line-height: var(--scale-xxl);
-}
-
-.site-header\:nav-items *,
-.homepage-header\:nav-items * {
-  font-family: var(--headings-font-family);
+.site-header\:nav-items * {
+  background-color: var(--color-masthead);
   font-size: var(--scale-base);
   line-height: var(--scale-base);
-  background-color: var(--color-masthead);
-}
-
-.homepage-header\:nav-items * {
   text-align: center;
 }
 
@@ -497,7 +487,7 @@ p.post-index-item\:summary {
 .footer * {
   font-family: var(--headings-font-family);
   font-size: var(--scale-s);
-  line-height: var(--scale-base);
+  line-height: var(--scale-l);
   color: var(--color-dark);
 }
 
@@ -516,6 +506,7 @@ p.post-index-item\:summary {
   border-radius: var(--scale-xxxxxs);
 }
 
+.site-header hr,
 .footer hr,
 section.footnotes hr {
   height: 0;
