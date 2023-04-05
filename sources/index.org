@@ -12,37 +12,33 @@ strategy, humans over technology, systems over hacks, workflows over tools. To
 */apply/* is to Design by /subtraction/ [fn:2], engineer for simplicity, produce
 output iteratively, ship continuously.
 
-*/Learn generously is my favourite directive [fn:3]./* One stands on the shoulders
-of giants. One has received much generosity. One benefits greatly from contributions
-to the public commons. And so the /eval/apply/ credo joins the directive to /learn
-generously/, in all that I [[./posts/index.html][think]], [[https://github.com/adityaathalye/clojure-by-example][teach]], [[https://confengine.com/user/aditya-athalye-1][speak]], [[https://inclojure.org/][organise]], [[https://news.ycombinator.com/submitted?id=adityaathalye][share]], [[https://github.com/adityaathalye/][code]], and work on.
+*/Learn generously is my favourite self-directive [fn:3]./* One stands on the
+shoulders of giants. One has received much generosity. One benefits greatly from
+contributions to the public commons.
 
-*/I eval/apply for hire./* B2B SaaS founders seeking the massive business leverage
-of healthy engineering systems and culture may [[./work.html#main][read more here]].
+The dashing duo of /eval/apply/ and /learn generously/ pervades all that I [[./posts/index.html][think]],
+[[https://github.com/adityaathalye/clojure-by-example][teach]], [[https://confengine.com/user/aditya-athalye-1][speak]], [[https://inclojure.org/][organise]], [[https://news.ycombinator.com/submitted?id=adityaathalye][share]], [[https://github.com/adityaathalye/][code]],
+and what I am doing /[[./now.html#main][now]]/.
 
 */Thoughtful [[mailto:hello@evalapply.org][email chats]] are welcome!/* Pet [[./posts/index.html#tags-index-list][topics]] include software, systems,
 complexity, architecture, functional programming, and Clojure.
 
-# * /eval/apply [fn:1] inspires me/
-
-# - */Eval/*: Think culture over strategy, humans over technology,
-#   systems over hacks, workflows over tools.
-
-# - */Apply/*: Design by /subtraction/ [fn:2], engineer for simplicity,
-#   produce output iteratively, ship continuously.
-
-# * /eval/apply is my modus operandi/
-
-# - */For joy/*: I try to live the value of /"learn generously"/ [fn:3] in
-#   what I [[https://evalapply.org/posts][think]], [[https://github.com/adityaathalye/clojure-by-example][teach]], [[https://confengine.com/user/aditya-athalye-1][speak]], [[https://inclojure.org/][organise]], [[https://news.ycombinator.com/submitted?id=adityaathalye][share]], [[https://github.com/adityaathalye/][code]].
-
-# - */For hire/*: I do similar things for B2B SaaS founders seeking to create
-#   extreme business leverage through healthy engineering systems and culture.
-#   [[./work.html#main][Learn more]].
-
-# * /Thoughtful [[mailto:hello@evalapply.org][email chats]] are welcome!/
-
-# - Pet [[https://www.evalapply.org/posts/#tags-index-list][topics]] include software, systems, complexity, architecture, functional programming, Clojure.
+#+begin_export html
+<div class="stack">
+<div>Ah, and I email occasional newsletters too.</div>
+<form class="footer cluster"
+      action="https://buttondown.email/api/emails/embed-subscribe/evalapply"
+      method="post" target="popupwindow"
+      onsubmit="window.open('https://buttondown.email/evalapply','popupwindow')">
+  <input type="email" name="email" id="bd-email">
+  <span>
+    <input type="submit" value="Get the eval/apply dispatch">
+    <em>(thanks, <a href="https://buttondown.email" target="_blank">Buttondown</a>!)</em>
+  </span>
+</form>
+<div></div>
+</div>
+#+end_export
 
 [fn:1] Computing pioneer Alan Kay dubbed /eval/apply/ the
 [[https://www.gnu.org/software/mes/manual/html_node/LISP-as-Maxwell_0027s-Equations-of-Software.html][Maxwell’s Equations of Software]].
