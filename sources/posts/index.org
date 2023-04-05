@@ -36,7 +36,7 @@ Oh, hello!
 Pardon my rambling. It's dark out here and I didn't see you arrive!
 
 My blog is about thinking and /"learning generously"/, in public [fn:4].
-Please [[#tags-index-list][have a dekko]], and [[#site-footer][write to me]] if it strikes your fancy.
+Please [[#tags-index-list][have a dekko]], and [[mailto:weblog@evalapply.org][write to me]] if it strikes your fancy.
 
 May The Source be with us.
 
@@ -50,4 +50,4 @@ May The Source be with us.
 [[https://imgs.xkcd.com/comics/focus_knob.png]]
 ...
 [fn:4] Writing = Thinking for me. /Learn generously/ is a "self-directive" at
-the [[#site-footer][Recurse Center]].
+the [[https://recurse.com][Recurse Center]].
