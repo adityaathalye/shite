@@ -151,7 +151,7 @@ shite_template_common_nav_items() {
     # &#10087; workshops
     # </a>
     # <a href="${shite_global_data[base_url]}/work.html#main">
-    # &#65284; hire
+    # &fnof;() hire
     # </a>
     cat <<EOF
 <a href="${shite_global_data[base_url]}/index.html#main">
@@ -162,9 +162,6 @@ shite_template_common_nav_items() {
 </a>
 <a href="mailto:hello@evalapply.org">
    &nbsp;&#x2709; write
-</a>
-<a href="${shite_global_data[base_url]}/work.html#main">
-   &fnof;() hire
 </a>
 <a href="${shite_global_data[base_url]}/now.html#main">
    &laquo; now &raquo;
