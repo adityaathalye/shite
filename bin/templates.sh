@@ -126,7 +126,7 @@ shite_template_common_header() {
 <header id="site-header">
   <div class="box invert stack">
     <div class="with-sidebar site-header">
-      <a class="box icon" href="${shite_global_data[base_url]}/index.html#main">
+      <a class="box icon" href="${shite_global_data[base_url]}/index.html">
         <img src="${shite_global_data[base_url]}/${shite_global_data[title_icon]}" alt="${shite_global_data[title]}">
       </a>
       <div class="stack">
@@ -154,7 +154,7 @@ shite_template_common_nav_items() {
     # &fnof;() hire
     # </a>
     cat <<EOF
-<a href="${shite_global_data[base_url]}/index.html#main">
+<a href="${shite_global_data[base_url]}/index.html">
    &lambda; hello
 </a>
 <a href="${shite_global_data[base_url]}/posts/index.html">
