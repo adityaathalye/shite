@@ -9,7 +9,7 @@
 -----
 * What I am doing now
 
-Updated: March 2023
+/Updated:/ April 2023
 
 #+begin_quote
 "This is [[https://nownownow.com/about][a now page]], and if you have your own site,
@@ -19,7 +19,6 @@ Updated: March 2023
 #+end_quote
 
 
-
 *2023 is dedicated to total reinvention.*
 
 A dead past is being firewalled. Accumulated baggage is being tagged for
@@ -27,54 +26,58 @@ eventual garbage collection. The mind's mechanics are being revised. The body is
 being repaired and upgraded. New experiences are being opted into. By learning
 to see with new eyes, a fresh vision of self, world, and life is appearing.
 
-Analogy: adopt "diffuse mode" mindset to reinvent, and "focus mode" mindset
+#+begin_quote
+*Analogy:* Adopt "diffuse mode" mindset to reinvent, and "focus mode" mindset
 to then re-build.
+#+end_quote
 
-*2023 is professional reinvention number three*
+*2023 is professional reinvention number three.*
 
-My 20s were full of MBA-type work including one failed attempt at a startup.
+My 20s were full of MBA-type work as well as one failed attempt at a startup.
 My 30s became about software engineering. This fourth decade seems to have
 begun with yet another pivot; toward solo enterprise. Suit and hoodie are
 amalgamating.
 
-Objective: Test one's wits, skills, capabilities, knowledge in the exacting
+#+begin_quote
+*Objective:* Test one's wits, skills, capabilities, knowledge in the exacting
 crucible of makin' and sellin' stuff.
+#+end_quote
 
-*2023 is year-long sabbatical number four*
+*2023 is sabbatical number four.*
 
-Sabbaticals, for me, have been times of hardcore reading, study, and hands-on
-application of new knowledge. Literally living eval/apply; I learn things and
-test myself by landing paid gigs for what I have learned.
+My sabbaticals have been times of hardcore reading, study, and hands-on
+use of new knowledge. Literally living /eval/apply/; I learn things and
+test myself by landing paid gigs for what I have learned. Let's see where this
+one goes.
 
-Insight: "How does your company let you take a year-plus long sabbatical?",
-asks the incredulous reader. To which I say, "Well, I've taken those /before/
-getting the next day job."
+#+begin_quote
+*Insight:* Making sabbaticals work is primarily about psychology, not money.
+#+end_quote
 
-You see, /two/ companies can give you a year-long sabbatical. Also, making
-these work is almost all about working on personal psychology, not so much
-about working toward a privileged material position.
+*Yes, and...*
 
-*Yes, and*
+An improv-style approach is being applied to break into the present, and to also
+break out of the "no, but" style psychological ossification that is common
+experience, after having lived a bit /but/ not quite enough (but not too much
+either, which engenders a "like, whatever" style of psychological regression.
+If you call this improv-ing oneself, I won't complain.
 
-A "Yes, and" improv-style approach is being applied to break into the present,
-and to also break out of the "no, but" style psychological ossification that
-is common experience, after having lived a bit, but not quite enough (but not
-too much either, which engenders a "like, whatever" style of psychological
-regression :).
+#+begin_quote
+*Experience:* I am about a year into what I've dubbed the "/Yes, and/ method of
+reinvention". And yes, I heartily recommend it to anyone who will listen.
+#+end_quote
 
-Experience: I am about a year into the "Yes, and" method of reinvention, and
-I am happy to recommend it to anyone who cares to listen.
+*Small is beautiful; the lifelong trend continues.*
 
-*Small is beautiful; the lifelong trend continues*
+Career-start was the first time I truly exerted my volitional muscles, and chose
+to work with/at small and medium companies instead of the socially approved giant
+MNC circuit. That drive has run through my MBA twenties, tech thirties, and seems
+to be the /telos/ for the, shall we say, /[[https://goodreads.com/book/show/37570605-company-of-one][company of one]]/ forties?
 
-Career-start was the first time I truly exerted my volitional muscles, and
-chose to work with/at small and medium enterprises and startups. That focus
-continued through the MBA decade, the tech decade, and seems to have brought
-me to the tip of the spear; the company of one (I should read that book!).
-
-Strategy: When re-inventing, known-good working threads need not be discarded.
-They may in fact be the strongest things going for oneself. So, this cycle is
-going to be about building a "[[https://en.wikipedia.org/wiki/Micro_ISV][Micro-ISV]]" business.
+#+begin_quote
+*Principle:* When reinventing, known-good legacy need not be discarded.
+It may in fact be the very thing to subtract down to, and rebuild from, anew.
+#+end_quote
 
 *2021 and 2022*
 
@@ -88,11 +91,11 @@ going to be about building a "[[https://en.wikipedia.org/wiki/Micro_ISV][Micro-I
 
 *2020*
 
-This was to be /The/ Year Of Reinvention. Certain world events truncated it.
-/But/ it got off to a great start with a back-to-back consulting gig making
-a thing with Clojure, and organising IN/Clojure 2020, and a retreat at the
-[[https://recurse.com][Recurse Center]].
+/This/ would be /The Year Of Total Reinvention/, had Certain World Events
+not intervened. Still, it began swimmingly, hacking Clojure code at a consulting
+gig, organising [[https://inclojure.org/][IN/Clojure 2020]], and experiencing
+an amazing programmer's retreat at the [[https://recurse.com][Recurse Center]].
 
 *Pre-2020*
 
-Faded into the mists of time after being cleaved away by intervening events.
+Faded into the mists of time. [[#what-i-am-doing-now][GOTO now]].
