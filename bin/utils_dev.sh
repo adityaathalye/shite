@@ -21,3 +21,7 @@ __shite_devutil_trigger_all_sources() {
         do touch -m ${f}
         done
 }
+
+__shite_devutil_minify_all_in_place() {
+    minify -r -o . .
+}
