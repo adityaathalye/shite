@@ -51,3 +51,13 @@ __html_escape() {
 
     jq -Rr @html
 }
+
+__url_encode() {
+    # Use to urlencode data to use in submit links, such as submit to HN. e.g.:
+    # <a href="https://news.ycombinator.com/submitlink?u=$(printf "%s" "${canonical_url}" | jq -sRr @uri)&t=$(printf "%s" "${title}" | jq -sRr @uri)">
+    #    discuss at HN
+    # </a>
+    # Thanks to: https://stackoverflow.com/a/34407620/1577057
+
+    jq -sRr @uri
+}

@@ -229,6 +229,7 @@ local tags=${shite_page_data[tags]:?"Fail. We expect at least one tag."}
 local first_published=${shite_page_data[date]:?"Fail. We expect date like $(date -Idate)."}
 local latest_published=${shite_page_data[updated]:?"Fail. We expect date like $(date -Idate)."}
 local include_toc=${shite_page_data[include_toc]:-"no"}
+local canonical_url=${shite_page_data[canonical_url]:?"Fail. Provide canonical url to use for discuss at HN prompt."}
 
 cat <<EOF
 <article id="blog-post" class="stack">
@@ -268,6 +269,7 @@ cat <<EOF
     <nav class="cluster">
       <span>&uarr; <a href="#blog-post" rel="bookmark">title</a></span>
       <span>&uarr; <a href="#site-header" rel="bookmark">menu</a></span>
+      <span><b>Y</b> <a href="https://news.ycombinator.com/submitlink?u=$(printf "%s" "${canonical_url}" | __url_encode)&t=$(printf "%s" "${title}" | __url_encode)">discuss at HN</a></span>
       <span>&rarr; <a href="mailto:weblog@evalapply.org">email comments</a></span>
       <span><a class="site-feed"
        href="${shite_global_data[base_url]}/${shite_global_data[feed_xml]}">
