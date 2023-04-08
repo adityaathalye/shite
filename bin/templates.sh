@@ -166,6 +166,9 @@ shite_template_common_nav_items() {
 <a href="${shite_global_data[base_url]}/now.html#main">
    &laquo; now &raquo;
 </a>
+<a href="${shite_global_data[base_url]}/${shite_global_data[feed_xml]}">
+   &asymp; feed
+</a>
 EOF
 }
 
