@@ -34,9 +34,8 @@ to then re-build.
 *2023 is professional reinvention number three.*
 
 My 20s were full of MBA-type work as well as one failed attempt at a startup.
-My 30s became about software engineering. This fourth decade seems to have
-begun with yet another pivot; toward solo enterprise. Suit and hoodie are
-amalgamating.
+My 30s became about software engineering. The 40s seem to have begun with yet
+another pivot; toward solo enterprise. Suit and hoodie are amalgamating.
 
 #+begin_quote
 *Objective:* Test one's wits, skills, capabilities, knowledge in the exacting
