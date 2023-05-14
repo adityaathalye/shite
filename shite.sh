@@ -54,17 +54,37 @@
         shite_hot_build_reload "${base_dir}" "${browser_name}" "${base_url}" \
                                > /dev/null
 
-    else # Run backgrounded hotreload in timeout mode, and trigger full rebuild
-        # by updating mtime of all sources
-        shite_hot_build_reload "${base_dir}" "${browser_name}" "${base_url}" \
-                               > /dev/null &
+    else # bulk rebuild from scratch
+        eventsource="${base_dir}/eventsource.txt"
+        rm -r "${base_dir}/public"
+        mkdir -p "${base_dir}/public"
 
-        > "${base_dir}/sources.txt"
-        find "${base_dir}/sources" -depth -type f -print \
-             >> "${base_dir}/sources.txt"
+        # Set up watches that stream out events for updated files
+        shite_hot_watch_file_events "${base_dir}" 'create' |
+            tee "${base_dir}/eventsource_published.txt" &
 
-        # xargs, why u no work with `touch`? :thinking-face:
-        cat "${base_dir}/sources.txt" |
-            while read -r f; do sleep 1; touch -m "${f}"; done;
+        # Generate events to feed into build pipeline
+        shite_events_source "${base_dir}/sources" "MODIFY" \
+                            > "${eventsource}"
+
+        # Build it
+        __log_info "About to rebuild content."
+        cat ${eventsource} |
+            stdbuf -oL grep -v -E "rootindex|blogindex$" |
+            shite_hot_build "${base_url}" > /dev/null
+        __log_info "Content rebuilt."
+
+        __log_info "About to rebuild posts index CSV."
+        __shite_metadata_make_posts_index_csv ${base_dir}
+        __log_info "Posts index CSV rebuilt."
+
+        __log_info "About to rebuild index pages."
+        cat ${eventsource} |
+            stdbuf -oL grep -E "rootindex|blogindex$" |
+            shite_hot_build "${base_url}" > /dev/null
+        __log_info "Index pages rebuilt."
+
+        __log_info "Full rebuild done."
+
     fi
 )

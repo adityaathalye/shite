@@ -9,6 +9,10 @@
 #
 # ##################################################
 
+__shite_events_select_filetypes() {
+    stdbuf -oL grep -E -e "(org|md|json|csv|html|css|js|jpg|jpeg|png|svg|ico|pdf|webm)$"
+}
+
 __shite_events_detect_changes() {
     # Monitor a target directory for file CRUD events and emit a structured
     # record for each event of interest. Emit a CSV record of the form:
@@ -29,7 +33,7 @@ __shite_events_detect_changes() {
                 ${watch_dir} |
         # INCLUDE FILES
         # Alas, inotifywait prohibits use of --exclude _and_ --include filters together.
-        stdbuf -oL grep -E -e "(org|md|json|csv|html|css|js|jpg|jpeg|png|svg|ico|pdf|webm)$"
+        __shite_events_select_filetypes
 }
 
 __shite_events_gen_csv() {
@@ -99,6 +103,17 @@ __shite_events_drop_public_noisy_events() {
 # THE EVENT STREAM
 # ##################################################
 
+shite_events_source() {
+    # UNIX_EPOCH_SECONDS,EVENT_TYPE,WATCHED_DIR,FILE_NAME
+    local dir_path=${1:?"Fail. Please specify a directory to generate events for."}
+    local event_name=${2:-'MODIFY'}
+    find "${dir_path}" \
+         -depth -type f \
+         -printf "%Ts,${event_name},%h/,%f\n" |
+        __shite_events_select_filetypes |
+        __shite_events_gen_csv
+}
+
 shite_events_stream() {
     # Watch all relevant files in the given directory, for the given events.
     local watch_dir=${1:?"Fail. Please specify a directory to watch"}
@@ -107,7 +122,5 @@ shite_events_stream() {
     __shite_events_detect_changes \
         ${watch_dir} ${watched_events} |
         # Construct events records as a CSV (consider JSON, if jq isn't too expensive)
-        __shite_events_gen_csv ${watch_dir} |
-        # Deduplicate file events
-        __shite_events_dedupe
+        __shite_events_gen_csv ${watch_dir}
 }

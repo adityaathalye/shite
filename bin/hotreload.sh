@@ -171,6 +171,22 @@ shite_hot_browser_reload() {
         __shite_hot_cmd_exec
 }
 
+shite_hot_watch_file_events() {
+    # Watch all files we care about, across sources (org, md, CSS, JS etc.), and
+    # public (published HTML, CSS, JS etc.), for events of interest, viz.:
+    # 'create,modify,close_write,moved_to,delete'
+    local watch_dir=${1:?"Fail. Please specify a directory to watch"}
+    local events=${2:-'create,modify,close_write,moved_to,delete'}
+    shite_events_stream ${watch_dir} ${events}
+}
+
+shite_hot_build() {
+    local base_url=${1:?"Fail. We expect a base URL like `file://`"}
+
+    # React to source events and CRUD public files
+    shite_templating_publish_sources ${base_url} > /dev/null
+}
+
 shite_hot_build_reload() {
     # React to various file events, hot-build-and-publish `sources` to `public`,
     # and then hot-reload (navigate) the browser.
@@ -196,14 +212,10 @@ shite_hot_build_reload() {
                         "}'")
 
     # RUN PIPELINE
-    # Watch all files we care about, across sources (org, md, CSS, JS etc.), and
-    # public (published HTML, CSS, JS etc.), for events of interest, viz.:
-    # 'create,modify,close_write,moved_to,delete'
-    shite_events_stream ${watch_dir} 'create,modify,close_write,moved_to,delete' |
-        # Copy events stream to stderr for observability and debugging
+    shite_hot_watch_file_events ${watch_dir} |
+        __shite_events_dedupe |
         __tap_stream |
-        # React to source events and CRUD public files
-        tee >(shite_templating_publish_sources ${base_url} > /dev/null) |
+        tee >(shite_hot_build ${base_url}) |
         # Perform hot-reload actions only against changes to public files
         tee >(shite_hot_browser_reload ${window_id} ${base_url}) |
         # Trigger rebuilds of metadata indices

@@ -298,6 +298,7 @@ shite_templating_publish_sources() {
                     ;;
                 * )
                     __log_info "shite_templating_publish_sources does not handle the given event."
+                    # __log_info "${timestamp},${event_type},${watch_dir},${sub_dir},${url_slug},${file_type},${content_type}"
                     ;;
             esac
         done
