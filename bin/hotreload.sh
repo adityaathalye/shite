@@ -158,9 +158,9 @@ __shite_hot_cmd_public_events() {
 
 __shite_hot_cmd_exec() {
     # In debug mode, only show the actions, don't do them.
-    if [[ ${SHITE_HOTRELOAD} == "no" ]]
-    then cat -
-    else stdbuf -oL grep -v '^$' | __tap_stream | xdotool -
+    if [[ ${SHITE_BUILD} == "hot" ]]
+    then stdbuf -oL grep -v '^$' | __tap_stream | xdotool -
+    else cat -
     fi
 }
 

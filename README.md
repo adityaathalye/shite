@@ -224,7 +224,7 @@ Rebuild full site for publication under my domain.
 
 These flags alter the behaviour of the system.
 
-- Setting `SHITE_HOTRELOAD` to "yes" will run the event system in "monitor" mode,
+- Setting `SHITE_BUILD` to "hot" will run the event system in "monitor" mode,
   which in turn drives hotreload behaviour. Setting it to "no" will suppress
   browser hotreload.
 - Setting `SHITE_DEBUG_TEMPLATES` to "debug" will cause templates to be sourced

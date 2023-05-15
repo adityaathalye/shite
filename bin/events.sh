@@ -24,7 +24,7 @@ __shite_events_detect_changes() {
     local watch_events=${2}
     local indefinite=0 # seconds
     local one_time=10 #seconds
-    local seconds=$([[ ${SHITE_HOTRELOAD} == "yes" ]] && printf ${indefinite} || printf ${one_time})
+    local seconds=$([[ ${SHITE_BUILD} == "full" ]] && printf ${one_time} || printf ${indefinite})
     # WATCH A DIRECTORY
     inotifywait -m --timeout ${seconds} -r --exclude '/\.git/|/\.#|/#|.*(swp|swx|\~)$' \
                 --timefmt "%s" \

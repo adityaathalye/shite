@@ -24,7 +24,7 @@
 
     # Cue shite for everyday local editing and publishing
     base_dir="$(pwd)"
-    SHITE_HOTRELOAD=${1:-"yes"}
+    SHITE_BUILD=${1:-"hot"} # or "full"
     base_url=${2:-"file://${base_dir}/public"}
     browser_name=${3:-"Mozilla Firefox"}
     SHITE_DEBUG_TEMPLATES="debug"
@@ -48,13 +48,15 @@
     )
 
     # Oh yeah!
-    if [[ ${SHITE_HOTRELOAD} == "yes" ]]
-    then # Run hotreload in streaming mode, with a
+    if [[ ${SHITE_BUILD} == "hot" ]]
+    then # Run hotreload in streaming mode, with a new browser session
         ( firefox --new-tab "${base_url}/index.html" & )
         shite_hot_build_reload "${base_dir}" "${browser_name}" "${base_url}" \
                                > /dev/null
+    fi
 
-    else # bulk rebuild from scratch
+    if [[ ${SHITE_BUILD} == "full" ]]
+    then
         eventsource="${base_dir}/eventsource.txt"
         rm -r "${base_dir}/public"
         mkdir -p "${base_dir}/public"
@@ -67,7 +69,6 @@
         shite_events_source "${base_dir}/sources" "MODIFY" \
                             > "${eventsource}"
 
-        # Build it
         __log_info "About to rebuild content."
         cat ${eventsource} |
             stdbuf -oL grep -v -E "rootindex|blogindex$" |
@@ -85,6 +86,5 @@
         __log_info "Index pages rebuilt."
 
         __log_info "Full rebuild done."
-
     fi
 )
