@@ -1,0 +1,232 @@
+# SHITE_META
+#+title: Software demos as deliberate acts of serious play
+#+summary: Making a software demo is a form of deliberate, serious play. An act that feeds our curiosity, inventiveness, and drive. It enlivens. It enriches. It entertains. And as we asymptotically approach the A.G.I. that's just around the corner, the capacity for deliberate, serious play will remain distinctively, deeply, deliciously human. Career software people like yours truly may please take note!
+#+author: Adi
+#+date: 2023-06-04
+#+updated: 2023-06-04
+#+tags: programming culture whyto software_design meta
+#+include_toc: yes
+# SHITE_META
+
+* Best Software Demo!
+To me, the best kind of /software demo/ is any program created in the inventive,
+artistic, seriously playful, playfully serious sense of /demoscene/ [fn:1],
+/and/ the freely shareable sense of /demoware/ [fn:2].
+
+Dylan Beattie's brilliant talk, /[[https://dylanbeattie.net/talks/the-art-of-code.html][The Art of Code]]/, is my all time favourite
+example of this sense of /demo/.
+
+#+begin_export html
+<figure class="box invert stack">
+  <div class="title"> The Art of Code — Dylan Beattie</div>
+  <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/6avJHaC3C2U" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+  <div class="footnotes">
+    <p>
+      Software and technology have changed every aspect of the world we live in.
+      At one extreme are the ‘mission critical’ applications - the code that
+      runs our banks, our hospitals, our airports and phone networks. Then
+      there’s the code we all use every day to browse the web, watch movies,
+      create spreadsheets… not quite so critical, but still code that solves
+      problems and delivers services.
+    </p>
+    <p>
+      But what about the code that only exists because somebody wanted to write
+      it? Code created just to make people smile, laugh, maybe even dance? Maybe
+      even code that does nothing at all? Code that was created just to see if
+      it was possible?
+    </p>
+  </div>
+</figure>
+#+end_export
+
+Many venues exist featuring such software demos. My favourite public examples
+include [[https://bangbangcon.com/][!!Con]], [[https://handmade-seattle.com/][Handmade Seattle]], [[https://sigbovik.org/][Sigbovik]], the [[https://joy.recurse.com/][Recurse Center]].
+Your local meetup is a great place to make a little demoscene of your own.
+
+* Y U NO DEMO????
+Like you and I, so many of us career software people first turned to computers
+for the sheer creativity of the medium. Endless tinkering. Instant feedback
+(gratifying or annoying). Serendipitous side quests. Deep wabbit holes of
+bugs-hunting. All the time learning, sharing, staying up all night arguing with
+strangers on the Internet. Sometimes even taking their advice. We were /playing/.
+
+Then, at some point, we went to work on other peoples' software. And after some
+more points we perhaps set out to make our own software or, heaven forefend, our
+own software business. And then one fine day, dramatically, we caught ourselves
+past yet another point, whizzing down the thermocline of drudgery into the cold
+depths of despair, intoning...
+
+#+begin_quote
+"WTF; where did the fun go?!"
+
+--- You, asking the mirror.
+#+end_quote
+
+Yours truly is with you, having managed to brown-out of a software job or two,
+and burnout of a software company I tried to help start. The latter fact is even
+chronicled in a book which shall remain safely ensconced in nameless obscurity
+because nobody needs to re-visit two years of anxiety, insomnia, and the insanity
+of 100 hour work weeks, character-building though that life was.
+
+But wait! Lest the invisible hand that feeds feels embittened...
+
+* You make. I make.
+
+I hereby proclaim that I /love/ the rush of making, shipping, scaling product
+(and production)!
+
+Truly, I do.
+
+All I am saying is, I /also/ know something of the sharp edges that cut. The
+dark places one goes to when it all gets too much. Ben Horowitz's line is
+hilarious and relatable.
+#+begin_quote
+“As a startup CEO, I slept like a baby. I woke up every 2 hours and cried.”
+
+--- Ben Horowitz
+#+end_quote
+
+Except...
+
+As celebrated as the mythic /Great Man/ might be, the gauntlet of weathering
+/The Struggle/ isn't thrown only to /His/ Lonesome Greatness, is it? I believe
+anyone who chooses /The Struggle/ of trying to make /something/ from nothing is
+playing the high stakes game in their own ways. /They/ too shoulder their share
+of the burden of navigating unknown unknowns, existential risks, and the
+ever-present specter of abject failure.
+
+And all this time they though all they did was wade through subtly broken and
+misleadingly stale software manuals, fix yet another broken dependency, make
+tickets, move tickets, say yes to way too many meetings (for why?), mock A.I.,
+fear A.I., use A.I., fear A.I... uh, and other work things.
+
+And they're not certainly wrong. But they're also not certainly right. For as
+much as it is a /"No, but"/ world, intent on smacking your head every time you
+think /"hey, what if I just..."/, it is also a /"Yes, and"/ world capable of
+saying /"sure, why not?"/.
+
+All they need to do is inject themselves with a self-prompt. A little red pill.
+
+#+begin_quote
+Aren't I a maker in my own right?
+#+end_quote
+
+Yes, I are.
+
+And, demos are how I own it [fn:3].
+
+Hence I demo.
+
+Hence. You. Demo! [fn:4]
+
+* To: Serious Business. Cc: All.
+
+/*Sub: Out with the CTO's Office, in with the CTO's Demoscene!*/
+
+Seriously.
+
+Yes the prospect of demo-derived joy will please many, but it's not just
+personal, it's business too. Here are some Important Business Reasons for, shall
+we say, demo driven business development...
+
+- /Demos cause progress/ by turning abstractions into tangibles. Shipping
+  output is a powerful catalyst.
+- /Demos rally stakeholders/ around vision and goals. A sharp demo can speak
+  louder than a thousand meetings.
+- /Demos foster psychological safety/ to experiment, transcend set mindsets,
+  and remove creative blocks.
+- /Demos reduce risk/ of sunk costs locking us into bad choices, by virtue
+  of being intentionally impermanent.
+- /Demos educate entertainingly./ We are not machines. Fun and joy are at least
+  as essential to making creative connections, as the struggle of surmounting the
+  energy gradient of forming new knowledge.
+- /Demos fuel camaraderie/ through shared experiences of making, failing,
+  showing (and showing off!) little and big cool /warez/.
+- /Demos sell product/ by making our product relatable to customers in their
+  unique contexts.
+
+And last but not least...
+
+- /A truly great demo is indistinguishable from magic./ After it occurs, the
+  impossible becomes possible. A clear boundary separates past and future. Life
+  changes forever. This is the realm of genius and wizardry.
+
+/"Ah, 20% time! Culture hack!"/, you say.
+
+I say /"psych!"/.
+
+In theory, culture hacks work in practice. What works is the intangible /that/.
+That which fosters a pervasive culture of serious play. That which makes those
+of us in the business of software—indies, teams, companies—get very good indeed
+at what we do.
+
+You see you can't /make/ your /demos/ love The Demo.
+
+But you can certainly show the way.
+
+One way is to walk the way.
+
+* So demo that demo already
+Maybe you want to lead by example. Or maybe you want to rethink your [[https://www.evalapply.org/now][own]]
+entire life as a software maker (among other things). /The Way of the Demo/ may
+be just what the doctor ordered.
+
+[[./index.html#best-software-demo][Beattie]] brilliantly illuminates for us career software people that it is not
+strange to experience respite and recovery from the business of serious software,
+in the guise of even more software; seriously playful software.
+
+So venture thither! Make fun-for-you software demos, while you await the day
+when your hip new LLM friends finally learn how to alliterate wryly, cleverly,
+spontaneously while they demoscene their cool demos while also running your
+company or your life to runaway success.
+
+That'll be the day.
+
+;)
+
+* Footnotes
+
+[fn:1] https://en.wikipedia.org/wiki/Demoscene
+#+begin_quote
+The demoscene is an international computer art subculture focused on producing
+demos: self-contained, sometimes extremely small, computer programs that produce
+audiovisual presentations. The purpose of a demo is to show off programming,
+visual art, and musical skills. Demos and other demoscene productions (graphics,
+music, videos, games) are shared at festivals known as demoparties, voted on by
+those who attend and released online.
+#+end_quote
+
+[fn:2] However, the other notion of demoware as /intentionally crippled/ software
+is... yuck.
+#+begin_quote
+*Demoware*: Software that is used to demonstrate a product's features, but has limitations.
+It will either expire at a set time, or it is limited in functionality. See
+trialware, crippleware, lite version, shareware and wares.
+
+--- [[https://www.pcmag.com/encyclopedia/term/demoware][pcmag.com]]
+#+end_quote
+Deliberate crippling is very different from making it deliberately small (e.g.
+Unix tools), which is a forward-looking creative constraint. I will argue that
+even WordPress, because of its pluggable architecture, is "deliberately small".
+The permutations of WP + pluggable code, in the WP universe, absolutely dwarf the
+core CMS. That kind of a design choice liberates creativity, which crippleware
+forefends /by design/. Ick. For similar reasons, /lite version/ (even open core)
+is an ethical minefield. One could start off well-intentioned, but when the
+quartely earnings come a-callin' it gets very hard to remain generous about
+foundational promises like "free forever" or "10,000 messages searchable".
+Trialware is also OK in my book, provided one gets to use the whole thing for a
+reasonable period, with no data lock-in, enough to make up one's mind about
+burdening the exchequer.
+
+[fn:3] I'm /that guy/ who insists on making all his [[https://github.com/adityaathalye/slideware][conference talks]]
+live demos. Dangerous? Who's that?
+
+[fn:4] Hey, maybe get the A.I. do the meeting instead of you? And the
+meeting notes. And schedule the follow up meeting? And... Well, I don't know
+what will make you nerd out. I get kicked about things like this...
+  - How far can I go only with Bash?
+  - Suppose I implemented <RFC> in $Language?
+  - This technique / trick / pattern is amazing! Here's why and how to use it!
+  - /"Ooooh, what does this button do?"/ (a thought that emerges when inside the
+    guts of some library or database manual or profiler feature set).
+  - What if we were forbidden the use of a database for X?

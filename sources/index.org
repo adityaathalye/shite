@@ -7,49 +7,59 @@
 #+date: 2021-11-10
 # SHITE_META
 
-*/eval/apply [fn:1] is my credo/*. To */eval/* is to think culture over
-strategy, humans over technology, systems over hacks, workflows over tools. To
-*/apply/* is to Design by /subtraction/ [fn:2], engineer for simplicity, produce
-output iteratively, ship continuously.
+The dashing duo of */eval/apply/* [fn:1] and */learn generously/* [fn:2] pervade
+all that I do [fn:3].
 
-*/Learn generously is my favourite self-directive [fn:3]./* One stands on the
-shoulders of giants. One has received much generosity. One benefits greatly from
-contributions to the public commons.
+I [[./posts/index.html#blog-index-list][blog here]] and write the occasional newsletter [fn:4].
+Pet [[./posts/index.html#tags-index-list][topics]] include systems, complexity,
+organisation design, architecture, and functional programming.
 
-The dashing duo of /eval/apply/ and /learn generously/ pervades all that I [[./posts/index.html][think]],
-[[https://github.com/adityaathalye/clojure-by-example][teach]], [[https://confengine.com/user/aditya-athalye-1][speak]], [[https://inclojure.org/][organise]], [[https://news.ycombinator.com/submitted?id=adityaathalye][share]], [[https://github.com/adityaathalye/][code]],
-and what I am doing /[[./now.html#main][now]]/.
+/[[./now.html#main][Now]]/ is a year of total reinvention; body, mind, and work.
+And I'm intent on making [[./posts/software-demos/index.html#main][demo software]] for fun (Also money. It's fun to have money.).
 
-*/Thoughtful [[mailto:hello@evalapply.org][email chats]] are welcome!/* Pet [[./posts/index.html#tags-index-list][topics]] include software, systems,
-complexity, architecture, functional programming, and Clojure.
+[fn:1] */eval/apply is wicked cool.../* Circa 1960, A.I. pioneer John McCarthy gave us
+~eval~ and ~apply~, two mutually recursive LISP functions that encode
+[[https://www.gnu.org/software/mes/manual/html_node/LISP-as-Maxwell_0027s-Equations-of-Software.html][the kernel of all of programming]].
+Like /yin/yang/ ☯, they contain each other. And
+they evoke other nonduals to live by; /diffuse/focus/, /abstract/reify/,
+/design/develop/.
 
+#+begin_quote
+*Stuart Feldman*: If nothing else, Lisp was carefully defined in terms of Lisp.
+
+*Alan Kay*: Yes, that was the big revelation to me when I was in graduate
+school—when I finally understood that the half page of code on the bottom of
+page 13 of the Lisp 1.5 manual was Lisp in itself. These were “Maxwell’s
+Equations of Software!” This is the whole world of programming in a few lines
+that I can put my hand over.
+#+end_quote
+
+[fn:2] */Learn generously is my favourite [[https://www.recurse.com/self-directives][self-directive]].../*
+coined by the gentlepeople at my favourite programmers' community, /*the Recurse Center*/.
+One stands on the shoulders of giants. One has received much generosity. One
+benefits greatly from contributions to the public commons. One tries to give back
+in one's meager ways.
 #+begin_export html
-<div class="stack">
-<div>Ah, and I email occasional newsletters too.</div>
+<div class="rc-scout"></div>
+#+end_export
+
+[fn:3] /eval/apply/ and /learn generously/ pervade all that I
+[[./posts/index.html][think]], [[https://github.com/adityaathalye/clojure-by-example][teach]],
+[[https://confengine.com/user/aditya-athalye-1][speak]], [[https://inclojure.org/][organise]],
+[[https://news.ycombinator.com/submitted?id=adityaathalye][share]], [[https://github.com/adityaathalye/][code]].
+
+[fn:4]
+If you fancy /The Rather Occasional eval/apply Dispatch/, get yours here...
+#+begin_export html
 <form class="footer cluster"
       action="https://buttondown.email/api/emails/embed-subscribe/evalapply"
       method="post" target="popupwindow"
       onsubmit="window.open('https://buttondown.email/evalapply','popupwindow')">
   <input type="email" name="email" id="bd-email">
   <span>
-    <input type="submit" value="Get the eval/apply dispatch">
+    <input type="submit" value="subscribe">
     <em>(thanks, <a href="https://buttondown.email" target="_blank">Buttondown</a>!)</em>
   </span>
 </form>
-<div></div>
-</div>
 #+end_export
-
-[fn:1] Computing pioneer Alan Kay dubbed /eval/apply/ the
-[[https://www.gnu.org/software/mes/manual/html_node/LISP-as-Maxwell_0027s-Equations-of-Software.html][Maxwell’s Equations of Software]].
-It is such a stunningly compact and fundamental descriptor of all of computing.
-To me, the concept also embodies similarly powerful non-dualities; think/do,
-diffuse/focus, abstract/concretise. Over time, it became my /way/.
-
-[fn:2] /"It is not daily increase but daily decrease, hack away the unessential.
-The closer to the source, the less wastage there is."/ --- Bruce Lee
-
-[fn:3]  /Learn generously/ is a "[[https://www.recurse.com/self-directives][self-directive]]"
-coined by the gentlepeople at my favourite programmers' community,
-the Recurse Center.
-#+html:<div class="box invert"><div class="footnotes rc-scout"></div></div>
+Or just [[mailto:hello@evalapply.org][write to me]]. I love slow-mo, thoughtful email banter.

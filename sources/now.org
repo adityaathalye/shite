@@ -7,17 +7,14 @@
 # SHITE_META
 
 -----
-* What I am doing now
-
-/Updated:/ April 2023
+* What I am doing /now/ [fn:1]
 
 #+begin_quote
-"This is [[https://nownownow.com/about][a now page]], and if you have your own site,
-[[https://nownownow.com/about][you should make one]], too."
-
---- [[https://sive.rs/now][Derek Sivers]]
+“I want to stay as close to the edge as I can without going over. Out on the edge
+you see all kinds of things you can't see from the center.” ― Kurt Vonnegut
 #+end_quote
 
+/Updated:/ May 2023 (prev: April 2023)
 
 *2023 is dedicated to total reinvention.*
 
@@ -99,3 +96,9 @@ an amazing programmer's retreat at the [[https://recurse.com][Recurse Center]].
 *Pre-2020*
 
 Faded into the mists of time. [[#what-i-am-doing-now][GOTO now]].
+
+[fn:1]
+#+begin_quote
+"This is [[https://nownownow.com/about][a now page]], and if you have your own site,
+[[https://nownownow.com/about][you should make one]], too." --- [[https://sive.rs/now][Derek Sivers]]
+#+end_quote

@@ -370,16 +370,23 @@ table > caption {
 }
 
 .site-header,
-.site-header * {
+.site-header *,
+.work-header,
+.work-header * {
   font-family: var(--headings-font-family);
   color: var(--color-dark);
 }
 
 .site-header\:nav-items * {
   background-color: var(--color-masthead);
+  padding: var(--scale-xxxxxs);
   font-size: var(--scale-base);
-  line-height: var(--scale-base);
+  line-height: var(--scale-s);
   text-align: center;
+}
+
+.work-header {
+  padding-top: var(--scale-base);
 }
 
 .title {
@@ -507,6 +514,7 @@ p.post-index-item\:summary {
 }
 
 .site-header hr,
+.work-header hr,
 .footer hr,
 section.footnotes hr {
   height: 0;
@@ -520,7 +528,6 @@ section.footnotes hr {
 
 .footnote-back::before {
   content: "# ";
-
 }
 
 a.site-feed {
@@ -528,4 +535,12 @@ a.site-feed {
   background-size: var(--scale-base);
   background-position: left;
   padding-left: var(--scale-l);
+}
+
+.rc-scout {
+  font-family: var(--headings-font-family);
+  font-size: var(--scale-s);
+  line-height: var(--scale-l);
+  color: var(--color-dark);
+  overflow-x: auto;
 }

@@ -127,7 +127,7 @@ shite_template_common_header() {
   <div class="box invert stack">
     <div class="with-sidebar site-header">
       <a class="box icon" href="${shite_global_data[base_url]}/index.html">
-        <img src="${shite_global_data[base_url]}/${shite_global_data[title_icon]}" alt="${shite_global_data[title]}">
+        <img src="${shite_global_data[base_url]}/${shite_global_data[title_icon]}" loading="lazy" alt="${shite_global_data[title]}">
       </a>
       <div class="stack">
         <h1 class="site-header title">${title}</h1>
@@ -159,6 +159,9 @@ shite_template_common_nav_items() {
 </a>
 <a href="${shite_global_data[base_url]}/posts/index.html">
    &#9753; read
+</a>
+<a href="${shite_global_data[base_url]}/posts/software-demos/index.html#main">
+  &#x262F; demo!
 </a>
 <a href="mailto:hello@evalapply.org">
    &nbsp;&#x2709; write
