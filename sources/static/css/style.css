@@ -537,7 +537,8 @@ a.site-feed {
   padding-left: var(--scale-l);
 }
 
-.rc-scout {
+.rc-scout,
+.rc-scout * {
   font-family: var(--headings-font-family);
   font-size: var(--scale-s);
   line-height: var(--scale-l);
