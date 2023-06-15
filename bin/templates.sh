@@ -400,7 +400,7 @@ shite_template_indices_tag_page_index() {
         # of the shape first_published$'\t'html$'\t'slug$'\t'tags$'\t'title
         # NOTE: We have to use PCRE (-P) instead of EGREP (-E), because apparently
         # EGREP doesn't have a pattern for the tab characters alone. Bah.
-        stdbuf -oL grep -P -e "^[[:digit:]-]+\tposts/.*\t.*${tag_name}.*\t.*$" |
+        stdbuf -oL grep -P -e "^[[:digit:]-]+\tposts/.*[\t\s]+${tag_name}[\s\t]+.*$" |
         shite_template_indices_posts_list |
         cat <<EOF
 <div class="stack">
