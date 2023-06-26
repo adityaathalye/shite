@@ -1,0 +1,56 @@
+# SHITE_META
+#+title: What have you been curious about?
+#+summary: Arguably a more interesting, revealing, and kinder question than "What are you curious about?"
+#+author: Adi
+#+date: 2023-06-21
+#+updated: 2023-06-21
+#+tags: meta riff
+#+include_toc: no
+# SHITE_META
+
+If you are anything like me, you will have about five answers at any given point
+in time for "What /are/ you curious about?". And that set will change depending
+on the day of the week. Or, also like me, you may be having that sort of week
+where you (mistakenly) "know for sure, beyond a shadow of doubt" that you have
+lost the curiosity directive. Basically, you might immediately (and once again,
+mistakenly) feel like a flake or a failure or some horrid in-between. I sure do.
+
+Luckily, arguably, a more interesting, revealing, and kinder question is;
+"What /have you been/ curious about?".
+
+You see as it happens, days glom into weeks, weeks into months and maybe even
+years. Only in hindsight do I discover that I /have been/ non-casually curious
+about "X". That my mind kept returning to that "X". That it drove me to action
+in some way; a blog post written, a book read, a long discussion had, a life
+experiment attempted, a tutorial followed, a behaviour tried, an experience opted
+into etc.
+
+For me the last year-plus became about examining the contents of my mind,
+identifying observing and acknowledging personal traits and oddities, making the
+self do things that past-me would scoff at or shy away from or fear, articulating
+what I want my professional life to be, and so forth.
+
+I can tell that this has been the "curiosity drive" that I was so convinced I had
+lost permanently, because I recently created a [[https://www.evalapply.org/now]["now" page]] that
+publicly reflects some of that, and ended up writing [[https://www.evalapply.org/posts/software-demos/][this blog post]] about what I
+want to do for fun and money(!) and ended up applying for a second batch at the
+[[https://www.recurse.com/][Recurse Center]] (starting soon!).
+
+That sounded like heavy work, but I have honest-to-goodness been /playing/ in the
+sense of /serious play/. Among other things, I have re-framed /"adult"/ as /"still
+an impish, wide-eyed, curious thirteen year old underneath sediments and crusty/
+/layers of accreted life experiences and beliefs and rules and... just *stuff*"/.
+
+And I feel a looking-back-to-curiosity exercise has power to shed light on where
+to look ahead (and why to do it). More so, I feel it has power to grant permission
+to that "insatiably curious thirteen year old self" to step out and /play/.
+Because it probably already has been up to something, while your attention was
+elsewhere.
+
+So, here is a prompt (see what I just did there? ;-)) ...
+
+*/What /have you been/ curious about?/*
+
+LLAP _\\//
+
+(NB: This is a lightly edited version of my newsletter that went out today.)
