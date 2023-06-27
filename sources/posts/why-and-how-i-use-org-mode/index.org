@@ -4,7 +4,7 @@
 #+author: Adi
 #+date: 2022-04-19
 #+updated: 2022-04-19
-#+tags: howto whyto org_mode local_first notebooks knowledge_management tools_for_thought
+#+tags: howto whyto emacs org_mode local_first notebooks knowledge_management tools_for_thought
 #+include_toc: yes
 # SHITE_META
 

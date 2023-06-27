@@ -1,0 +1,99 @@
+# SHITE_META
+#+title: Emerging from dotemacs bankruptcy the hard way
+#+summary: Or, finally biting the bullet to redesigning my developerly and writerly experience, from the ground up, with Emacs.
+#+author: Adi
+#+date: 2023-06-29
+#+updated: 2023-06-29
+#+tags: programming emacs howto
+#+include_toc: no
+# SHITE_META
+
+#+caption: [[https://xkcd.com/378/][XKCD/378]]: Real Programmers.
+[[https://imgs.xkcd.com/comics/real_programmers.png]]
+
+My extant Emacs configuration is built with the handy and battle tested [[https://github.com/bbatsov/prelude][prelude]]
+starter kit, created by indomitable Emacs fanatic and gentleman hacker, [[https://metaredux.com/about/][bbatsov]],
+a.k.a. "Bug", a.k.a. Bozhidar Batsov.
+
+The smart move would be to stick with /prelude/ and fix /my/ gunk instead. However,
+for better or worse, it is /that time/ in my developer life-cycle. The irrational
+gnawing urge to take it apart and rebuild it in my own image has overpowered my
+standard clawing reluctance to fix what ain't broke.
+
+#+caption: [[https://xkcd.com/1172/][XKCD/1172]]: Every change breaks someone's workflow.
+[[https://imgs.xkcd.com/comics/workflow.png]]
+
+To be honest, it has been /that time/ for a good while now. Like, years? As it
+happens, I had to face facts when I got serious about overhauling my Emacs config.
+My Emacs 26 was three major versions behind. But underneath lurked my OS, at the
+fag end of its LTS support window. So /of course/, the OS /had/ to be upgraded
+first. Two major LTS version upgrades later I had to let it rest. Then I fell
+into writing my [[https://github.com/adityaathalye/shite][site-maker]], because otherwise how would I blog about reduxing
+my dotemacs?
+
+Meanwhile, desire to actually redux my config waned.
+
+Now it waxes eloquent.
+
+Plus, I am in-batch at [[https://www.recurse.com/][the Recurse Center]], as I type this.
+It is a place where Yak Shaving for Joy is revered as a noble pursuit. As is
+proper form.
+
+Because it is our second coming, we already know we want a few things, listed
+below, in no particular order.
+- Clutter-free GUI
+- Easy, fast, RSI-free navigation and movement (chording, completions)
+- Quick, easy GUI organisation (split/move/switch/resize windows)
+- Awesome completions everywhere (helm and/or ivy)
+- Good undo/redo support (undo-tree)
+- Expansions and boilerplate templates (Yasnippet)
+- Org mode stuff (org-babel, present, export backends etc.)
+- Version Control (magit)
+- Polyglot Programming Language Support
+  - LSP everywhere as far as possible
+  - Clojure, MIT Scheme, Common Lisp, Bash, SQL, OCaml, APL, Java, JS, HTML, CSS, XML, YAML at least
+  - Repo-wide refactorings
+  - Structural code editing
+  - Code folding
+  - Code navigation (jump-to-definition etc.)
+  - Auto linting
+  - Auto formatting
+  - Auto builds where applicable
+  - Top notch remote REPL support (Clojure, Scheme etc.)
+  - Multiple cursors
+- Diagramming
+- Various creature comforts
+  - Nice theme, icons, typography
+  - Font resizes for coding, demos, presentations
+  - Auto save / restore files
+  - Auto save / restore workspace
+  - Recent files memory
+  - ...
+- Maybe other use cases I don't currently employ too much
+  - Email
+  - PDF reading
+  - Web browsing
+- etc...
+
+A partial list of references being perused in this noblest of Yak Shaves.
+- m'colleague [[https://github.com/suvratapte/dot-emacs-dot-d][suvrat's dotemacs]] and [[https://suvratapte.com/configuring-emacs-from-scratch-intro/][blog posts]]
+- m'colleague [[https://github.com/vedang/emacs-up][vedang's dotemacs]]
+- [[https://github.com/purcell/emacs.d][purcell's dotemacs]]
+- System Crafters' [[https://systemcrafters.net/emacs-from-scratch/][Emacs from scratch]] series
+- Mickey's mighty fine [[https://www.masteringemacs.org/][Mastering Emacs]] book
+- The [[https://www.gnu.org/software/emacs/manual/][Emacs Manual]]
+- The [[https://www.emacswiki.org/][Emacs Wiki]]
+
+Last but not least, a bankruptcy emergence requires a bankruptcy filing. The
+filing is hereby filed. The game is afoot. And /prelude/ remains my spiritual guide.
+
+#+begin_quote
+Remember that the ultimate goal of every Emacs user is to create an Emacs setup
+that reflects their own experience, needs, goals and ideas. Just like Lisp, Emacs
+is nothing but a raw building material for the perfect editing experience.
+
+--- [[https://github.com/bbatsov/prelude#philosophy][prelude's README/philosophy]]
+#+end_quote
+
+#+caption: [[https://xkcd.com/1205/][XKCD/1205]]: Is It Worth the Time?
+[[https://imgs.xkcd.com/comics/is_it_worth_the_time.png]]
