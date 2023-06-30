@@ -63,7 +63,7 @@ __shite_events_gen_csv() {
         -e "s;.*,sources,[-[:alnum:]_]?+\.(org|md|html),.*;\0,rootpages;"\
         -e "s;.*,sources,posts/index.org,.*;\0,blogindex;"\
         -e 's;.*,static\/.*;\0,static;' \
-        -e 's;.*,posts\/[-[:alnum:]_]?+\/index\.(org|md|html),.*;\0,blog;' \
+        -e 's;.*,posts\/[-[:alnum:]_]+\/index\.(org|md|html),.*;\0,blog;' \
         -e '/,static|blog|rootindex|rootpages|blogindex|(^$)$/{p ; d}' \
         -e 's;.*;\0,generic;'
 }
