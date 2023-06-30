@@ -1,10 +1,10 @@
 # SHITE_META
-#+title: Emerging from dotemacs bankruptcy the hard way
+#+title: Emerging from dotemacs bankruptcy the hard way: Prelude
 #+summary: Or, finally biting the bullet to redesigning my developerly and writerly experience, from the ground up, with Emacs.
 #+author: Adi
 #+date: 2023-06-29
 #+updated: 2023-06-29
-#+tags: programming emacs howto
+#+tags: programming emacs howto recurse_center
 #+include_toc: no
 # SHITE_META
 

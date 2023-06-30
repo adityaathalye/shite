@@ -1,0 +1,123 @@
+# SHITE_META
+#+title: Emerging from dotemacs bankruptcy the hard way: init begins
+#+summary: The first action must, of course, be to colour the bikeshed and set some decent defaults.
+#+author: Adi
+#+date: 2023-06-30
+#+updated: 2023-06-30
+#+tags: programming emacs howto recurse_center
+#+include_toc: no
+# SHITE_META
+
+Jokes apart, my first action has been to read and learn from other peoples'
+configurations. I am referencing a small set of familiar-to-me configs I noted
+[[../emerging-from-dotemacs-bankruptcy/index.html][previously]]. It pays to be
+circumspect. One can [[https://www.emacswiki.org/emacs/ExampleConfigurations][drown in configs]].
+
+OK, so I already have my day-to-day Emacs. It has pulled down packages, and it
+has set globals and so forth. I want to live-develop my new config on the same
+machine, without clobbering contents of the old .emacs.d, and without picking up
+any of my existing init files, which Emacs [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Init-File.html][finds by default]] at startup.
+
+This means start a new Emacs session only with my draft init file, like so.
+#+begin_src shell
+emacs -q -l path/to/new/init.el
+#+end_src
+
+And I must ensure I set paths for package downloads, temporary files, and other
+file-based state in a safe enough way. The init file snippet below sets and/or
+defines values I have researched so far. The preamble and postfix to the config
+code is conventional Emacs-speak. An elisp package linter will complain if the
+information is incomplete, or the text is improper.
+
+#+html: <details class="box invert stack">
+#+html: <summary>
+#+html: <code>The barebones init.el</code>
+#+html: <hr>
+#+html: </summary>
+#+begin_src elisp
+  ;;; init.el --- My Emacs configuration.
+
+  ;;; Commentary:
+
+  ;;; This file is not part of GNU Emacs.
+
+  ;;; Author: Aditya Athalye
+  ;;; Created on: 30 June 2023
+  ;;; Copyright (c) 2023 Aditya Athalye
+
+  ;;; License:
+  ;;; This program is free software; you can redistribute it and/or
+  ;;; modify it under the terms of the MIT license, which is included
+  ;;; with this distribution. See the LICENCE.txt file.
+
+  ;;; Code:
+
+  ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; Globals
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  ;; Always load newest byte code
+  (setq load-prefer-newer t) ; cf. bbatsov/prelude
+
+  ;; Directory structure
+  ;; Take clues from bbatsov/prelude, except keep structure relative to our
+  ;; initial dotemacs-dir path. This way we can start the user's emacs via
+  ;; ~/.emacs.d symlinked to the dotemacs repo, and develop/debug against
+  ;; the repo without potentially overwriting transient state files of the
+  ;; daily driver .emacs.d.
+  (defvar dotemacs-dir (file-name-directory load-file-name)
+    "The dotemacs' root.")
+  (defvar dotemacs-savefile-dir (expand-file-name "savefile" dotemacs-dir)
+    "This folder stores all the automatically generated save/history-files.")
+  (unless (file-exists-p dotemacs-savefile-dir)
+    (make-directory dotemacs-savefile-dir))
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; Visual Aesthetics
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  (setq inhibit-startup-message t)
+
+  ;; More screen real estate
+  (scroll-bar-mode 0)
+  (tool-bar-mode 0)
+  (menu-bar-mode 0)
+  (set-fringe-mode '(5 . 13)) ;; describe variable fringe-mode
+
+  ;; Go easy on the eyes
+  ;; This high-contrast darkmode theme is built into Emacs as of
+  ;; Emacs version 28.1
+  (load-theme 'modus-vivendi)
+
+
+  (provide 'init)
+  ;;; init.el ends here
+#+end_src
+#+html: </details>
+
+These preliminaries /not at all obvious/---"clean GUI", garbage collection (GC)
+thresholds, native compilation, lockfiles, savefiles, "better defaults" settings,
+a decent high-contrast theme. They are "unknown unknowns". They are not easy to
+discover, context-free, as many functions and variables can be oddly named, and
+do not follow any globally standard naming convention. The manual is vast, and
+combing through it to learn stuff for our purpose is inadvisable. Settings are
+also matters of personal taste and need. This is why it helps to read different
+configs; to acquire context, acquire vocabulary, and to form opinions. And when
+tastes (or facts) change, one can always change one's mind /and/ dotemacs!
+
+The rough plan has been:
+- [✓] Set the very preliminaries.
+- Set up package management. I'll probably stick with the old familiars; elpa and
+  melpa. I'm not sure about straight.el at this time.
+- Choose ~use-package~ to get and configure each package. I like how neat configs
+  are, when defined with use-package.
+- Make completions and "getting about" work (the right mix of ivy, consul,
+  swiper, company, helm, imenu). Someone mentioned newer alternatives to helm.
+  Have a look at that.
+- Fix general text editing stuff (keybindings, multiple cursors, snippets etc.)
+- Add support for favourite programming languages.
+- org-mode specifics
+- then let's see...
+
+I feel like by this point the new init.el will be good enough to switch to,
+as my daily driver. Next up, package management and useful packages.
