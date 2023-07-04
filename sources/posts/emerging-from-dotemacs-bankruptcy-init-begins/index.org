@@ -2,8 +2,8 @@
 #+title: Emerging from dotemacs bankruptcy the hard way: init begins
 #+summary: The first action must, of course, be to colour the bikeshed and set some decent defaults.
 #+author: Adi
-#+date: 2023-06-30
-#+updated: 2023-06-30
+#+date: 2023-07-04
+#+updated: 2023-07-04
 #+tags: programming emacs howto recurse_center
 #+include_toc: no
 # SHITE_META
