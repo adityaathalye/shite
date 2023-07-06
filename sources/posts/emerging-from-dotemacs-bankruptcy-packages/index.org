@@ -1,0 +1,257 @@
+# SHITE_META
+#+title: Emerging from dotemacs bankruptcy the hard way: package management
+#+summary: Elpa, Melpa, git repo. Vendor package straight from source. It compiled? Fetch some more! Elpa, Melpa, git repo. In more adult terms, we learn to use use-package to fetch, install, initialise, configure useful packages that enhance our Emacs experience.
+#+author: Adi
+#+date: 2023-07-06
+#+updated: 2023-07-10
+#+tags: programming emacs howto recurse_center
+#+include_toc: no
+# SHITE_META
+
+A nearly half-century old community-run software project that bills itself /"the
+advanced, extensible, customisable, self-documenting editor"/ [fn:1] is going to
+have an /interesting/ customisation story. The following note may give you a more
+visceral sense of what I mean.
+
+I ended up reading documentation for the built-in ~auto-save-mode~ function, as
+I want to configure a certain kind of auto-save behaviour [fn:2]. I noticed its
+documentation says /"Probably introduced at or before Emacs version 1.6"/. That
+is, version One point Six. /Probably/. Whereas the Emacs version history page[fn:3]
+goes back only to the point Emacs was announced to the public on Usenet, which
+was version 13.0, which was /Thirty Eight years/ ago; i.e. auto save mode has
+been customisable far longer than that.
+
+Generally speaking, there are three approaches to customisation.
+- Using the GUI: The so-called "Easy Customization Interface" [fn:4]. This limits
+  us to modifying values of variables exposed by modes and packages (which we can
+  ~M-x package-install~). This is pretty powerful in itself, but can get tedious
+  and brittle to maintain and to repeat across machines.
+- Using elisp; whether written by others (packages, starter kits [fn:5]), or
+  written by oneself (init file configurations, custom functions, "defadvice"s,
+  and even bespoke major/minor modes).
+- Using X Options and Resources; which is obscure enough to appear in Appendix D
+  of the GNU Emacs manual, so I am not even going there.
+
+And as with anything the effort investment is about "build" v/s "buy". Writing a
+custom dotemacs (instead of just using a starter kit) is the "build" part, and
+using packages is "buy" part (which starter kits make ever so easy).
+
+Part of the allure of starter kits is that they reduce the need to write a lot
+of boilerplate and/or repetitive elisp. /However/ elisp can also write the boring
+elisp for us. And that is exactly what use-package does.
+
+Lisp macrology FTW [fn:6]!
+
+#+begin_quote
+The use-package macro allows you to isolate package configuration in your .emacs
+file in a way that is both performance-oriented and, well, tidy. I created it
+because I have over 80 packages that I use in Emacs, and things were getting
+difficult to manage. Yet with this utility my total load time is around 2 seconds,
+with no loss of functionality!
+
+--- [[https://jwiegley.github.io/use-package/][jwiegley]]
+#+end_quote
+
+Use-package delivers on its sales pitch; e.g.
+- [[https://github.com/jwiegley/dot-emacs][jweigley's own dotemacs]] of course (excellent reference material,
+  but fairly intimidating to me, to begin with)
+- M'colleague Suvrat's [[https://github.com/suvratapte/dot-emacs-dot-d/][dotemacs]] exemplifies ti tidiness I seek.
+- Ian Y.E. Pan's [[https://ianyepan.github.io/posts/setting-up-use-package/][most approachable use-package tutorial]]
+  eased me into a useful mental model that I am currently working with.
+
+I want to move my workflow to the "new" Emacs as fast as possible. So to begin
+with, I chose to enhance code completions (company-mode), lisp editing (paredit),
+and version control (magit). Now developing my dotemacs in my new Emacs is nicer!
+
+The init.el so far ([[../emerging-from-dotemacs-bankruptcy-init-begins/index.html][previously]])...
+
+#+html: <details class="box invert stack">
+#+html: <summary>
+#+html: <code>Enhanced Lisp editing, using use-package</code>
+#+html: <hr>
+#+html: </summary>
+#+begin_src elisp
+  ;;; init.el  -*- lexical-binding: t -*-  --- My Emacs configuration.
+
+  ;;; Commentary:
+
+  ;;; This file is not part of GNU Emacs.
+
+  ;;; Author: Aditya Athalye
+  ;;; Created on: 30 June 2023
+  ;;; Copyright (c) 2023 Aditya Athalye
+
+  ;;; License:
+  ;;; This program is free software; you can redistribute it and/or
+  ;;; modify it under the terms of the MIT license, which is included
+  ;;; with this distribution. See the LICENCE.txt file.
+
+  ;;; Code:
+
+  ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; Globals
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  ;; Always load newest byte code
+  (setq load-prefer-newer t) ; cf. bbatsov/prelude
+
+  ;; Directory structure
+  ;; Take clues from bbatsov/prelude, except keep structure relative to our
+  ;; initial dotemacs-dir path. This way we can start the user's emacs via
+  ;; ~/.emacs.d symlinked to the dotemacs repo, and develop/debug against
+  ;; the repo without potentially overwriting transient state files of the
+  ;; daily driver .emacs.d.
+  (defvar dotemacs-dir
+    (file-name-directory (or load-file-name (buffer-file-name)))
+    "The dotemacs' root.  Normally it should be ~/.emacs.d.")
+
+  (defvar dotemacs-savefile-dir (expand-file-name "savefile" dotemacs-dir)
+    "This folder stores all the automatically generated save/history-files.")
+  (unless (file-exists-p dotemacs-savefile-dir)
+    (make-directory dotemacs-savefile-dir))
+
+  ;; Make emacs add customisations here, instead of the init file.
+  ;; Usually customisations made from the UI go into custom-file.
+  (setq custom-file (expand-file-name "custom.el" dotemacs-dir))
+  (unless (file-exists-p custom-file)
+    (make-empty-file custom-file))
+
+  ;; Sundries
+  (setq indent-tabs-mode nil) ; no hard tabs
+  (setq create-lockfiles nil) ; no lockfiles
+  (setq ring-bell-function 'ignore) ;
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; Visual Aesthetics
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  (setq inhibit-startup-message t)
+
+  ;; More screen real estate
+  (scroll-bar-mode 0)
+  (tool-bar-mode 0)
+  (menu-bar-mode 0)
+  (set-fringe-mode '(5 . 13)) ;; describe variable fringe-mode
+
+  ;; Go easy on the eyes
+  ;; This high-contrast darkmode theme is built into Emacs as of
+  ;; Emacs version 28.1
+  (load-theme 'modus-vivendi)
+
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; Package management
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  (require 'package)
+  ;; Explicitly set the exact package archives list
+  (setq package-archives '(("melpa" . "https://melpa.org/packages/")
+                           ("org" . "https://orgmode.org/elpa/")
+                           ("elpa" . "https://elpa.gnu.org/packages/")))
+  ;; Set package download directory relative to the dotemacs-dir
+  (setq package-user-dir (expand-file-name "elpa" dotemacs-dir))
+
+  (package-initialize)
+  (unless package-archive-contents
+    (package-refresh-contents))
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; Use use-package
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  ;; Ian Y.E. Pan's tutorial is a nice quick overview.
+  ;; https://ianyepan.github.io/posts/setting-up-use-package/
+
+  (unless (package-installed-p 'use-package)
+    (package-install 'use-package))
+
+  (require 'use-package)
+  (setq use-package-always-ensure t)
+  (setq use-package-expand-minimally t) ; set nil to debug use-package forms
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; All the packages!
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  ;;; Packages useful to configure packages
+  (use-package diminish)
+  (use-package delight)
+
+  ;;; COMplete ANYthing, please!
+  ;;; h/t suvratapte/dot-emacs-dot-d
+  (use-package company
+    :bind (:map global-map
+                ("TAB" . company-complete-common-or-cycle))
+    :config
+    (setq company-idle-delay 0.1)
+    (global-company-mode t)
+    :diminish)
+
+  ;;; General code editing
+  (global-display-line-numbers-mode 1)
+
+  ;;; Lispy editing support
+
+  ;; Tweak settings of built-in paren package
+  (use-package paren
+    :ensure nil ; it already exists, don't try to search online
+    :init
+    (setq show-paren-delay 0)
+    :config
+    (show-paren-mode t)
+    :diminish)
+
+  (use-package paredit
+    :init
+    (add-hook 'emacs-lisp-mode-hook #'enable-paredit-mode)
+    :bind
+    (("M-[" . paredit-wrap-square)
+     ("M-{" . paredit-wrap-curly))
+    :diminish)
+
+  (use-package magit
+    :diminish)
+
+  (provide 'init)
+  ;;; init.el ends here
+#+end_src
+#+html: </details>
+
+Our current place in the rough plan:
+- [✓] Set the very preliminaries.
+- [✓] Set up package management. I'll probably stick with the old familiars;
+  elpa and melpa. I'm not sure about straight.el at this time.
+- [✓] Choose ~use-package~ to get and configure each package. I like how neat
+  configs are, when defined with use-package.
+- [WIP] Make completions and "getting about" work (the right mix of ivy, consul,
+  swiper, company, helm, imenu). Someone mentioned newer alternatives to helm.
+  Have a look at that.
+- [WIP] Fix general text editing stuff (keybindings, multiple cursors, snippets etc.)
+- [WIP] Add support for favourite programming languages.
+  - [✓] Emacs Lisp
+  - many others...
+- org-mode specifics
+- then let's see...
+
+Next, I will fully enhance completions and code/text navigation. It will make
+/all/ my programming and writing /much/ more ergonomic. And it will help me
+straighten my mental model about why and how to make those enhancements.
+
+* Footnotes
+
+[fn:1] [[https://www.gnu.org/software/emacs/manual/html_node/emacs/index.html ][The Emacs Editor]], GNU Manual
+
+[fn:2] In the end, I decided to use the [[https://github.com/bbatsov/super-save][super-save]] package, instead of futzing
+around with built-in auto-save settings. It will "Save Emacs buffers when they
+lose focus". Yes please.
+
+[fn:3] Emacs version history page goes back only 38 years...
+https://www.gnu.org/software/emacs/history.html
+
+[fn:4] [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Easy-Customization.html ][49.1 Easy Customization Interface]] manual page is but one small part of
+the [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Customization.html][whole customisation story]].
+
+[fn:5] Emacs wiki [[https://www.emacswiki.org/emacs?action=elisp-area][lists many packages]] (~M-x package-list-packages~ in Emacs),
+and many [[https://www.emacswiki.org/emacs/StarterKits][emacs configuration starter kits]].
+
+[fn:6] Emacs Lisp macrology: [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Macros.html][14 Macros]].
