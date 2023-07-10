@@ -40,28 +40,84 @@ Part of the allure of starter kits is that they reduce the need to write a lot
 of boilerplate and/or repetitive elisp. /However/ elisp can also write the boring
 elisp for us. And that is exactly what use-package does.
 
-Lisp macrology FTW [fn:6]!
+Lisp macrology FTW [fn:6]! For example...
 
-#+begin_quote
-The use-package macro allows you to isolate package configuration in your .emacs
-file in a way that is both performance-oriented and, well, tidy. I created it
-because I have over 80 packages that I use in Emacs, and things were getting
-difficult to manage. Yet with this utility my total load time is around 2 seconds,
-with no loss of functionality!
+The most basic use-package definition.
+#+begin_src elisp
+  (use-package delight)
+#+end_src
+Translates to...
+#+begin_src elisp
+  (macroexpand
+   '(use-package delight))
+#+end_src
+This elisp code...
+#+begin_src elisp
+  (use-package-ensure-elpa 'delight '(t) 'nil)
+  (require 'delight nil nil)
+#+end_src
 
---- [[https://jwiegley.github.io/use-package/][jwiegley]]
-#+end_quote
+That was not very impressive, visually-speaking. A more typical definition with
+some basic customisations is more eye-opening.
+#+begin_src elisp
+(use-package company
+    :bind (:map global-map ; because we make company-mode global
+                ("TAB" . company-complete-common-or-cycle))
+    :config
+    (setq company-idle-delay 0.1)
+    (global-company-mode t)
+    :diminish)
+#+end_src
+Let's ~macroexpand~ that whole form.
+#+begin_src elisp
+  (macroexpand
+   '(use-package company
+      :bind (:map global-map ; because we make company-mode global
+                  ("TAB" . company-complete-common-or-cycle))
+      :config
+      (setq company-idle-delay 0.1)
+      (global-company-mode t)
+      :diminish))
+#+end_src
+The result is code we would have to hand-write if we chose to do the same with
+regular elisp /and/ the ~bind-keys~ macro provided by the ~bind-keys~ package,
+which comes bundled with ~use-package~. Meaning, if we did not have a utility
+package like ~bind-keys~, we would end up writing even more elisp to /safely/
+bind keys [fn:7].
+#+begin_src elisp
+  (use-package-ensure-elpa 'company '(t) 'nil)
 
-Use-package delivers on its sales pitch; e.g.
+  (unless (fboundp 'company-complete-common-or-cycle)
+    (autoload #'company-complete-common-or-cycle "company" nil t))
+
+  (eval-after-load 'company
+    '(progn (setq company-idle-delay 0.1)
+            (global-company-mode t)
+            (if (fboundp 'diminish)
+                (diminish 'company-mode)) t))
+
+  (bind-keys
+   :package company
+   :map global-map
+   ("TAB" . company-complete-common-or-cycle))
+#+end_src
+
+Starter kits like ~prelude~, ~spacemacs~, or ~doom-emacs~ do just this sort of
+elisp heavy lifting for us. I like those, but I feel ~use-package~ is in a class
+of its own. A fantastic utility with an elegant interface that delivers handsomely
+on its sales pitch. For example:
 - [[https://github.com/jwiegley/dot-emacs][jwiegley's own dotemacs]] of course (excellent reference material,
   but fairly intimidating to me, to begin with)
 - M'colleague Suvrat's [[https://github.com/suvratapte/dot-emacs-dot-d/][dotemacs]] exemplifies the tidiness I seek.
 - Ian Y.E. Pan's [[https://ianyepan.github.io/posts/setting-up-use-package/][most approachable use-package tutorial]]
   eased me into a useful mental model that I am currently working with.
 
-I want to move my workflow to the "new" Emacs as fast as possible. So to begin
-with, I chose to enhance code completions (company-mode), lisp editing (paredit),
-and version control (magit). Now developing my dotemacs in my new Emacs is nicer!
+So that completes the ~use-package~ story.
+
+Going further, I want to move my workflow to the "new" Emacs as fast as possible.
+So to begin with, I chose to enhance code completions (company-mode), lisp editing
+(paredit), and version control (magit). Now developing my dotemacs in my new Emacs
+is nicer!
 
 The init.el so far ([[../emerging-from-dotemacs-bankruptcy-init-begins/index.html][previously]])...
 
@@ -255,3 +311,40 @@ the [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Customization.ht
 and many [[https://www.emacswiki.org/emacs/StarterKits][emacs configuration starter kits]].
 
 [fn:6] Emacs Lisp macrology: [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Macros.html][14 Macros]].
+#+begin_quote
+The use-package macro allows you to isolate package configuration in your .emacs
+file in a way that is both performance-oriented and, well, tidy. I created it
+because I have over 80 packages that I use in Emacs, and things were getting
+difficult to manage. Yet with this utility my total load time is around 2 seconds,
+with no loss of functionality!
+
+--- [[https://jwiegley.github.io/use-package/][jwiegley]]
+#+end_quote
+
+[fn:7] The ~bind-keys~ form macroexpands to this.
+#+begin_src elisp
+  (macroexpand
+   '(bind-keys
+     :package company
+     :map global-map
+     ("TAB" . company-complete-common-or-cycle)))
+
+  (let* ((name "TAB")
+         (key "	")
+         (kmap (or (if (and nil (symbolp nil))
+                       (symbol-value nil)
+                     nil)
+                   global-map))
+         (kdesc (cons (if (stringp name)
+                          name
+                        (key-description name))
+                      (if (symbolp nil) nil 'nil)))
+         (binding (lookup-key kmap key)))
+    (let ((entry (assoc kdesc personal-keybindings))
+          (details (list #'company-complete-common-or-cycle
+                         (unless (numberp binding) binding))))
+      (if entry
+          (setcdr entry details)
+        (add-to-list 'personal-keybindings (cons kdesc details))))
+    (define-key kmap key #'company-complete-common-or-cycle))
+#+end_src
