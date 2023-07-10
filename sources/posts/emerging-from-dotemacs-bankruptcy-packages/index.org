@@ -53,9 +53,9 @@ with no loss of functionality!
 #+end_quote
 
 Use-package delivers on its sales pitch; e.g.
-- [[https://github.com/jwiegley/dot-emacs][jweigley's own dotemacs]] of course (excellent reference material,
+- [[https://github.com/jwiegley/dot-emacs][jwiegley's own dotemacs]] of course (excellent reference material,
   but fairly intimidating to me, to begin with)
-- M'colleague Suvrat's [[https://github.com/suvratapte/dot-emacs-dot-d/][dotemacs]] exemplifies ti tidiness I seek.
+- M'colleague Suvrat's [[https://github.com/suvratapte/dot-emacs-dot-d/][dotemacs]] exemplifies the tidiness I seek.
 - Ian Y.E. Pan's [[https://ianyepan.github.io/posts/setting-up-use-package/][most approachable use-package tutorial]]
   eased me into a useful mental model that I am currently working with.
 
