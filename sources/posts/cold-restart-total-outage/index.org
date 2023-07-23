@@ -1,9 +1,9 @@
 # SHITE_META
 #+title: Cold restart whole system after total outage
-#+summary: "What are folks’ views on systems so large where cold-starting the whole system is almost impossible?"... — M'colleague In A Slackroom Next Door.
+#+summary: "What are folks’ views on systems so large where cold-starting the whole system is almost impossible?"... — M'colleague, Shivam, In A Slackroom Next Door.
 #+author: Adi
 #+date: 2023-04-07
-#+updated: 2023-04-07
+#+updated: 2023-07-23
 #+tags: riff systems complexity meta
 #+include_toc: no
 # SHITE_META
@@ -16,7 +16,7 @@ happened which caused all the fancy microservices, IAM, etc etc are dead.
 started laying off the bird app’s employees and everyone was saying twitter will
 go down and it will be almost impossible to cold start it."
 
---- M'colleague spake further
+--- M'colleague, [[https://twitter.com/shivam_310][Shivam Singhal]] , spake further
 #+end_quote
 
 Nerdsnipe!
@@ -182,3 +182,9 @@ Hey, I just wrote a blog post :p :)
 
 and stopped the wall-of-texting. /But/ you and I can keep riffing, if you like
 long-running email conversations...
+
+#+html: <section class="footnotes">
+#+html: <hr>
+See [[https://news.ycombinator.com/item?id=36792421][discussion at HN]]. Several cool anecdotes and some useful critiques.
+#+html: <hr>
+#+html: </section>

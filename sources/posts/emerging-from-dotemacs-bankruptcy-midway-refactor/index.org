@@ -1,0 +1,397 @@
+# SHITE_META
+#+title: Emerging from dotemacs bankruptcy the hard way: the midway refactor
+#+summary: Or the one in which we confront our elisp n00bishness and try to be better at using it. And we learn new habits to understand our Emacs better. Better late than never.
+#+author: Adi
+#+date: 2023-07-23
+#+updated: 2023-07-23
+#+tags: programming emacs howto recurse_center
+#+include_toc: no
+# SHITE_META
+
+Part way through "the plan", I realised a few things:
+- I had been learning elisp by osmosis. I needed to make some of it explicit.
+- A subtle bug or two had crept in.
+- Better code layout and organisation would ease my life.
+- I should have added more "better defaults" already.
+
+Areas for improvement presented themselves, such as purpose and usage of ~setq~,
+~put~, ~setq-default~. So I started using ~M-x describe-*~ a lot. I wish I had
+habituated to this when I was new to Emacs. If you are just starting off, wiring
+~describe-*~ into muscle memory early on is a good idea. It will help you:
+- demystify what your Emacs is made of and how it works under the hood
+- learn to use what you have, with expertise (keybindings, modes, features etc.)
+- gain confidence to improve, debug, and tailor Emacs to your needs
+- discover useful and creative ways to do more things with Emacs
+
+~describe-*~ s I have used frequently while developing the dotemacs:
+#+begin_src elisp
+  describe-variable
+  describe-function
+  describe-command
+  describe-package
+#+end_src
+
+Other ~describe-*~ s I have used so far:
+#+begin_src elisp
+  describe-mode
+  describe-key
+  describe-keymap
+  describe-bindings
+  describe-face
+  describe-font
+#+end_src
+
+And when I don't know what's what in the first place, ~apropos~ comes to the
+rescue. Learn that too!
+
+I also enriched help with the ~helpful~ package, discovered in
+[[https://systemcrafters.net/emacs-from-scratch/helpful-ui-improvements/][episode 2 of /Emacs from Scratch/]] by systemcrafters.net.
+
+#+begin_src elisp
+(use-package helpful ; h/t systemcrafters.net
+  ;; https://github.com/Wilfred/helpful
+  :ensure t
+  :bind (("C-h f" . #'helpful-callable)
+         ("C-h F" . #'helpful-function) ; exclude macros
+         ("C-h v" . #'helpful-variable)
+         ("C-h k" . #'helpful-key)
+         ("C-h x" . #'helpful-command)
+         ;; Lookup the current symbol at point. C-c C-d is
+         ;; a common keybinding for this in lisp modes.
+         ("C-c C-d" . #'helpful-at-point)))
+#+end_src
+
+Another thing I discovered was that I had created subtle bugs by not knowing
+Directory v/s File naming conventions. Directory names should always be correctly
+terminated, so they are interpreted and handled correctly. So I started using
+~file-name-as-directory~ since.
+
+#+begin_src elisp
+  (defvar dotemacs-savefile-dir
+    (file-name-as-directory
+     (expand-file-name "savefile" dotemacs-dir))
+    "This folder stores all the automatically generated save/history-files.")
+
+  (unless (file-exists-p dotemacs-savefile-dir)
+    (make-directory dotemacs-savefile-dir))
+#+end_src
+
+Pre-debugging, the savefile dir was ~(expand-file-name "savefile" dotemacs-dir)~,
+and that broke package configuration statements that tried to create savefiles.
+
+On similar lines, I have noticed several dotemacsen in the wild use ~concat~ to
+construct paths. That seems more error-prone (bad path construction), and not
+portable, say, if the same dotemacs needs work on Linux and on Windows. Presumably
+the many inbuilt file and directory manipulation functions exist to handle the
+many platform specific oddities for us. I think it's wise to look these up for
+anything to do with file handling ([[https://www.gnu.org/software/emacs/manual/html_node/emacs/Files.html][see manual]]). Some useful ones are:
+
+#+begin_src elisp
+  file-exists-p
+  expand-file-name
+  file-name-as-directory
+  make-directory
+  make-empty-file
+  load-file
+  load-file-name
+#+end_src
+
+On another level, now that more code was being added, the conceptual layout of
+said code felt ripe for cleanup. I also had a better sense of how and why to do
+this by dint of having read other peoples layout choices. So, many globals were
+consolidated and some more added a la "better defaults". This is where neater use
+of `setq` and `setq-default` helped.
+
+And as a /pièce de résistance/, I also chose to constrain my Emacs to ~v28.1~ or
+higher. Now that this stable version is widely available, I don't anticipate
+trouble in any of my personal or work environments.
+
+The init.el so far ([[../emerging-from-dotemacs-bankruptcy-packages/index.html#main][previously]],
+[[../emerging-from-dotemacs-bankruptcy-init-begins/index.html#main][even earlier]])...
+
+#+html: <details class="box invert stack">
+#+html: <summary>
+#+html: <code>After the mid-way refactor, and some more additions</code>
+#+html: <hr>
+#+html: </summary>
+#+begin_src elisp
+  ;;; package --- init.el  -*- lexical-binding: t -*- --- My Emacs configuration.
+
+  ;;; Commentary:
+
+  ;;; This file is not part of GNU Emacs.
+
+  ;;; Author: Aditya Athalye
+  ;;; Created on: 30 June 2023
+  ;;; Copyright (c) 2023 Aditya Athalye
+
+  ;;; License:
+  ;;; This program is free software; you can redistribute it and/or
+  ;;; modify it under the terms of the MIT license, which is included
+  ;;; with this distribution. See the LICENCE.txt file.
+
+  ;;; Code:
+
+  ;; Set the low bar Emacs compatibility high
+  (defvar dotemacs-min-version "28.1")
+
+  (when (version< emacs-version dotemacs-min-version)
+    (error "We demand spiffy new Emacs, at least v%s, but you have v%s"
+           dotemacs-min-version
+           emacs-version))
+
+  ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; DIRECTORY STRUCTURE
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; Take clues from bbatsov/prelude, except keep structure relative to our
+  ;; initial dotemacs-dir path. This way we can start the user's emacs via
+  ;; ~/.emacs.d symlinked to the dotemacs repo, and develop/debug against
+  ;; the repo without potentially overwriting transient state files of the
+  ;; daily driver .emacs.d.
+
+  (defvar dotemacs-dir
+    (file-name-directory (or load-file-name (buffer-file-name)))
+    "The dotemacs' root.  Normally it should be ~/.emacs.d.")
+
+  (defvar dotemacs-custom-file (expand-file-name "custom.el" dotemacs-dir)
+    "Make Emacs add customisations here, instead of the init file.
+  Usually customisations made from the UI go into `custom-file'.")
+  (setq custom-file dotemacs-custom-file)
+  (unless (file-exists-p dotemacs-custom-file)
+    (make-empty-file dotemacs-custom-file))
+  (load-file custom-file) ; load *now*, instead of unpredictable load sequence
+
+  (defvar dotemacs-savefile-dir (file-name-as-directory
+                                 (expand-file-name "savefile" dotemacs-dir))
+    "This folder stores all the automatically generated save/history-files.")
+  (unless (file-exists-p dotemacs-savefile-dir)
+    (make-directory dotemacs-savefile-dir))
+
+  ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; BETTER DEFAULTS
+  ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; via
+  ;; - technomancy/better-defaults
+  ;; - bbatsov/prelude
+  ;; - vedang/emacs-up
+  ;; - suvratapte/dot-emacs-dot-d
+
+  ;; SPACES OVER TABS,
+  ;; but keep up conventional appearances of 8 character wide tabs.
+  ;; NOTE: Use `C-q TAB` to insert literal tabs.
+  (setq-default indent-tabs-mode nil
+                tab-width 8
+                fill-column 80)
+
+  (setq
+   ;; PERFORMANCE
+   ;; gc ~100MB for better overall performance. ~50-100MB is recommended
+   ;; these days over the long-obsolete default of ~8MB.
+   gc-cons-threshold (* 100 1024 1024)
+   ;; Large files freeze Emacs. Warn for files over ~100MB.
+   large-file-warning-threshold (* 100 1024 1024)
+   ;; Always load newest byte code. cf. bbatsov/prelude
+   load-prefer-newer t
+
+   ;; INTERACTIONS
+   inhibit-startup-message t
+   ring-bell-function 'ignore ; no beeps
+   require-final-newline t ; always well-form files
+   confirm-kill-emacs 'y-or-n-p ; instead of disabling 'C-x C-c'
+   create-lockfiles nil
+   tab-always-indent 'complete
+   tab-first-completion 'word
+   uniquify-buffer-name-style 'forward
+   uniquify-after-kill-buffer-p t ; rename after killing uniquified
+   uniquify-ignore-buffers-re "^\\*") ; spare special buffers
+
+  ;; MORE INTERACTIONS
+  ;; http://ergoemacs.org/emacs/emacs_save_restore_opened_files.html
+  (global-auto-revert-mode 1) ; auto-revert buffer if file-on-disk changes
+  (delete-selection-mode t) ; delete selection for any keypress
+  (add-hook 'before-save-hook 'delete-trailing-whitespace)
+  (fset 'yes-or-no-p 'y-or-n-p) ; typing "yes/no" gets annoying fast
+  (global-unset-key (kbd "C-z")) ; avoid fat fingering `suspend-frame'
+
+  ;; UTF-8 as default encoding
+  ;; ref: http://ergoemacs.org/emacs/emacs_encoding_decoding_faq.html
+  (set-language-environment "UTF-8")
+
+  ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; VISUAL AESTHETICS
+  ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; Go easy on the eyes. This high-contrast darkmode theme is built
+  ;; into Emacs, as of Emacs version 28.1
+  (load-theme 'modus-vivendi)
+
+  ;; More screen real estate
+  (scroll-bar-mode 0)
+  (tool-bar-mode 0)
+  (tooltip-mode 0) ; disable popup, make help text appear in echo area
+  (menu-bar-mode 0)
+  (column-number-mode t)
+  (set-fringe-mode '(5 . 13)) ;; describe variable fringe-mode
+  (global-display-line-numbers-mode 1) ; always show line numbers
+  (global-hl-line-mode +1)
+
+  ;; Tweak Font sizes globally, and also set line number mode
+  (defun adi/set-frame-font--default ()
+    "Interactively set default frame font for day to day work."
+    (interactive)
+    (set-frame-font "-PfEd-DejaVu Sans Mono-normal-normal-normal-*-13-*-*-*-m-0-iso10646-1")
+    (global-display-line-numbers-mode -1))
+
+  (defun adi/set-frame-font--pair-prog ()
+    "Interactively set frame font for pair programming."
+    (interactive)
+    (set-frame-font "-PfEd-DejaVu Sans Mono-normal-normal-normal-*-16-*-*-*-m-0-iso10646-1")
+    (global-display-line-numbers-mode 1))
+
+  (defun adi/set-frame-font--code-demo ()
+    "Interactively set frame font for presentations and demos."
+    (interactive)
+    (set-frame-font "-1ASC-Liberation Mono-normal-normal-normal-*-28-*-*-*-m-0-iso10646-1")
+    (global-display-line-numbers-mode -1))
+
+  ;; Ensure we always start Emacs with the default font.
+  (adi/set-frame-font--default)
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; Package management
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  (require 'package)
+  ;; Explicitly set the exact package archives list
+  (setq package-archives '(("melpa" . "https://melpa.org/packages/")
+                           ("org" . "https://orgmode.org/elpa/")
+                           ("elpa" . "https://elpa.gnu.org/packages/")))
+  ;; Set package download directory relative to the dotemacs-dir
+  (setq package-user-dir (file-name-as-directory
+                          (expand-file-name "elpa" dotemacs-dir)))
+
+  (package-initialize)
+  (unless package-archive-contents
+    (package-refresh-contents))
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; Use use-package
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  ;; Ian Y.E. Pan's tutorial is a nice quick overview.
+  ;; https://ianyepan.github.io/posts/setting-up-use-package/
+
+  (unless (package-installed-p 'use-package)
+    (package-install 'use-package))
+
+  (eval-when-compile
+    (add-to-list 'load-path package-user-dir)
+    (require 'use-package))
+
+  (setq use-package-always-ensure t)
+  (setq use-package-expand-minimally t) ; set nil to debug use-package forms
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; All the packages!
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  ;; Packages useful to configure packages
+
+  ;; radian-software/blackout to tune major/minor mode names
+  ;; in modeline. It unifies functionality of the mutually
+  ;; confusing modeline lighters delight, diminish, and dim.
+  ;; It integrates seamlessly with use-package.
+  (use-package blackout)
+
+  (use-package helpful ; h/t systemcrafters.net
+    ;; https://github.com/Wilfred/helpful
+    :ensure t
+    :bind (("C-h f" . #'helpful-callable)
+           ("C-h F" . #'helpful-function) ; exclude macros
+           ("C-h v" . #'helpful-variable)
+           ("C-h k" . #'helpful-key)
+           ("C-h x" . #'helpful-command)
+           ;; Lookup the current symbol at point. C-c C-d is
+           ;; a common keybinding for this in lisp modes.
+           ("C-c C-d" . #'helpful-at-point)))
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; General text viewing and editing
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  ;; Enable narrowings to enhance focus, and reduce accidental
+  ;; edits of nonfocus areas (thanks to save-restrictions).
+  ;; h/t bbatsov/prelude
+  ;; Note: `C-x n w` makes all visible again.
+  (put 'narrow-to-region 'disabled nil)
+  (put 'narrow-to-page 'disabled nil)
+  (put 'narrow-to-defun 'disabled nil)
+
+  ;; COMplete ANYthing, please!
+  ;; TODO: instead try radian's completion system
+  ;;; ref: https://github.com/radian-software/radian
+  (use-package company
+    :bind (:map global-map
+                ("TAB" . company-indent-or-complete-common)
+                ;; Got to love the name hippie-expand. Use this for general
+                ;; expansions, because company-complete is good for the
+                ;; current/narrow-case expansions. By default, `M-/` binds
+                ;; to the less powerful `dabbrev-expand`. To alter search
+                ;; options, :config the hippie-expand-try-functions-list.
+                ("M-/" . hippie-expand))
+    :config (setq company-idle-delay 0.1
+                  company-minimum-prefix-length 2)
+    (global-company-mode t)
+    :blackout)
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; Lispy editing support
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  ;; Tweak settings of built-in paren package
+  (use-package paren
+    :ensure nil                    ; it already exists, don't try to search online
+    :init
+    (setq show-paren-delay 0)
+    :config
+    (show-paren-mode t)
+    :blackout)
+
+  (use-package paredit
+    ;; Handy configs available at the wiki https://www.emacswiki.org/emacs/ParEdit
+    ;; including combining with eldoc, "electric" enabled modes etc.
+    :ensure t
+    :bind
+    (("M-[" . paredit-wrap-square)
+     ("M-{" . paredit-wrap-curly))
+    :hook ((emacs-lisp-mode lisp-interaction-mode)
+           . paredit-mode)
+    :blackout)
+
+  (use-package magit
+    :diminish)
+
+  (provide 'init)
+    ;;; init.el ends here
+#+end_src
+#+html: </details>
+
+Our current place in the rough plan:
+- [✓] Set the very preliminaries.
+- [✓] Set up package management. I'll probably stick with the old familiars;
+  elpa and melpa. I'm not sure about straight.el at this time.
+- [✓] Choose ~use-package~ to get and configure each package. I like how neat
+  configs are, when defined with use-package.
+- [✓] Unexpectedly refactor the whole thing.
+- [WIP] Make completions and "getting about" work (the right mix of ivy, consul,
+  swiper, company, helm, imenu). Someone mentioned newer alternatives to helm.
+  Have a look at that.
+- [WIP] Fix general text editing stuff (keybindings, multiple cursors, snippets etc.)
+- [WIP] Add support for favourite programming languages.
+  - [✓] Emacs Lisp
+  - many others...
+- org-mode specifics
+- then let's see...
+
+Although not quite... This post is for posterity. By now, I have done a fair bit
+of work on the "getting about" bits of the plan, viz. navigation, movement, window
+layout, UI state, discoverability and so forth. That is for the next post.
