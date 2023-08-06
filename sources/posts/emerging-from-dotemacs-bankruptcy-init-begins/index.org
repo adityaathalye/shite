@@ -8,6 +8,15 @@
 #+include_toc: no
 # SHITE_META
 
+#+html: <div class="footnotes box invert">
+Post series:
+[[../emerging-from-dotemacs-bankruptcy/index.html#main][prelude]] →
+[[../emerging-from-dotemacs-bankruptcy-init-begins/index.html#main][init begins]] (you are here) →
+[[../emerging-from-dotemacs-bankruptcy-midway-refactor/index.html#main][midway refactor]] →
+[[../emerging-from-dotemacs-bankruptcy-packages/index.html#main][packages]] →
+[[../emerging-from-dotemacs-bankruptcy-getting-about/index.html#main][getting about]]
+#+html: </div>
+
 Jokes apart, my first action has been to read and learn from other peoples'
 configurations. I am referencing a small set of familiar-to-me configs I noted
 [[../emerging-from-dotemacs-bankruptcy/index.html][previously]]. It pays to be

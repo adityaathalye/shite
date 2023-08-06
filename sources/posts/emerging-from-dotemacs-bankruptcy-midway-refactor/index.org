@@ -8,6 +8,15 @@
 #+include_toc: no
 # SHITE_META
 
+#+html: <div class="footnotes box invert">
+Post series:
+[[../emerging-from-dotemacs-bankruptcy/index.html#main][prelude]] →
+[[../emerging-from-dotemacs-bankruptcy-init-begins/index.html#main][init begins]] →
+[[../emerging-from-dotemacs-bankruptcy-midway-refactor/index.html#main][midway refactor]] (you are here) →
+[[../emerging-from-dotemacs-bankruptcy-packages/index.html#main][packages]] →
+[[../emerging-from-dotemacs-bankruptcy-getting-about/index.html#main][getting about]]
+#+html: </div>
+
 Part way through "the plan", I realised a few things:
 - I had been learning elisp by osmosis. I needed to make some of it explicit.
 - A subtle bug or two had crept in.

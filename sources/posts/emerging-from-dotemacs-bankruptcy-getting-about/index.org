@@ -8,6 +8,15 @@
 #+include_toc: no
 # SHITE_META
 
+#+html: <div class="footnotes box invert">
+Post series:
+[[../emerging-from-dotemacs-bankruptcy/index.html#main][prelude]] →
+[[../emerging-from-dotemacs-bankruptcy-init-begins/index.html#main][init begins]] →
+[[../emerging-from-dotemacs-bankruptcy-midway-refactor/index.html#main][midway refactor]] →
+[[../emerging-from-dotemacs-bankruptcy-packages/index.html#main][packages]] →
+[[../emerging-from-dotemacs-bankruptcy-getting-about/index.html#main][getting about]] (you are here)
+#+html: </div>
+
 #+caption: My Emacs sessions often look like this. One or more persistent
 #+caption: windows of work-in-progress files, /and/ one or more transient
 #+caption: windows or buffer contexts for functions like search, magit,

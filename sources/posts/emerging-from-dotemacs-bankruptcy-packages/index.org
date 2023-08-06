@@ -7,6 +7,14 @@
 #+tags: programming emacs howto recurse_center
 #+include_toc: no
 # SHITE_META
+#+html: <div class="footnotes box invert">
+Post series:
+[[../emerging-from-dotemacs-bankruptcy/index.html#main][prelude]] →
+[[../emerging-from-dotemacs-bankruptcy-init-begins/index.html#main][init begins]] →
+[[../emerging-from-dotemacs-bankruptcy-midway-refactor/index.html#main][midway refactor]] →
+[[../emerging-from-dotemacs-bankruptcy-packages/index.html#main][packages]] (you are here) →
+[[../emerging-from-dotemacs-bankruptcy-getting-about/index.html#main][getting about]]
+#+html: </div>
 
 A nearly half-century old community-run software project that bills itself /"the
 advanced, extensible, customisable, self-documenting editor"/ [fn:1] is going to
