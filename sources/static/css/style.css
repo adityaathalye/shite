@@ -186,7 +186,7 @@ a[href]:not(:where(
               /* exclude hash only links */
               [href^="#"],
               /* exclude relative but not double slash only links */
-              [href^="./"],[href^="/"]:not([href^="//"]),
+              [href^="./"],[href^="../"],[href^="/"]:not([href^="//"]),
               /* domains to exclude */
               [href^="file:///"],
               [href*="//localhost"],
