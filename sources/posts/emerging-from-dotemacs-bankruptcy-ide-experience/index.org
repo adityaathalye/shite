@@ -1,0 +1,846 @@
+# SHITE_META
+#+title: Emerging from dotemacs bankruptcy the hard way: integrating the IDE (feat. Clojure(Script))
+#+summary: The one in which we design a rich Integrated Development Environment (IDE) experience, using Clojure as our muse. Featuring Language Server Protocol (lsp-mode + clojure-lsp), clojure-mode, cider, and more! Buckle up and get a coffee.
+#+author: Adi
+#+date: 2023-09-07
+#+updated: 2023-09-07
+#+tags: programming emacs howto recurse_center
+#+include_toc: yes
+# SHITE_META
+
+#+html: <div class="footnotes box invert">
+Post series:
+[[../emerging-from-dotemacs-bankruptcy/index.html#main][prelude]] →
+[[../emerging-from-dotemacs-bankruptcy-init-begins/index.html#main][init begins]] →
+[[../emerging-from-dotemacs-bankruptcy-midway-refactor/index.html#main][midway refactor]] →
+[[../emerging-from-dotemacs-bankruptcy-packages/index.html#main][packages]] →
+[[../emerging-from-dotemacs-bankruptcy-getting-about/index.html#main][getting about]] →
+[[../emerging-from-dotemacs-bankruptcy-ide-experience/index.html#main][IDE experience]] (you are here)
+#+html: </div>
+
+#+begin_quote
+Wild brush strokes across canvas
+
+Hands invisible
+
+A cool Starry Night
+#+end_quote
+
+#+caption: My Clojure IDE experience, built around Emacs [fn:1].
+[[file:emacs-clojure-ide-lsp-cider-reveal-gui.jpeg]]
+
+* Why IDEs?
+
+Programs---even small ones---can be incredibly dense and complex. Beyond a
+point, they cannot be understood as mere textual entities. Nor can the human
+mind keep track of a self-updating correct emulation of their live meaning.
+
+This is why people have built, and continue to build, a vast array of tools
+to help us understand and manipulate /meanings/ of programming languages,
+their surroundings, and their runtimes.
+
+/Integrated Development Environments/ (IDEs) provide bundles of these tools
+and services to assist the programmer. Tools and services that:
+- are aware of code syntax and semantics, project layouts and structures
+- are aware of error checks and safeties the language provides (or need bolted-on)
+- can build, publish, use, run, observe, analyze software artifacts
+- help experiment with code, e.g. change code as we step through a debugger
+- these days, even unburden us from pinching StackOverflow answers [fn:2].
+
+* What does "Integrated" mean?
+
+A big task calls for a little philosophical indulgence. I think there are
+at least two lenses we can use to explore this question.
+
+/*One lens:* Tools integrating with *us* as humans./
+
+Emacs, our building material, lets us mould it in our image, all the way
+from the guts of the lisp machine, to packages we use, to how various
+modes play off each other, to interoperability with the OS and third party
+software, to our muscle memory and our brains [fn:3].
+
+/*The other lens:* Integrating with how *other things* are integrated./
+
+For example, a programming language /along with/ its ecosystem. A plaintext
+notebook integrating TODOs, checklists, calendar, live code evaluation,
+export to other formats. A deep integration into code review and CI/CD [fn:4].
+
+/*Perhaps a third lens:* is us integrating back with the development
+environment.../
+
+...by learning the tools, using them better, switching them out when we meet
+their limits. For example, Kotlin is IntelliJ-only. So I just port my daily
+driver Emacs shortcuts to IntelliJ, run it in "Zen" mode. I know it works
+because A) colleagues don't believe that it is, in fact, IntelliJ until I
+restore all the menus, file tree, and sundry visual cues, and because B) my
+muscle memory is oblivious to the differences. It simply continues taking
+care of me. [fn:5]
+
+* John Carmack opines
+
+We can configure our Emacs for this kind of deep integration, with the help
+of specialist tools designed for each language + ecosystem + runtime.
+
+I will make an appeal to authority to set the touchstone for IDE requirements.
+#+begin_export html
+<figure><iframe width="560" height="315" src="https://www.youtube.com/embed/tzr7hRXcwkw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+  <details class="footnotes">
+    <summary>
+      <a href="https://www.youtube.com/watch?v=tzr7hRXcwkw">John Carmack on IDEs, focusing on Debuggers</a> - John Carmack with Lex Fridman.
+      <p>...
+        Anybody who says "Just read the code and think about it"… that's an insane statement. You can't even read all the code of a big system. You have to do experiments on the system.
+      </p>
+      <p><em>—+ expand for more +—</em></p>
+    </summary>
+    <p>...
+      The very first thing I do after writing new code is to set a debugger and
+      step through the function.
+    </p>
+    <p>...
+      When you write code that's going to live for years, and is going to have
+      other people working on it, and it's going to be deployed to millions of
+      people, then you want to use all of these tools. You <em>want</em> to be told it's
+      like "no, you screwed up <em>here, here, and here</em>". That requires an ego check.</p>
+
+    <p>...
+      You have to be open to the fact that everything you are doing is just
+      <em>littered</em> with flaws. It's not that oh you occasionally have a bad day.
+      It's about whatever stream of code you output, there is going to be a
+      statistical regularity of things that you just make mistakes on.</p>
+
+    <p>...
+      There's the whole argument about test-driven design and unit testing versus
+      analysis and different things. I am more in favour of the analysis and the stuff
+      that just like "you can't run your program until you've fixed this" rather than
+      "you can run it and hopefully a unit test will catch it in some way".</p>
+  </details>
+</figure>
+#+end_export
+
+Ok, motivation! Let's make working config now!
+
+* Integration Level One: Language as Plain Text
+
+Programs, for better or worse, continue to be written in plain text. Our
+Emacs already is a pretty good general-purpose text editor that also "just
+works" for /any/ text based programming language. Neat!
+- ~projectile~ for project-aware directory navigation
+- ~magit~ for version control
+- ~avy~ + ~key-chord~ to fluidly navigate / select text units
+- ~flyspell~ for spellchecks
+- ~yasnippet~ for boilerplate templates
+- ~expand-region~ for incremental selection of units of text
+- ~multiple-cursors~ to edit structured text
+- ~imenu~ to display top-level names (vars, methods)
+- ~wgrep~ for grep-powered search/replace across multiple files
+- ~eldoc~ to surface function doc-strings and argument lists
+- ~paren~ + ~smartparens~ for structural editing support, which works
+   uniformly across Lispy languages, as well as for data representations
+   in most other languages (e.g. quoted strings, JSON data, python tuples
+   and dicts etc.)
+
+However we can /and should/ do better. Much better! [fn:6]
+
+* Integration Level Two: Language as Structured Material (LSP FTW!)
+
+We write and modify code not as plain text, but as structural elements
+of the programming language at hand; viz. its syntax, semantics, idioms,
+patterns, conventions, method or function call graphs, object hierarchies,
+compiler feedback etc.
+
+Historically, language-aware editors and IDEs have been purpose-built for
+individual languages. Emacs has historically been extended to new languages,
+because we can [fn:7]. In all cases, everyone has had to implement the same
+set of features from scratch, such as, auto-complete, documentation on hover,
+go to definition, code browsing, project browsing etc.
+
+Recently, the [[https://microsoft.github.io/language-server-protocol/][Language Server Protocol (LSP) Project]] changed the game, and
+quickly became foundational infrastructure for code editors [fn:8]. So much
+so that Emacs 29 baked in the [[https://github.com/joaotavora/eglot][elgot]] language server client. We also have the
+[[https://github.com/emacs-lsp/][Emacs LSP]] project that gives us [[https://emacs-lsp.github.io/][lsp-mode]], and other packages with which to
+design a general-purpose IDE experience.
+
+I have been itching to design my baseline programming workflow around LSP.
+Familiarity with Emacs lsp-mode led me to choose it. Though I will probably
+switch to elgot whenever I upgrade my Emacs. I am using:
+- [[https://github.com/emacs-lsp/lsp-mode][lsp-mode]]: Emacs client/library for the Language Server Protocol
+- [[https://github.com/emacs-lsp/lsp-ui][lsp-ui]]: inline UI display of flycheck diagnostics, LSP code actions, code
+  lenses, documentation etc.
+- [[https://github.com/emacs-lsp/lsp-ivy][lsp-ivy]]: interactive ivy interface to lsp-mode's workspace symbol
+  functionality
+
+Optionally (not sure about these two yet):
+- [[https://github.com/emacs-lsp/lsp-treemacs][lsp-treemacs]]: treemacs-driven views of project files, symbols, errors,
+  call graphs etc.
+- [[https://github.com/emacs-lsp/dap-mode][dap-mode]]: "Debug Adapter Protocol", optionally, to integrate language
+  specific debuggers
+
+#+begin_src elisp
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; Programming languages
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  (use-package lsp-mode
+    ;; ref: https://emacs-lsp.github.io/lsp-mode/page/installation/#use-package
+    :ensure t
+    :init
+    (setq lsp-keymap-prefix "C-c C-l")
+    :hook ((clojure-mode clojurescript-mode clojurec-mode) . lsp-deferred)
+    :hook (lsp-mode . lsp-enable-which-key-integration)
+    :custom
+    ;; LSP "workspace" dirs:
+    ;; nb. "workspace" seems to be a confusing concept. It is a VSCode concept
+    ;; that lsp-mode superseded as "session", because lsp-mode was already using
+    ;; the word "workspace" in some other context. See: `lsp-describe-session'.
+    ;; https://github.com/emacs-lsp/lsp-mode/discussions/3095
+    ;; "workspace" directories still seem to server some purpose (no idea what),
+    ;; and seem to be language specific.
+    (lsp-clojure-workspace-dir
+     (file-name-as-directory (expand-file-name "workspace"
+                                               adi/dotemacs-dir)))
+    :config
+    (setq lsp-server-install-dir (file-name-as-directory ; install local to dotemacs
+                                  (expand-file-name "lsp" adi/dotemacs-cache-dir))
+          ;; Perf. tweaks. Ref: https://emacs-lsp.github.io/lsp-mode/page/performance/
+          lsp-idle-delay 0.500 ; bump higher if lsp-mode gets sluggish
+          lsp-log-io nil
+          ; lsp-enable-indentation nil ; set 'nil' to use cider indentation instead of lsp
+          ; lsp-enable-completion-at-point nil; set 'nil' to use cider completion instead of lsp
+
+          ;; No semgrep. https://emacs-lsp.github.io/lsp-mode/page/lsp-semgrep/
+          ;; IDK why semgrep is on by default, docs are thin on configuring it
+          ;; I don't want the error 'Command "semgrep lsp" is not present on the path.'
+          ;; because I don't want to "pip install semgrep --user".
+          lsp-semgrep-server-command nil)
+    ;; LANGUAGE SPECIFIC SETTINGS
+    ;; clojure-lsp: cf. https://clojure-lsp.io/clients/#emacs
+    (add-to-list 'lsp-language-id-configuration
+                  `(clojurex-mode . "clojure"))
+    :commands (lsp lsp-deferred))
+
+  (use-package lsp-ui
+    :ensure t
+    :after lsp-mode
+    :commands lsp-ui-mode
+    :bind (:map lsp-ui-mode-map ; h/t github.com/bbatsov/prelude
+                ([remap xref-find-definitions] . #'lsp-ui-peek-find-definitions)
+                ([remap xref-find-references] . #'lsp-ui-peek-find-references)
+                ("C-c C-l ." . 'lsp-ui-peek-find-definitions)
+                ("C-c C-l ?" . 'lsp-ui-peek-find-references)
+                ("C-c C-l r" . 'lsp-rename)
+                ("C-c C-l x" . 'lsp-workspace-restart)
+                ("C-c C-l w" . 'lsp-ui-peek-find-workspace-symbol)
+                ("C-c C-l i" . 'lsp-ui-peek-find-implementation)
+                ("C-c C-l d" . 'lsp-describe-thing-at-point)
+                ("C-c C-l e" . 'lsp-execute-code-action))
+    :config
+    ; h/t github.com/bbatsov/prelude
+    (setq lsp-ui-sideline-enable t
+          lsp-ui-doc-enable t
+          lsp-ui-peek-enable t
+          lsp-ui-peek-always-show t))
+
+  (use-package lsp-ivy
+    :ensure t
+    :after lsp-mode
+    :commands lsp-ivy-workspace-symbol)
+
+  ;; treemacs is cool, but I'm not sure I want it yet.
+  ;; cf: https://github.com/emacs-lsp/lsp-treemacs
+  ;; and https://github.com/Alexander-Miller/treemacs
+  ;; (use-package lsp-treemacs
+  ;;   :ensure t
+  ;;   :after lsp-mode
+  ;;   :commands lsp-treemacs-errors-list
+  ;;   :config
+  ;;   (setq treemacs-space-between-root-nodes nil))
+
+  ;; dap-mode, optionally to use LANGUAGE-specific debuggers
+  ;; cf. https://emacs-lsp.github.io/lsp-mode/page/installation/#use-package
+  ;; (use-package dap-mode)
+  ;; (use-package dap-LANGUAGE :ensue t :after dap-mode) ; load dap adapter for LANGUAGE
+#+end_src
+
+* Integration Level Three: A language and its ecosystem: Clojure(Script) FTW!
+
+LSP can solve a good chunk of the overall IDE design problem, but plenty is
+left for more specialised tools. Often, a language will have properties,
+runtimes, ecosystems which is out of scope for the language server project.
+For those needs, language-specific Emacs packages will likely be available.
+
+Using Clojure as a practical example, here are some features we expect.
+- Editing and linting support for all Clojure dialects, viz. Clojure,
+  ClojureScript, Babashka, Cljc files, and EDN.
+- Tight integration with REPLs, test tools, debugger, profiler.
+- And hopefully some automagical support for Clojure-like languages such
+  as [[https://janet-lang.org/][janet-lang]], [[https://ferret-lang.org/][ferret-lang]].
+
+Here are two demos of rock-solid professional Clojure IDE experiences.
+
+#+begin_export html
+<figure>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/kjJVfoqFj_k" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+<div class="footnotes">
+<p>
+<a href="https://www.youtube.com/watch?v=kjJVfoqFj_k&list=PL2Q86tDyogSXCZnAwtxGa5cCmxEKosFZ-&index=1">Clojure Basics: Editor and Tooling Setup</a> is m'colleague Sandy's demo of what
+a typical Clojure development setup should be like. Focus on the <em>ideas</em>
+and the <em>workflow</em> rather than the editor itself.
+</p>
+<p>
+nb. This video kicks off their "<a href="https://www.youtube.com/playlist?list=PL2Q86tDyogSXCZnAwtxGa5cCmxEKosFZ-">Clojure Basics</a>" playlist, which is worth
+watching in its entirety, if your are just starting off your Clojure programming
+journey.
+</p>
+</div>
+</figure>
+#+end_export
+
+#+begin_export html
+<figure>
+  <iframe width="560" height="315" src="https://www.youtube.com/embed/gIoadGfm5T8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+  <div class="footnotes">
+    <p><a href="https://www.youtube.com/embed/gIoadGfm5T8"> REPL Driven Development, Clojure's Superpower </a>Sean Corfield</p>
+    <p><em>
+        This talk will show you how fundamental Clojure’s REPL is
+        to development, and how to build a web application, live, from your
+        editor, with no restarts, no refreshes, just simple, basic tooling.
+        Clojure’s REPL is truly its superpower:it lets you hold your application
+        in your hand, query it, modify it, evolve it, with just a basic set of
+        tools and an understanding of what “REPL-friendly development” means.
+    </p></em>
+  </div>
+</figure>
+#+end_export
+
+We are well-served by the [[https://github.com/clojure-emacs][clojure-emacs]] and
+[[https://github.com/clojure-lsp][clojure-lsp]] projects. These, with allied
+packages enhance our Emacs's baseline programming experience, with Clojure
+focused features and capabilities.
+
+** clojure-mode: foundational Clojure programming support
+
+This major mode provides syntax highlighting, indentation, navigation,
+and refactoring support for Clojure, ClojureScript, and mixed cljc code.
+
+It also provides language-specific hooks that other modes can use to add
+more behaviours and features. For example, I want to defer the start of
+language servers until after a major mode is activated, so I set the hook
+in the lsp-mode config ([[#integration-level-two-language-as-structured-material-lsp-ftw][see above]]).
+
+#+begin_src elisp
+  (use-package clojure-mode
+    ;; Brings in clojure-mode for Clj, clojurescript-mode for Cljs,
+    ;; and clojurec-mode for Cljc
+    :ensure t
+    ;; Hook into subword-mode to work with CamelCase tokens like Java classes
+    ;; h/t suvratapte/dot-emacs-dot-d
+    :hook ((clojure-mode . subword-mode)
+           (clojure-mode . yas-minor-mode))
+
+    :config
+    (setq clojure-indent-style 'align-arguments)
+    :blackout "Clj")
+#+end_src
+
+** clojure-lsp: for a static-analysis style workflow, no REPL needed
+
+/*[[https://clojure-lsp.io/][clojure-lsp]]*/ is a language server, and Emacs lsp-mode already knows about
+it (see [[#integration-level-two-language-as-structured-material-lsp-ftw][configuration above]]).
+
+#+begin_export html
+<figure>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/grL3DQyvneI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+<p class="footnotes">
+Eric Dallo, a core maintainer of clojure-lsp and emacs-lsp demonstrates <a href="https://www.youtube.com/watch?v=grL3DQyvneI">Turning your editor into a Clojure IDE with clojure-lsp</a>
+</p>
+</figure>
+#+end_export
+
+clojure-lsp helps us /"navigate, identify and fix errors, perform refactors
+and much more!"/, with features like:
+- Autocomplete
+- Jump to definition/implementation
+- Find references
+- Renaming
+- Code actions
+- Errors
+- Automatic ns cleaning
+- Lots of Refactorings
+- Code lens
+- Semantic tokens (syntax highlighting)
+- Linting (via clj-kondo)
+- Call hierarchy
+- Java interop
+
+All of this is available without even firing up a Clojure REPL, or adding
+any other package. For example, if we used only ~clojure-mode~, we would
+have had to add linting support with ~flycheck-clj-kondo~ for Clojure and
+~flycheck-joker~ for ClojureScript. And if we used only CIDER, then for
+better auto-complete using CIDER, we would use ~ac-cider~.
+
+/However/ static analysis is no substitute for programming Clojure
+interactively, against a live REPL. The excellent CIDER package enhances
+that for us.
+
+** CIDER: Putting the "Interactive" in the IDE
+
+In the nearly half century old tradition of Lisps, Smalltalks, and APLs,
+Clojure programming is a highly interactive exercise. We converse with the
+live runtime. Supporting this requires its own kind of tooling.
+
+#+begin_export html
+<figure>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/IvTDzKVL58Y?start=1827" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+<p class="footnotes">
+Bozhidar Batsov, the author of CIDER demos
+<a href="https://www.youtube.com/embed/IvTDzKVL58Y?start=1827">Dark CIDER -
+lesser known features for Clojure development</a>.
+</p>
+</figure>
+#+end_export
+
+*[[https://cider.mx/][CIDER]]:* is /"the Clojure(Script) Interactive Development Environment that
+Rocks!"/. Wherever CIDER and clojure-lsp offer similar features, I pick
+clojure-lsp, only adding what is unique to CIDER, viz.:
+- Enhanced REPL experience and REPL session manager
+- Value inspector
+- Interactive Debugger
+- Profiler (CIDER profiler)
+- Session tracking (cider-spy + cider-spy-nrepl)
+- Test runner integration
+- Minibuffer code evaluation
+- Macro expansion
+- Smart namespace reloading
+- Refactor intelligently with clj-refactor
+
+Optionally, I will bring in clj-refactor to patch up corner cases where
+cider, and lsp-mode may both fall short.
+#+begin_src elisp
+  (use-package clojure-mode
+    ;; Brings in clojure-mode for Clj, clojurescript-mode for Cljs,
+    ;; and clojurec-mode for Cljc
+    :ensure t
+    ;; Hook into subword-mode to work with CamelCase tokens like Java classes
+    ;; h/t suvratapte/dot-emacs-dot-d
+    :hook ((clojure-mode . subword-mode)
+           (clojure-mode . yas-minor-mode))
+
+    :config
+    (setq clojure-indent-style 'align-arguments)
+    :blackout "Clj")
+
+  (use-package cider
+    ;; Note: Ensure CIDER and lsp-mode play well together, as we use both.
+    ;; - LSP for more static-analysis-y services (completions, lookups, errors etc.),
+    ;; - CIDER for "live" runtime services (enhanced REPL, interactive debugger etc.).
+    :ensure t
+    :after clojure-mode
+    :init
+    ;; Use clojure-lsp for eldoc and completions
+    ;; h/t cider docs and ericdallo/dotfiles/.config/doom/config.el
+    (remove-hook 'eldoc-documentation-functions #'cider-eldoc)
+    (remove-hook 'completion-at-point-functions #'cider-complete-at-point)
+    :custom
+    (cider-preferred-build-tool 'clj)
+    :bind
+    (:map cider-mode-map
+          ("C-c C-l" . nil))
+    :config
+    ;; settings h/t suvratapte/dot-emacs-dot-d
+    (setq cider-repl-pop-to-buffer-on-connect nil
+          cider-show-error-buffer t
+          cider-auto-select-error-buffer t
+          cider-repl-history-file (expand-file-name "cider-history"
+                                                    adi/dotemacs-savefile-dir)
+          cider-repl-wrap-history t
+          cider-prompt-for-symbol nil
+          cider-repl-use-pretty-printing t
+          nrepl-log-messages nil
+          ;; play nice with lsp-mode
+          ;; h/t ericdallo/dotfiles/.config/doom/config.el
+          cider-font-lock-dynamically nil ; use lsp semantic tokens
+          cider-eldoc-display-for-symbol-at-point nil ; use lsp
+          cider-prompt-for-symbol nil ; use lsp
+          cider-use-xref nil ; use lsp
+          ;; Maybe customize variables for cider-jack-in
+          ;; https://docs.cider.mx/cider/basics/up_and_running.html
+          )
+    :blackout)
+
+  ;; clj-refactor can go where clojure-lsp refactor can't go
+  (use-package clj-refactor
+    ;; config h/t ericdallo/dotfiles doom emacs config
+    :after clojure-mode
+    :config
+    (setq cljr-warn-on-eval nil
+          cljr-eagerly-build-asts-on-startup nil
+          cljr-add-ns-to-blank-clj-files nil ; use lsp
+          cljr-magic-require-namespaces
+          '(("s"   . "schema.core")
+            ("pp" . "clojure.pprint"))))
+#+end_src
+
+** Clojure with org-mode for live demos and more
+
+As it happens, I do all my conference talks as live demos (What can I say,
+I like to live dangerously and embrace the demofails :)). The upshot of
+using org-mode is that I can publish my talks as plaintext org files that
+others can read or use, as well as static PDF or html files, optionally with
+in-line "results capture".
+
+Here is one such talk I gave last year, and
+[[../n-ways-to-fizz-buzz-in-clojure/index.html#main][its associated blog post]].
+
+#+begin_export html
+<figure>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/BTouODWov-A" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+<p class="footnotes">
+<a href="https://www.youtube.com/watch?v=BTouODWov-A">n ways to FizzBuzz in Clojure</a> by Yours Truly, at Functional Conf 2022
+</p>
+</figure>
+#+end_export
+
+#+begin_src emacs-lisp
+  (use-package org
+    :ensure nil
+    :config
+    (setq org-export-coding-system 'utf-8
+          org-babel-clojure-backend 'cider)
+    (org-babel-do-load-languages
+     'org-babel-load-languages
+     '((shell . t)
+       (clojure . t)
+       (clojurescript . t)
+       (sql .t )
+       (sqlite . t)
+       (plantuml . t))))
+
+  (use-package ob-clojurescript
+    :blackout)
+
+  (use-package org-tree-slide
+    ;; Simple org outline based presentation mode
+    ;; ref: https://github.com/takaxp/org-tree-slide
+    :ensure t
+    :bind (("<f8>" . 'org-tree-slide-mode)
+           ("S-<f8>" . 'org-tree-slide-skip-done-toggle)
+           :map org-tree-slide-mode-map
+           ("<f9>" . 'org-tree-slide-move-previous-tree)
+           ("<f10>" . 'org-tree-slide-move-next-tree)
+           ("<f11>" . 'org-tree-slide-content))
+    :config
+    (setq org-tree-slide-skip-outline-level 4))
+#+end_src
+
+** Assist Emacs with /Graphical/ Interactive Development
+
+Clojure programs model the world in terms of composite data structures;
+hash-maps, vectors, sequences, streams and so forth. /And/ we also access
+host platform objects, classes, metadata. /And/ we also like to traverse /
+inspect / visualise any of those entities from different angles, to further
+our understanding of what's actually going on in the live runtime.
+
+Emacs is great for text UIs (e.g. magit), but not for rich graphical UIs.
+CIDER affords navigable views into much of this stuff right inside Emacs.
+/And/ graphical tools like /vlaaad/'s [[https://vlaaad.github.io/reveal/][Reveal]], [[https://docs.datomic.com/cloud/other-tools/REBL.html][Cognitect REBL]] by Datomic
+Team, or Chris Badahdah's browser-based [[https://djblue.github.io/portal/][portal]] data navigator level up our
+runtime visualisations and interactions to a whole other level.
+
+#+begin_export html
+<figure>
+  <iframe width="560" height="315" src="https://www.youtube.com/embed/jq-7aiXPRKs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+  <div class="footnotes">
+    <p>
+      <a href="https://www.youtube.com/watch?v=jq-7aiXPRKs">Reveal: Read Eval Visualize Loop</a> by vlaaad
+    </p>
+    <p><em>
+        Reveal is a Clojure REPL with UI that enables data exploration in
+        a way never seen before: select printed text and evaluate code
+        directly on a value that produced it, build charts only using data,
+        explore object fields in debugger-like inspector, easily create views
+        that matter to you or your domain. In this talk I'm going to explain
+        what is Reveal, why I made it and how to use it.
+    </em></p>
+  </div>
+</figure>
+#+end_export
+
+#+begin_export html
+<figure>
+  <iframe width="560" height="315" src="https://www.youtube.com/embed/c52QhiXsmyI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+  <div class="footnotes">
+    <p><a href="https://www.youtube.com/embed/c52QhiXsmyI">REBL</a> - Stuart Halloway.
+    <p>REBL is a graphical, interactive tool for browsing Clojure data.
+      REBL is extracted from Datomic tools developed by the Datomic Team
+      at Cognitect.</p>
+    <p><a href="https://www.youtube.com/watch?v=ZhzMoEz4j1k">Atom, Chlorine, and Cognitect's REBL</a> is a short demo by Sean Corfield about his day-to-day use of REBL, professionally.</p>
+  </div>
+</figure>
+#+end_export
+
+#+begin_export html
+<figure>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/Tj-iyDo3bq0?si=2G_BDhjZrmEDvsu0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+<div class="footnotes">
+<p><a href="https://www.youtube.com/watch?v=Tj-iyDo3bq0">Thinking with Portal</a> - Chris Badahdah.</p>
+<p></p>
+</div>
+</figure>
+#+end_export
+
+** Wire everything up using Clojure Deps and CLI tools
+
+And finally, we have to integrate back with our programming ecosystem's
+build tooling. I have chosen to switch away from
+[[https://github.com/technomancy/leiningen/][Leiningen]], to the new-ish
+CLI tools by the Clojure team, that come bundled with Clojure these days.
+From the official [[https://clojure.org/guides/deps_and_cli][Deps and CLI Guide]]:
+
+#+begin_quote
+Clojure provides command line tools for:
+- Running an [[https://clojure.org/guides/repl/introduction][interactive REPL]] (Read-Eval-Print Loop)
+- Running Clojure programs
+- Evaluating Clojure expressions
+#+end_quote
+
+My CLI tools invocation looks like this:
+
+  #+begin_src shell
+adi@tardis:~/src/github/adityaathalye/planet_coloniser
+\_$ clj -M:dev/base:repl/clj:repl/reveal
+nREPL server started on port 34139 on host localhost - nrepl://localhost:34139
+nREPL 1.0.0
+Clojure 1.10.3
+OpenJDK 64-Bit Server VM 18.0.2-ea+9-Ubuntu-222.04
+Interrupt: Control+C
+Exit:      Control+D or (exit) or (quit)
+user=>
+#+end_src
+
+And below is my global ~deps.edn~ configuration that declare a few standard
+clj aliases (e.g. ~:dev/base~, ~:repl/clj~, ~:repl/reveal~) that I want
+across all Clojure(Script) projects. These configurations let our Emacs
+play well with CIDER middleware, clj-refactor, Reveal etc.
+
+#+begin_src clojure
+  {;; Ref. deps configs by Sean Corfield and practicalli
+   ;; Lots of stuff taken from there.
+   ;; https://github.com/seancorfield/dot-clojure/blob/develop/deps.edn
+   ;; https://github.com/practicalli/clojure-cli-config/blob/main/deps.edn
+
+   ;; Enumerate aliases as:
+   ;; clj -T:deps aliases
+
+   ;; Start a typical session as:
+   ;; clj -M:dev/base:repl/clj:repl/reveal
+
+   :paths ["src"]
+
+   :mvn/repos
+   {"central" {:url "https://repo1.maven.org/maven2/"}
+    "clojars" {:url "https://repo.clojars.org/"}}
+
+   :aliases
+   {:build {:deps {io.github.clojure/tools.build {:mvn/version "0.9.5"}}
+            :ns-default build}
+
+    ;; LOCAL DEVELOPMENT
+    :dev/base
+    {:extra-paths ["dev"]}
+
+    :dev/test
+    {:extra-paths ["test"]
+     :extra-deps {org.clojure/test.check {:mvn/version "1.1.1"}
+                  io.github.cognitect-labs/test-runner {:git/tag "v0.5.1" :git/sha "dfb30dd"}}}
+
+    :dev/tools
+    {:extra-deps {criterium/criterium {:mvn/version "RELEASE"}}}
+
+    ;; CIDER AND REPL THINGS
+    ;; https://docs.cider.mx/cider/basics/middleware_setup.html
+    ;; nb. we should get nrepl and refactor-nrepl bundled with cider-nrepl
+    ;; - for clojure-only: clj -M:repl/clj
+    ;; - for clj and cljs: clj -M:repl/clj:repl/cljs
+    ;; - for reveal GUI:   clj -M:repl/clj:repl/cljs:repl/reveal
+    :repl/clj
+    {:extra-deps {cider/cider-nrepl {:mvn/version "0.37.0"}
+                  org.clojure/tools.deps {:mvn/version "0.18.1354"}
+                  org.clojure/tools.namespace {:mvn/version "RELEASE"}}
+     :main-opts ["-m" "nrepl.cmdline"
+                 "--middleware" "[cider.nrepl/cider-middleware]"
+                 "--interactive"]}
+
+    :repl/cljs
+    {:extra-deps {org.clojure/clojurescript {:mvn/version "1.10.339"}
+                  cider/piggieback {:mvn/version "0.5.3"}}
+     :main-opts ["-m" "nrepl.cmdline"
+                 "--middleware" "[cider.piggieback/wrap-cljs-repl]"
+                 "--interactive"]}
+
+    ;; :repl/refactor
+    ;; {:extra-deps {refactor-nrepl/refactor-nrepl {:mvn/version "3.9.0"}}
+    ;;  :main-opts ["--middleware" "[refactor-nrepl.middleware/wrap-refactor]"]}
+
+    :repl/reveal ;; https://vlaaad.github.io/reveal/setup#clj--nrepl-middleware
+    {:extra-deps {vlaaad/reveal {:mvn/version "1.3.280"}}
+     ;; optional: preferences
+     ;; :jvm-opts ["-Dvlaaad.reveal.prefs={:theme,:light}"]
+     :main-opts ["-m" "nrepl.cmdline"
+                 "--middleware" "[vlaaad.reveal.nrepl/middleware]"
+                 "--interactive"]}}
+#+end_src
+
+* Bonus demos and references
+
+** Clojure tooling evolution
+
+[[https://www.youtube.com/watch?v=4X-1fJm25Ww][The evolution of the Emacs tooling for Clojure (2014)]], Bozhidar Batsov.
+
+#+begin_quote
+A session dedicated to the evolution of CIDER (the Clojure dev environment for Emacs) and all the new features that have been added since I took over the project exactly one year ago.
+#+end_quote
+
+CIDER was already cool circa 2014, and has come a long way since then!
+
+[[https://www.youtube.com/watch?v=dZ4xczP5zDI][The Future of Clojure Tooling (2018)]], Bozhidar Batsov is a nice follow-up
+to his 2014 talk. By 2018, LSP had arrived and debates about "REPL Powered"
+/versus/ "Static Analysis Powered" tooling were in the air. We now have the
+best of both worlds, because even though those world overlap, they are not,
+in fact, in conflict!
+
+** Clojurists like Static Analysis /and/ REPL Powered Tools
+
+As you have seen so far, both LSP and CIDER enhance our Clojure programming
+life in Emacs. The fantastic Cursive IDE for IntelliJ is the original model
+of a seamless static+REPL powered Clojure IDE. If I weren't already invested
+in Emacs, I would have picked Cursive.
+
+[[https://www.youtube.com/watch?v=vt1y2FbWQMg][Cursive: A different type of IDE (2014)]] , Colin Fleming.
+
+In contrast to the majority of Clojure development environments, Cursive
+uses static analysis of the source code to work its magic rather than
+taking advantage of the REPL.
+
+[[https://www.youtube.com/watch?v=ql77RwhcCK0][Debugging Clojure Code With Cursive]], Colin Fleming
+
+A very good showcase of a rock-solid debugger and debugging experience.
+Cursive provides a complete JVM debugger based on the one provided in
+IntelliJ, including breakpoints, stepping and expression evaluation.
+
+** Emacs is a first-rate C++ IDE, John
+
+I feel compelled to include this section because I set up this post by
+quoting famous C++ developer and a lover of great IDEs, John Carmack.
+
+Even without LSP, Emacs was configurable as a first-rate IDE for large
+scale codebases: [[https://www.youtube.com/watch?v=5FQwQ0QWBTU][CppCon 2015: Emacs as a C++ IDE]] - Atila Neves.
+
+Now that we _have_ LSP, [[https://emacs-lsp.github.io/lsp-mode/tutorials/CPP-guide/][the C++ IDE story is even better]]!
+
+* Our plan is complete!
+
+We have come a long way!
+
+All the big pieces are in place, and the general design looks good to me. I
+will add enhancements, and fix bad ideas and bugs as I go along.
+
+- [✓] Set the very preliminaries.
+- [✓] Set up package management. I'll probably stick with the old familiars;
+  elpa and melpa. I'm not sure about straight.el at this time.
+- [✓] Choose ~use-package~ to get and configure each package. I like how neat
+  configs are, when defined with use-package.
+- [✓] Unexpectedly refactor the whole thing.
+- [✓] Make completions and "getting about" work (the right mix of ivy, consul,
+  swiper, company, helm, imenu). Someone mentioned newer alternatives to helm.
+  Have a look at that.
+- [✓] Fix general text editing stuff (keybindings, multiple cursors, snippets etc.)
+- [✓] Add support for favourite programming languages.
+  - [✓] Emacs Lisp (built-in + smartparens, eldoc etc.)
+  - [✓] Clojure (clojure-mode, clojure-lsp, CIDER, and lispy editing packages)
+  - [✓] Bash (lsp-bash)
+  - Others will be configured on an as-needed basis.
+- [✓] org-mode specifics that suit [[../why-and-how-i-use-org-mode/index.html#main][how I use org]]
+  - [✓] org-babel (currently for Clojure, elisp, shell, SQL and some other langs)
+  - [✓] tree-slide for presentations
+- then let's see...
+
+This was educational, fun, satisfying, and useful.
+
+I am calling it done (for now)!
+
+* Footnotes
+
+[fn:1] The opening screenshot shows my Clojure programming session. Emacs
+occupies the left vertical half. /[[https://vlaaad.github.io/reveal/][Reveal]]/,
+a separate graphical data inspector (unrelated to reveal.js), occupies the
+right half of my monitor.
+- *In the Emacs session*, the lower half has documentation I pulled up using
+  lsp-mode, and the upper part has Clojure code, with a lsp-ui overlay of
+  a "find references" action I executed via lsp-mode.
+- *In the Reveal GUI session*, I have a navigable, interactive view of the
+  result of code I evaluated from Emacs, into the live REPL. Reveal captured
+  this for me because it taps into a shared REPL session.
+- *Both Emacs and Reveal connect to the /same/ Clojure REPL session*, over
+  an nREPL server socket. That is because I started them together, at the
+  root of the Clojure project, like so:
+  #+begin_src shell
+adi@tardis:~/src/github/adityaathalye/planet_coloniser
+\_$ clj -M:dev/base:repl/clj:repl/reveal
+nREPL server started on port 34139 on host localhost - nrepl://localhost:34139
+nREPL 1.0.0
+Clojure 1.10.3
+OpenJDK 64-Bit Server VM 18.0.2-ea+9-Ubuntu-222.04
+Interrupt: Control+C
+Exit:      Control+D or (exit) or (quit)
+user=>
+#+end_src
+
+[fn:2] Yes, colour me skeptical. I think the A.I. tools are cool, but I
+value thinking about problems and design far more than banging out swaths
+of code. Less code is better code. The only way I know how to do that is
+by doing good design, paired with ruthless testing and refactoring --- not
+just of code, but of mental models. So I will conserve my enthusiasm until
+the AI can help produce + factor kickass software architecture and design.
+
+[fn:3] And for some people, like m'esteemed colleague, gentleman and scholar,
+[[https://vedang.me/][Vedang]], [[https://www.youtube.com/watch?v=KZoQ4EkfDPo][their entire life]].
+Few editors can lay claim to this kind of all-integrating integration. Vim,
+in its text editorial way, also answers to this charge, though I contend
+the Emacs life is harder to escape from :)
+
+[fn:4] [[https://blog.janestreet.com/putting-the-i-back-in-ide-towards-a-github-explorer/][Putting the I back in IDE: Towards a Github Explorer]] - Jane Street blog.
+
+[fn:5] This, I think, is the little secret worth noticing. We /do not/
+really learn *an* editor, we learn *a way* (or ways) of working. So any
+editor that supports our "way" can be our editor. Personally, I chose to
+learn enough Emacs and Vim to be dangerous. And I hereby profess that all
+teh editorz r mine.
+
+[fn:6] I for one certainly can, by fixing my rather poor use of tools like
+debuggers, profiles, static analysers etc.
+
+[fn:7] Frequently, new programming languages will gain a major-mode very early in
+the life of said language (often approximate, but /useful/). Whereas some
+programming languages never get good support because their language tools
+and/or infrastructure remains proprietary, preventing deep and thorough
+understanding of the language. In those cases, it is pragmatic to use the
+proprietary IDE, if we must ([[#what-does-integrated-mean][but do it our way]]).
+
+[fn:8] [[https://microsoft.github.io/language-server-protocol/overviews/lsp/overview/][What is the Language Server Protocol?]]
+#+begin_quote
+Implementing support for features like autocomplete, goto definition,
+or documentation on hover for a programming language is a significant
+effort. Traditionally this work must be repeated for each development
+tool, as each provides different APIs for implementing the same features.
+
+The idea behind a Language Server is to provide the language-specific
+smarts inside a server that can communicate with development tooling
+over a protocol that enables inter-process communication.
+
+The idea behind the Language Server Protocol (LSP) is to standardize the
+protocol for how tools and servers communicate, so a single Language
+Server can be re-used in multiple development tools, and tools can support
+languages with minimal effort.
+
+LSP is a win for both language providers and tooling vendors!
+#+end_quote

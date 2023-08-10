@@ -14,7 +14,8 @@ Post series:
 [[../emerging-from-dotemacs-bankruptcy-init-begins/index.html#main][init begins]] →
 [[../emerging-from-dotemacs-bankruptcy-midway-refactor/index.html#main][midway refactor]] (you are here) →
 [[../emerging-from-dotemacs-bankruptcy-packages/index.html#main][packages]] →
-[[../emerging-from-dotemacs-bankruptcy-getting-about/index.html#main][getting about]]
+[[../emerging-from-dotemacs-bankruptcy-getting-about/index.html#main][getting about]] →
+[[../emerging-from-dotemacs-bankruptcy-ide-experience/index.html#main][IDE experience]]
 #+html: </div>
 
 Part way through "the plan", I realised a few things:

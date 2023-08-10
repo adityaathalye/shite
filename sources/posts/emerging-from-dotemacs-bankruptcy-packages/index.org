@@ -13,7 +13,8 @@ Post series:
 [[../emerging-from-dotemacs-bankruptcy-init-begins/index.html#main][init begins]] →
 [[../emerging-from-dotemacs-bankruptcy-midway-refactor/index.html#main][midway refactor]] →
 [[../emerging-from-dotemacs-bankruptcy-packages/index.html#main][packages]] (you are here) →
-[[../emerging-from-dotemacs-bankruptcy-getting-about/index.html#main][getting about]]
+[[../emerging-from-dotemacs-bankruptcy-getting-about/index.html#main][getting about]] →
+[[../emerging-from-dotemacs-bankruptcy-ide-experience/index.html#main][IDE experience]]
 #+html: </div>
 
 A nearly half-century old community-run software project that bills itself /"the

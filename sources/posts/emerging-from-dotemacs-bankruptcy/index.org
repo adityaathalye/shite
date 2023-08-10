@@ -1,6 +1,6 @@
 # SHITE_META
 #+title: Emerging from dotemacs bankruptcy the hard way: Prelude
-#+summary: Or, finally biting the bullet to redesigning my developerly and writerly experience, from the ground up, with Emacs.
+#+summary: Or, finally biting the bullet to redesigning my developerly and writerly experience, from the ground up, with Emacs. Or, finally biting the bullet to redesigning my developerly and writerly experience, from the ground up, with Emacs.
 #+author: Adi
 #+date: 2023-06-29
 #+updated: 2023-06-29
@@ -14,7 +14,8 @@ Post series:
 [[../emerging-from-dotemacs-bankruptcy-init-begins/index.html#main][init begins]] →
 [[../emerging-from-dotemacs-bankruptcy-midway-refactor/index.html#main][midway refactor]] →
 [[../emerging-from-dotemacs-bankruptcy-packages/index.html#main][packages]] →
-[[../emerging-from-dotemacs-bankruptcy-getting-about/index.html#main][getting about]]
+[[../emerging-from-dotemacs-bankruptcy-getting-about/index.html#main][getting about]] →
+[[../emerging-from-dotemacs-bankruptcy-ide-experience/index.html#main][IDE experience]]
 #+html: </div>
 
 #+caption: [[https://xkcd.com/378/][XKCD/378]]: Real Programmers.
