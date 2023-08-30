@@ -14,9 +14,21 @@
 you see all kinds of things you can't see from the center.” ― Kurt Vonnegut
 #+end_quote
 
+* 2023
+
+/Updated:/ Aug 2023 (prev: May 2023)
+
+Since June, I have been in a programmer's retreat at the [[https://recurse.com][Recurse Center]].
+RC is my favourite community of gentlenerds. This is my second batch here,
+and it's fantastic to be back in NYC, among all these awesome people.
+
+Meanwhile, the 2023 reinvention agenda continues.
+
+---
+
 /Updated:/ May 2023 (prev: April 2023)
 
-*2023 is dedicated to total reinvention.*
+** 2023 is dedicated to total reinvention.
 
 A dead past is being firewalled. Accumulated baggage is being tagged for
 eventual garbage collection. The mind's mechanics are being revised. The body is
@@ -28,7 +40,7 @@ to see with new eyes, a fresh vision of self, world, and life is appearing.
 to then re-build.
 #+end_quote
 
-*2023 is professional reinvention number three.*
+** 2023 is professional reinvention number three.
 
 My 20s were full of MBA-type work as well as one failed attempt at a startup.
 My 30s became about software engineering. The 40s seem to have begun with yet
@@ -39,7 +51,7 @@ another pivot; toward solo enterprise. Suit and hoodie are amalgamating.
 crucible of makin' and sellin' stuff.
 #+end_quote
 
-*2023 is sabbatical number four.*
+** 2023 is sabbatical number four.
 
 My sabbaticals have been times of hardcore reading, study, and hands-on
 use of new knowledge. Literally living /eval/apply/; I learn things and
@@ -50,7 +62,7 @@ one goes.
 *Insight:* Making sabbaticals work is primarily about psychology, not money.
 #+end_quote
 
-*Yes, and...*
+** Yes, and...
 
 An improv-style approach is being applied to break into the present, and to also
 break out of the "no, but" style psychological ossification that is common
@@ -64,7 +76,7 @@ and if you call this method improv-ing oneself, we won't complain.
 reinvention". And yes, I heartily recommend it to anyone who will listen.
 #+end_quote
 
-*Small is beautiful; the lifelong trend continues.*
+** Small is beautiful; the lifelong trend continues.
 
 Career-start was the first time I truly exerted my volitional muscles, and chose
 to work with/at small and medium companies instead of the socially approved giant
@@ -76,7 +88,7 @@ to be the /telos/ for the, shall we say, /[[https://goodreads.com/book/show/3757
 It may in fact be the very thing to subtract down to, and rebuild from, anew.
 #+end_quote
 
-*2021 and 2022*
+* 2021 and 2022
 
 #+begin_quote
 "A rebirth requires a death."
@@ -86,14 +98,14 @@ It may in fact be the very thing to subtract down to, and rebuild from, anew.
 
 'nuff said.
 
-*2020*
+* 2020
 
 /This/ would be /The Year Of Total Reinvention/, had Certain World Events
 not intervened. Still, it began swimmingly, hacking Clojure code at a consulting
 gig, organising [[https://inclojure.org/][IN/Clojure 2020]], and experiencing
 an amazing programmer's retreat at the [[https://recurse.com][Recurse Center]].
 
-*Pre-2020*
+* Pre-2020
 
 Faded into the mists of time. [[#what-i-am-doing-now][GOTO now]].
 
