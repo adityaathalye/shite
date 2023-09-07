@@ -156,13 +156,13 @@ go to definition, code browsing, project browsing etc.
 
 Recently, the [[https://microsoft.github.io/language-server-protocol/][Language Server Protocol (LSP) Project]] changed the game, and
 quickly became foundational infrastructure for code editors [fn:8]. So much
-so that Emacs 29 baked in the [[https://github.com/joaotavora/eglot][elgot]] language server client. We also have the
+so that Emacs 29 baked in the [[https://github.com/joaotavora/eglot][eglot]] language server client. We also have the
 [[https://github.com/emacs-lsp/][Emacs LSP]] project that gives us [[https://emacs-lsp.github.io/][lsp-mode]], and other packages with which to
 design a general-purpose IDE experience.
 
 I have been itching to design my baseline programming workflow around LSP.
 Familiarity with Emacs lsp-mode led me to choose it. Though I will probably
-switch to elgot whenever I upgrade my Emacs. I am using:
+switch to eglot whenever I upgrade my Emacs. I am using:
 - [[https://github.com/emacs-lsp/lsp-mode][lsp-mode]]: Emacs client/library for the Language Server Protocol
 - [[https://github.com/emacs-lsp/lsp-ui][lsp-ui]]: inline UI display of flycheck diagnostics, LSP code actions, code
   lenses, documentation etc.
