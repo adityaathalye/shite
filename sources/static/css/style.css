@@ -139,6 +139,7 @@ figure {
   border-radius: var(--scale-xxxxs);
   background-color: var(--color-light);
   color: var(--color-emphasis) !important;
+  overflow-x: auto;
 }
 
 figure > img {
