@@ -3,19 +3,20 @@
 #+summary: The one in which we design a rich Integrated Development Environment (IDE) experience, using Clojure as our muse. Featuring Language Server Protocol (lsp-mode + clojure-lsp), clojure-mode, cider, and more! Buckle up and get a coffee.
 #+author: Adi
 #+date: 2023-09-07
-#+updated: 2023-09-07
+#+updated: 2023-09-09
 #+tags: programming emacs howto recurse_center
 #+include_toc: yes
 # SHITE_META
 
 #+html: <div class="footnotes box invert">
-Post series:
+Series:
 [[../emerging-from-dotemacs-bankruptcy/index.html#main][prelude]] →
 [[../emerging-from-dotemacs-bankruptcy-init-begins/index.html#main][init begins]] →
 [[../emerging-from-dotemacs-bankruptcy-midway-refactor/index.html#main][midway refactor]] →
 [[../emerging-from-dotemacs-bankruptcy-packages/index.html#main][packages]] →
 [[../emerging-from-dotemacs-bankruptcy-getting-about/index.html#main][getting about]] →
-[[../emerging-from-dotemacs-bankruptcy-ide-experience/index.html#main][IDE experience]] (you are here)
+*([[../emerging-from-dotemacs-bankruptcy-ide-experience/index.html#main][IDE (ft. Clojure)]])* →
+[[https://github.com/adityaathalye/dotemacs][.emacs.d]]
 #+html: </div>
 
 #+begin_quote
@@ -766,7 +767,12 @@ will add enhancements, and fix bad ideas and bugs as I go along.
 
 This was educational, fun, satisfying, and useful.
 
-I am calling it done (for now)!
+I [[https://github.com/adityaathalye/dotemacs][published it]], and call it done (for now)!
+
+#+begin_src shell
+  # https://github.com/adityaathalye/dotemacs
+  ln -s ~/src/github/adityaathalye/dotemacs ~/.emacs.d
+#+end_src
 
 * Footnotes
 
