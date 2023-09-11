@@ -167,9 +167,9 @@ __shite_templating_wrap_page_html() {
         blog|blogindex )
             shite_template_common_default_page
             ;;
-        * )
-            cat -
-            ;;
+        # * )
+        #     __log_info "__shite_templating_wrap_page_html skips this content type: ${content_type}."
+        #     ;;
     esac
 }
 
