@@ -18,9 +18,9 @@ you see all kinds of things you can't see from the center.” ― Kurt Vonnegut
 
 /Updated:/ Aug 2023 (prev: May 2023)
 
-Since June, I have been in a programmer's retreat at the [[https://recurse.com][Recurse Center]].
-RC is my favourite community of gentlenerds. This is my second batch here,
-and it's fantastic to be back in NYC, among all these awesome people.
+Starting July, I have been back at the [[#section-1][Recurse Center]] for a programmer's
+retreat. RC is my favourite community of gentlenerds, and it's fantastic
+to be in NYC again, among all these awesome people.
 
 Meanwhile, the 2023 reinvention agenda continues.
 
@@ -103,7 +103,7 @@ It may in fact be the very thing to subtract down to, and rebuild from, anew.
 /This/ would be /The Year Of Total Reinvention/, had Certain World Events
 not intervened. Still, it began swimmingly, hacking Clojure code at a consulting
 gig, organising [[https://inclojure.org/][IN/Clojure 2020]], and experiencing
-an amazing programmer's retreat at the [[https://recurse.com][Recurse Center]].
+an amazing programmer's retreat at the Recurse Center [fn:2].
 
 * Pre-2020
 
@@ -114,3 +114,9 @@ Faded into the mists of time. [[#what-i-am-doing-now][GOTO now]].
 "This is [[https://nownownow.com/about][a now page]], and if you have your own site,
 [[https://nownownow.com/about][you should make one]], too." --- [[https://sive.rs/now][Derek Sivers]]
 #+end_quote
+
+[fn:2] RC is /the retreat where curious programmers recharge and grow/.
+#+begin_export html
+<div class="box invert"><div class="rc-scout"></div></div>
+<script async defer src="https://www.recurse-scout.com/loader.js?t=40533398b8c93bb4f3323a170e032e91"></script>
+#+end_export
