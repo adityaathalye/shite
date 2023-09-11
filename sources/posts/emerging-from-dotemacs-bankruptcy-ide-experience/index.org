@@ -4,7 +4,7 @@
 #+author: Adi
 #+date: 2023-09-07
 #+updated: 2023-09-09
-#+tags: programming emacs howto recurse_center
+#+tags: programming emacs howto recurse_center clojure
 #+include_toc: yes
 # SHITE_META
 
