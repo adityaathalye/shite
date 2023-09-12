@@ -160,9 +160,6 @@ shite_template_common_nav_items() {
 <a href="${shite_global_data[base_url]}/posts/index.html">
    &#9753; read
 </a>
-<a href="${shite_global_data[base_url]}/posts/software-demos/index.html#main">
-  &#x262F; demo!
-</a>
 <a href="mailto:hello@evalapply.org">
    &nbsp;&#x2709; write
 </a>
