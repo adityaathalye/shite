@@ -167,7 +167,9 @@ __shite_templating_wrap_page_html() {
         blog|blogindex )
             shite_template_common_default_page
             ;;
-        * )
+        * ) # let all other HTML content through as-is, e.g. standalone html
+	    # pages nested under a blog post. i.e. 
+	    # posts/post-url-slug/microsite-example-under-post/some-page.html
             cat -
             ;;
     esac
