@@ -1,0 +1,125 @@
+# SHITE_META
+#+title: Riff: A "mycelium-clj" for the Clojure ecosystem?
+#+summary: In a world of concrete objects, steel frameworks bring sense and order. In a forest of composable tools, libraries and open-ended schemas, it would be the mycelia. A frustrated yet optimistic man muses "Might such a thing come to be?".
+#+author: Adi
+#+date: 2023-10-19
+#+updated: 2023-10-19
+#+tags: riff clojure systems architecture recurse_center
+#+include_toc: no
+# SHITE_META
+
+A thousand library-flowers bloom, bushes and trees and vines and creepers
+grow, but if nothing reconnects them the whole remains diluted and weak
+and unfathomable and forbidding.
+
+In a world of concrete objects, steel frameworks bring sense and order.
+
+In a forest of composable tools and libraries, it is the invisible mycelia.
+
+I am dreaming of a tool. I want to name it *mycelium-clj*.
+
+What I can't tell is if all this boils down to /"Oh look, yet another
+internet rando witlessly reverse-engineered a cheap knock-off of RDF/
+/and the semantic web."./. Or if it is something practicable within the
+little village (relatively speaking) of Clojureland.
+
+Spitballing ahead!
+
+While Clojure the language itself is a joy to use, being /hosted/ means it
+gives us a double edged sword, with reach (yay!), but also the /compounded/
+mass of the host ecosystem (Java, Javascript, .net CLR, mobile) /and/ the
+language-specific ecosystems (REPLs, IDEs, libraries, tools). The more we
+want to do, the more unwieldy the whole gets.
+
+For example, the joy of libraries is that you get to choose. The agony of
+libraries is that you /*have*/ to choose. So goes for the other pieces.
+All told it gets quite overwhelming quite fast. Ultimately everyone gives
+up and uses the "phone a friend" option (if they even have one).
+
+Like yours truly.
+
+Recently, while at the Recurse Center, I decided to jump into full stack
+Clojure web development for my "[[https://www.recurse.com/blog/185-do-more-than-you-think][Impossible Stuff Day]]" project. For that,
+I started spinning up all the machinery. And by "all" I mean the whole nine
+yards---working through the multifarious build tool options, REPL choices,
+editor options, IDE integration options (editor + build + REPL), package
+management tools and conventions, library options, project conventions etc.
+And the spinning up has spun veeeery slowly.
+
+Now, I am willing to incur the effort and hair loss to find and traverse
+the vast knowledge graph of all this machinery, only because I am optimistic
+about the (eventual) payoff.
+
+As it happens, though, I am not alone in feeling frustrated and confused.
+
+Whatsapp rants to fellow Clojurists elicited a "Alas, 'tis so.". A bunch
+of :+1:s and :sweat-smile:s rapidly followed. These veteran Clojurists,
+each with over a decade of experience running Clojure in production, had
+felt that full stack burn too. Oh the schadenfreude. Woe be the newcomer
+professional programmer. Pity the hapless absolute beginner.
+
+As much as I dislike how confusing it has been, I am telling myself it is
+a sign that the ecosystem is bigger than people think. I am optimistic
+that much of the confusion can be undone with good community curated
+documentation and tools, which people seem to be interested in (e.g the
+recent Clojurists Together funding round heavily features documentation
+and tools authors. Hopefully this "ecosystem knowledge and tools"
+situation will improve in the coming years.
+
+The idea of a Rails clone as a "killer app" appears regularly. I think a
+framework is at odds with the architecture of Clojureland, which falls out
+of functional composition /with/ à la carte polymorphism. The Expression
+Problem solved; viz. not objects, but also not pure functions alone. Both.
+Properties of both together engender dynamic networks with open-ended
+participation. I view the Clojure ecosystem as such.
+
+If not one framework to rule them all, a cookbook of sorts could be a
+solution, but it would have to be a living document. Ecosystems change,
+and the Clojure ecosystem has been changing quite rapidly. Apparently,
+a capable, stable, backwards compatible language substrate is playground
+for fantastic creativity and innovation. Plus we also get access to host
+ecosystem creativity. That's a /lot/ of change to track!
+
+Which brings us back to the problem of mechanical knowledge graphs.
+
+Analogous to the dependency graph resolving core of Clojure cli, a
+*mycelium-clj* will dynamically construct ecosystem pathways and graphs
+that you and I can traverse and query as human beings.
+- Start at (almost) nothing, and it will show you what's out there and
+  reveal the interconnections.
+- It will source information from disparate sources and make them available
+  in context.
+- It will let content writers and maintainers participate in the graph.
+- It could be a schema specification with globally namespaced structure,
+  semantics, and open-ended interfaces.
+- Maybe it will integrate dependency graphs generated by dev tools. Maybe
+  it will run basis "microformats" style machine-readable metadata. Maybe
+  a shared ontology encoded using EDN (Garden of EDN, anyone?!).
+
+An example *mycelium* session would address general questions like:
+
+- "I want to make a :full-stack :database backed :web application.".
+  Starting from here it would take you down decision trees. Choose set of
+  capabilities #{primary store, search, cache ..., unsure}, set of frontend
+  or backend language choices #{clj, cljs, java, javascript, unsure}, set
+  of transport formats #{json, edn, xml, avro, unsure}, set of build tools
+  #{lein, cli-tools, npm, unsure}. Next, for each it would pull up library
+  options, preferably with import instructions for the chosen build tool,
+  link to the docs, and some quickstart summary. Finally, it would use the
+  build tool to generate a skeleton project with the appropriate config
+  files, directory structure, dependencies, editor hookups etc.
+
+As well as more specific questions like:
+
+- "I want to make a :full-stack :web-app with :postgres, :elasticsearch,
+  :kafka, :clojure, :cljs, :re-frame, :cli-tools, :reitit, :edn,
+  :clojure-test." would generate its own decision tree.
+
+As well as other fanciful stuff on those lines...
+
+A man can dream, no?
+
+---
+
+/(Narrator: And with that he turned his gaze back to the abyss of his
+command line, where the crashed clj command remained crashed...)/
