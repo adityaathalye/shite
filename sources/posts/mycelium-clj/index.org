@@ -3,13 +3,13 @@
 #+summary: In a world of concrete objects, steel frameworks bring sense and order. In a forest of composable tools, libraries and open-ended schemas, it would be the mycelia. A frustrated yet optimistic man muses "Might such a thing come to be?".
 #+author: Adi
 #+date: 2023-10-19
-#+updated: 2023-10-19
+#+updated: 2023-10-20
 #+tags: riff clojure systems architecture recurse_center
 #+include_toc: no
 # SHITE_META
 
 A thousand library-flowers bloom, bushes and trees and vines and creepers
-grow, but if nothing reconnects them the whole remains diluted and weak
+grow, but if nothing reconnects them, the whole remains diluted and weak
 and unfathomable and forbidding.
 
 In a world of concrete objects, steel frameworks bring sense and order.
@@ -20,7 +20,7 @@ I am dreaming of a tool. I want to name it *mycelium-clj*.
 
 What I can't tell is if all this boils down to /"Oh look, yet another
 internet rando witlessly reverse-engineered a cheap knock-off of RDF/
-/and the semantic web."./. Or if it is something practicable within the
+/and the semantic web."./ Or if it is something practicable within the
 little village (relatively speaking) of Clojureland.
 
 Spitballing ahead!
@@ -28,18 +28,19 @@ Spitballing ahead!
 While Clojure the language itself is a joy to use, being /hosted/ means it
 gives us a double edged sword, with reach (yay!), but also the /compounded/
 mass of the host ecosystem (Java, Javascript, .net CLR, mobile) /and/ the
-language-specific ecosystems (REPLs, IDEs, libraries, tools). The more we
-want to do, the more unwieldy the whole gets.
+Clojure-specific ecosystem (REPLs, IDEs, libraries, tools). The more full
+stack we try to go, the more unwieldy the whole gets.
 
 For example, the joy of libraries is that you get to choose. The agony of
-libraries is that you /*have*/ to choose. So goes for the other pieces.
-All told it gets quite overwhelming quite fast. Ultimately everyone gives
-up and uses the "phone a friend" option (if they even have one).
+libraries is that you /*have*/ to choose. So goes for the other chess pieces.
+All told it gets quite overwhelming quite fast, at least in my experience.
+Ultimately everyone gives up and uses the "phone a friend" option (if they
+even have one).
 
-Like yours truly.
+Yours truly phoned his friends.
 
-Recently, while at the Recurse Center, I decided to jump into full stack
-Clojure web development for my "[[https://www.recurse.com/blog/185-do-more-than-you-think][Impossible Stuff Day]]" project. For that,
+A few weeks ago, I decided to jump into full stack Clojure web development
+for my "[[https://www.recurse.com/blog/185-do-more-than-you-think][Impossible Stuff Day]]" project at the Recurse Center. For that,
 I started spinning up all the machinery. And by "all" I mean the whole nine
 yards---working through the multifarious build tool options, REPL choices,
 editor options, IDE integration options (editor + build + REPL), package
@@ -52,26 +53,27 @@ about the (eventual) payoff.
 
 As it happens, though, I am not alone in feeling frustrated and confused.
 
-Whatsapp rants to fellow Clojurists elicited a "Alas, 'tis so.". A bunch
-of :+1:s and :sweat-smile:s rapidly followed. These veteran Clojurists,
+Whatsapp rants to the aforementioned friends elicited a "Alas, 'tis so.".
+A bunch of :+1:s and :sweat-smile:s rapidly followed. These veteran Clojurists,
 each with over a decade of experience running Clojure in production, had
-felt that full stack burn too. Oh the schadenfreude. Woe be the newcomer
+felt that "full stack" burn too. Oh the schadenfreude. Woe be the newcomer
 professional programmer. Pity the hapless absolute beginner.
 
 As much as I dislike how confusing it has been, I am telling myself it is
-a sign that the ecosystem is bigger than people think. I am optimistic
-that much of the confusion can be undone with good community curated
+a sign that the ecosystem bigger and more diverse than most people believe.
+I am optimistic that much of the gallimaufry can be tamed with good curated
 documentation and tools, which people seem to be interested in (e.g the
-recent Clojurists Together funding round heavily features documentation
-and tools authors. Hopefully this "ecosystem knowledge and tools"
-situation will improve in the coming years.
+[[https://www.clojuriststogether.org/news/july-and-august-2023-long-term-project-updates/][recent Clojurists Together "long term funding" round]] heavily features
+documentation and tools authors). Hopefully this "ecosystem knowledge and
+tools" situation will improve in the coming years.
 
-The idea of a Rails clone as a "killer app" appears regularly. I think a
-framework is at odds with the architecture of Clojureland, which falls out
-of functional composition /with/ à la carte polymorphism. The Expression
-Problem solved; viz. not objects, but also not pure functions alone. Both.
-Properties of both together engender dynamic networks with open-ended
-participation. I view the Clojure ecosystem as such.
+What is not on that list is a Rails clone as a "killer app". The idea pops
+up regularly in this line of discussion. Personal tastes notwithstanding,
+I think frameworks are at odds with the emergent architecture of Clojureland
+itself, which falls out of the fact that embraces functional composition
+/with/ à la carte polymorphism. The Expression Problem solved. Not objects,
+but also not pure functions alone. Both. Properties of both together engender
+dynamic networks with open-ended participation.
 
 If not one framework to rule them all, a cookbook of sorts could be a
 solution, but it would have to be a living document. Ecosystems change,
@@ -94,7 +96,9 @@ that you and I can traverse and query as human beings.
   semantics, and open-ended interfaces.
 - Maybe it will integrate dependency graphs generated by dev tools. Maybe
   it will run basis "microformats" style machine-readable metadata. Maybe
-  a shared ontology encoded using EDN (Garden of EDN, anyone?!).
+  a shared ontology encoded using EDN (Garden of EDN, anyone?!), that
+  authors can use to add metadata to their projects (books, blog posts,
+  libraries etc.).
 
 An example *mycelium* session would address general questions like:
 
@@ -118,6 +122,10 @@ As well as more specific questions like:
 As well as other fanciful stuff on those lines...
 
 A man can dream, no?
+
+#+caption: [[https://xkcd.com/2044/][xkcd 2044]]: "Sandboxing Cycle". Or, the karmic wheel of unbundling and bundling.
+#+ATTR_HTML: :width 100%
+[[file:https://imgs.xkcd.com/comics/sandboxing_cycle.png]]
 
 ---
 
