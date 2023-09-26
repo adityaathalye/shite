@@ -3,7 +3,7 @@
 #+summary: The one in which we design a rich Integrated Development Environment (IDE) experience, using Clojure as our muse. Featuring Language Server Protocol (lsp-mode + clojure-lsp), clojure-mode, cider, and more! Buckle up and get a coffee.
 #+author: Adi
 #+date: 2023-09-07
-#+updated: 2023-09-09
+#+updated: 2023-09-25
 #+tags: programming emacs howto recurse_center clojure
 #+include_toc: yes
 # SHITE_META
@@ -590,11 +590,9 @@ runtime visualisations and interactions to a whole other level.
 #+end_export
 
 ** Wire everything up using Clojure Deps and CLI tools
-
-And finally, we have to integrate back with our programming ecosystem's
-build tooling. I have chosen to switch away from
-[[https://github.com/technomancy/leiningen/][Leiningen]], to the new-ish
-CLI tools by the Clojure team, that come bundled with Clojure these days.
+And now, we have to integrate back with our programming ecosystem's build
+tooling. I have chosen to switch away from [[https://github.com/technomancy/leiningen/][Leiningen]], to the new-ish CLI
+tools that come bundled with Clojure these days.
 From the official [[https://clojure.org/guides/deps_and_cli][Deps and CLI Guide]]:
 
 #+begin_quote
@@ -604,92 +602,132 @@ Clojure provides command line tools for:
 - Evaluating Clojure expressions
 #+end_quote
 
-My CLI tools invocation looks like this:
+My Clojure CLI tools invocation looks like this:
 
   #+begin_src shell
-adi@tardis:~/src/github/adityaathalye/planet_coloniser
-\_$ clj -M:dev/base:repl/clj:repl/reveal
-nREPL server started on port 34139 on host localhost - nrepl://localhost:34139
-nREPL 1.0.0
-Clojure 1.10.3
-OpenJDK 64-Bit Server VM 18.0.2-ea+9-Ubuntu-222.04
-Interrupt: Control+C
-Exit:      Control+D or (exit) or (quit)
-user=>
+    adi@tardis:~/src/github/adityaathalye/planet_coloniser
+    \_ (master *% u+1) $ clj -M:dev/cljx
+    nREPL server started on port 34399 on host localhost - nrepl://localhost:34399
+    nREPL 1.0.0
+    Clojure 1.11.1
+    OpenJDK 64-Bit Server VM 18.0.2-ea+9-Ubuntu-222.04
+    Interrupt: Control+C
+    Exit:      Control+D or (exit) or (quit)
+    user=>
 #+end_src
 
-And below is my global ~deps.edn~ configuration that declare a few standard
-clj aliases (e.g. ~:dev/base~, ~:repl/clj~, ~:repl/reveal~) that I want
-across all Clojure(Script) projects. These configurations let our Emacs
-play well with CIDER middleware, clj-refactor, Reveal etc.
+And below is my global ~deps.edn~ configuration that declares an alias
+I can use to start a development session for any of my full-stack web
+app projects. This lets our Emacs play well with CIDER middleware,
+clj-refactor, Reveal etc.
 
 #+begin_src clojure
-  {;; Ref. deps configs by Sean Corfield and practicalli
-   ;; Lots of stuff taken from there.
-   ;; https://github.com/seancorfield/dot-clojure/blob/develop/deps.edn
-   ;; https://github.com/practicalli/clojure-cli-config/blob/main/deps.edn
+  ;; BASELINE DEVELOPMENT CONFIG
+  ;;
+  ;; For use across all projects on my machine.
+  ;;
+  ;; - Ref. deps configs by Sean Corfield and practicalli, for ideas.
+  ;;   https://github.com/seancorfield/dot-clojure/blob/develop/deps.edn
+  ;;   https://github.com/practicalli/clojure-cli-config/blob/main/deps.edn
+  ;;
+  ;; - Query deps in various ways:
+  ;;   $ clj -T:deps aliases # Enumerate aliases across resolved deps files
+  ;;   $ clj -X:deps find-versions :lib com.example/lib-name
+  ;;
+  ;; - Start full-stack web development sessions as:
+  ;;   $ clj -M:dev/cljx
+  ;;
+  ;; - Print environment and command parsing info as data
+  ;;   $ clj -Sdescribe
 
-   ;; Enumerate aliases as:
-   ;; clj -T:deps aliases
-
-   ;; Start a typical session as:
-   ;; clj -M:dev/base:repl/clj:repl/reveal
-
-   :paths ["src"]
-
+  {;; Provider attributes
    :mvn/repos
    {"central" {:url "https://repo1.maven.org/maven2/"}
     "clojars" {:url "https://repo.clojars.org/"}}
 
+   ;; Directories in the current project to include in the classpath.
+   :paths ["src"] ; only the last :paths is kept and others are dropped.
+
    :aliases
-   {:build {:deps {io.github.clojure/tools.build {:mvn/version "0.9.5"}}
-            :ns-default build}
+   {:build ;; Building the project for dev or prod.
+    ;; Override per project, using a :build alias in project's deps.edn.
+    ;; This is a useful baseline default.
+    ;;
+    ;; e.g. `clj -T:build jar` will expect a `jar` function defined in a
+    ;; "build.clj" file at the effective classpath "." (the project root),
+    ;; if :paths is not specified for the :build alias. See the tools.build
+    ;; guide for an example build.clj file.
+    ;;
+    ;; ref: https://clojure.org/guides/tools_build
+    {:deps {io.github.clojure/tools.build {:mvn/version "0.9.5"}}
+     :ns-default build}
 
-    ;; LOCAL DEVELOPMENT
-    :dev/base
-    {:extra-paths ["dev"]}
-
-    :dev/test
+    :test ;; Testing and debugging tools.
+    ;; Override per project, using a :test alias in project's deps.edn.
+    ;; This is a useful baseline default.
+    ;; - see https://github.com/cognitect-labs/test-runner
+    ;; - run your tests: clj -X:test
     {:extra-paths ["test"]
-     :extra-deps {org.clojure/test.check {:mvn/version "1.1.1"}
-                  io.github.cognitect-labs/test-runner {:git/tag "v0.5.1" :git/sha "dfb30dd"}}}
+     :extra-deps {io.github.cognitect-labs/test-runner
+                  {:git/tag "v0.5.1" :git/sha "dfb30dd"}}
+     :exec-fn cognitect.test-runner.api/test
+     :main-opts ["-m" "cognitect.test-runner"]}
 
-    :dev/tools
-    {:extra-deps {criterium/criterium {:mvn/version "RELEASE"}}}
-
-    ;; CIDER AND REPL THINGS
-    ;; https://docs.cider.mx/cider/basics/middleware_setup.html
-    ;; nb. we should get nrepl and refactor-nrepl bundled with cider-nrepl
-    ;; - for clojure-only: clj -M:repl/clj
-    ;; - for clj and cljs: clj -M:repl/clj:repl/cljs
-    ;; - for reveal GUI:   clj -M:repl/clj:repl/cljs:repl/reveal
-    :repl/clj
-    {:extra-deps {cider/cider-nrepl {:mvn/version "0.37.0"}
-                  org.clojure/tools.deps {:mvn/version "0.18.1354"}
-                  org.clojure/tools.namespace {:mvn/version "RELEASE"}}
+    ;; DEVELOPMENT CONFIGURATION
+    ;; - We want to do fullstack development by default
+    ;; - Assumes we start a standalone REPL at the terminal, and
+    ;;   `cider-connect-clj&cljs` from our Emacs.
+    ;; - nb. To prevent figwheel-main auto compiler output from polluting the
+    ;;   GUI of vlaaad/reveal, configure figwhell-main's log level as :error.
+    ;; - We set nREPL middleware here instead of global ~/.nrepl/nrepl.edn,
+    ;;   or project-specific .nrepl.edn, to avoid splitting related configs
+    ;;   in too many places.
+    ;;   cf. https://nrepl.org/nrepl/1.0/usage/server.html#server-configuration
+    :dev/cljx
+    {:extra-paths ["src" "resources" "target" "dev" "test"]
+     :extra-deps {org.clojure/clojure {:mvn/version "1.11.1"}
+                  org.clojure/clojurescript {:mvn/version "1.11.60"}
+                  cider/cider-nrepl {:mvn/version "0.37.0"}
+                  refactor-nrepl/refactor-nrepl {:mvn/version "3.9.0"}
+                  cider/piggieback {:mvn/version "0.5.3"}
+                  com.bhauman/figwheel-main {:mvn/version "0.2.18"}
+                  vlaaad/reveal {:mvn/version "1.3.280"}
+                  ;; Suppress spammy jetty server logs emitted by figwheel's
+                  ;; development server that powers hot reloading. Bleh.
+                  ;; c.f. https://github.com/bhauman/flappy-bird-demo-new/blob/master/project.clj
+                  org.slf4j/slf4j-nop {:mvn/version "2.0.9"}}
      :main-opts ["-m" "nrepl.cmdline"
-                 "--middleware" "[cider.nrepl/cider-middleware]"
+                 "--middleware"
+                 "[cider.nrepl/cider-middleware,refactor-nrepl.middleware/wrap-refactor,cider.piggieback/wrap-cljs-repl,vlaaad.reveal.nrepl/middleware]"
                  "--interactive"]}
 
-    :repl/cljs
-    {:extra-deps {org.clojure/clojurescript {:mvn/version "1.10.339"}
-                  cider/piggieback {:mvn/version "0.5.3"}}
-     :main-opts ["-m" "nrepl.cmdline"
-                 "--middleware" "[cider.piggieback/wrap-cljs-repl]"
-                 "--interactive"]}
+    :dev/extras
+    {:extra-deps {org.clojure/test.check {:mvn/version "1.1.1"}
+                  criterium/criterium {:mvn/version "RELEASE"}}}
 
-    ;; :repl/refactor
-    ;; {:extra-deps {refactor-nrepl/refactor-nrepl {:mvn/version "3.9.0"}}
-    ;;  :main-opts ["--middleware" "[refactor-nrepl.middleware/wrap-refactor]"]}
-
-    :repl/reveal ;; https://vlaaad.github.io/reveal/setup#clj--nrepl-middleware
-    {:extra-deps {vlaaad/reveal {:mvn/version "1.3.280"}}
-     ;; optional: preferences
-     ;; :jvm-opts ["-Dvlaaad.reveal.prefs={:theme,:light}"]
-     :main-opts ["-m" "nrepl.cmdline"
-                 "--middleware" "[vlaaad.reveal.nrepl/middleware]"
-                 "--interactive"]}}
+    ;; to run clj-kondo as ad-hoc command line dependency, with tools.deps
+    ;; cf. https://github.com/clj-kondo/clj-kondo/blob/master/doc/jvm.md#toolsdepsalpha
+    ;; :clj-kondo  {:replace-deps {clj-kondo/clj-kondo {:mvn/version "RELEASE"}}
+    ;;              :main-opts ["-m" "clj-kondo.main"]}
+    }}
 #+end_src
+
+** Add offline documentation browsing
+As far as possible, I like to have software documentation available a
+keystroke away. While Clojure documentation is available in-Emacs, thanks
+to clojure-lsp, one needs docs for other things like databases or package
+managers or docker and so forth; things that we use while writing Clojure
+apps. The awesome [[https://kapeli.com/dash][Dash]] for Mac OS project inspired the [[https://zealdocs.org/][Zealdocs]] project
+for Linux (which is what I use).
+
+Nifty little ~zeal-at-point~ helps integrate Zeal into my dev workflow.
+#+begin_src elisp
+(use-package zeal-at-point
+  ;; ref: https://github.com/jinzhu/zeal-at-point
+  :bind (:map global-map
+              ("\C-c z" . 'zeal-at-point)))
+#+end_src
+
 
 * Bonus demos and references
 
