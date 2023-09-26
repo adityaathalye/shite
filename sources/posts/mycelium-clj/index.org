@@ -59,8 +59,8 @@ each with over a decade of experience running Clojure in production, had
 felt that "full stack" burn too. Oh the schadenfreude. Woe be the newcomer
 professional programmer. Pity the hapless absolute beginner.
 
-As much as I dislike how confusing it has been, I am telling myself it is
-a sign that the ecosystem bigger and more diverse than most people believe.
+As much as I dislike how confusing it has been, I tell myself it is a sign
+that the Clojure ecosystem is bigger and more diverse than most people believe.
 I am optimistic that much of the gallimaufry can be tamed with good curated
 documentation and tools, which people seem to be interested in (e.g the
 [[https://www.clojuriststogether.org/news/july-and-august-2023-long-term-project-updates/][recent Clojurists Together "long term funding" round]] heavily features
@@ -70,7 +70,7 @@ tools" situation will improve in the coming years.
 What is not on that list is a Rails clone as a "killer app". The idea pops
 up regularly in this line of discussion. Personal tastes notwithstanding,
 I think frameworks are at odds with the emergent architecture of Clojureland
-itself, which falls out of the fact that embraces functional composition
+itself, which derives from the fact that Clojure embraces functional composition
 /with/ à la carte polymorphism. The Expression Problem solved. Not objects,
 but also not pure functions alone. Both. Properties of both together engender
 dynamic networks with open-ended participation.
@@ -84,9 +84,9 @@ ecosystem creativity. That's a /lot/ of change to track!
 
 Which brings us back to the problem of mechanical knowledge graphs.
 
-Analogous to the dependency graph resolving core of Clojure cli, a
-*mycelium-clj* will dynamically construct ecosystem pathways and graphs
-that you and I can traverse and query as human beings.
+Analogous to Clojure cli's core dependency graph resolver, a *mycelium-clj*
+will dynamically construct ecosystem pathways and graphs that you and I
+can traverse and query as human beings.
 - Start at (almost) nothing, and it will show you what's out there and
   reveal the interconnections.
 - It will source information from disparate sources and make them available
@@ -123,7 +123,8 @@ As well as other fanciful stuff on those lines...
 
 A man can dream, no?
 
-#+caption: [[https://xkcd.com/2044/][xkcd 2044]]: "Sandboxing Cycle". Or, the karmic wheel of unbundling and bundling.
+#+caption: [[https://xkcd.com/2044/][xkcd 2044]]: "Sandboxing Cycle".
+#+caption: Or, the karmic wheel of unbundling and bundling.
 #+ATTR_HTML: :width 100%
 [[file:https://imgs.xkcd.com/comics/sandboxing_cycle.png]]
 
