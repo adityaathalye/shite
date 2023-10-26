@@ -231,7 +231,7 @@ shite_templating_publish_sources() {
                     # Handy trick to modify templates, without having to restart
                     # our process each time we change template functions.
                     if [[ ${SHITE_DEBUG_TEMPLATES} == "debug" ]]
-                    then source "${watch_dir}/bin/templates.sh"
+                    then source "$(pwd)/bin/templates.sh"
                     fi
 
                     # Idempotent. Make the slug's root directory IFF it does not exist.

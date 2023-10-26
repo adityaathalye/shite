@@ -23,10 +23,10 @@
     __ensure_deps "xdotool" "xdg-open"
 
     # Cue shite for everyday local editing and publishing
-    base_dir="$(pwd)"
-    SHITE_BUILD=${1:-"hot"} # or "full"
-    base_url=${2:-"file://${base_dir}/public"}
-    browser_name=${3:-"Mozilla Firefox"}
+    base_dir="$(realpath -e ${1:?'Fail. Source directory must be specified.'})"
+    SHITE_BUILD=${2:-"hot"} # or "full"
+    base_url=${3:-"file://${base_dir}/public"}
+    browser_name=${4:-"Mozilla Firefox"}
     SHITE_DEBUG_TEMPLATES="debug"
 
     # Set globally-relevant information that we inject into components,
@@ -66,7 +66,7 @@
             tee "${base_dir}/eventsource_published.txt" &
 
         # Generate events to feed into build pipeline
-        shite_events_source "${base_dir}/sources" "MODIFY" \
+        shite_events_source "${base_dir}" "sources" "MODIFY" \
                             > "${eventsource}"
 
         __log_info "About to rebuild content."

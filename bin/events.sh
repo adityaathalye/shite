@@ -37,7 +37,7 @@ __shite_events_detect_changes() {
 }
 
 __shite_events_gen_csv() {
-    local base_dir="$(realpath -e ${1:-$(pwd)})"
+    local base_dir="$(realpath -e ${1:?'Fail. Please specify a directory to generate events for.'})"
     # Given a raw stream of file events, emit a rich CSV record of event info,
     # having fields:
     #
@@ -105,13 +105,14 @@ __shite_events_drop_public_noisy_events() {
 
 shite_events_source() {
     # UNIX_EPOCH_SECONDS,EVENT_TYPE,WATCHED_DIR,FILE_NAME
-    local dir_path=${1:?"Fail. Please specify a directory to generate events for."}
-    local event_name=${2:-'MODIFY'}
-    find "${dir_path}" \
+    local base_dir=${1:?"Fail. Please specify a directory to generate events for."}
+    local sub_dir=${2:-"sources"}
+    local event_name=${3:-'MODIFY'}
+    find "${base_dir}/${sub_dir}" \
          -depth -type f \
          -printf "%Ts,${event_name},%h/,%f\n" |
         __shite_events_select_filetypes |
-        __shite_events_gen_csv
+        __shite_events_gen_csv "${base_dir}"
 }
 
 shite_events_stream() {
