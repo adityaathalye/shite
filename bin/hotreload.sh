@@ -181,7 +181,7 @@ shite_hot_watch_file_events() {
 }
 
 shite_hot_build() {
-    local base_url=${1:?"Fail. We expect a base URL like `file://`"}
+    local base_url=${1:?"Fail. We expect a base URL like 'file://'"}
 
     # React to source events and CRUD public files
     shite_templating_publish_sources ${base_url} > /dev/null
@@ -197,19 +197,19 @@ shite_hot_build_reload() {
     # Maybe improve with getopts later
     local watch_dir=${1:?"Fail. Please specify a directory to watch"}
     local browser_name=${2:?"Fail. We expect a browser name like \"Mozilla Firefox\"."}
-    local base_url=${3:?"Fail. We expect a base URL like `file://`"}
+    local base_url=${3:?"Fail. We expect a base URL like 'file://'"}
 
     # LOOKUP WINDOW ID
-    local window_id=$(xdotool search --onlyvisible --name ".*${browser_name}$")
+    local window_id
+    window_id=$(xdotool search --onlyvisible --name ".*${browser_name}$")
 
-    __log_info $(printf "%s" "Hotreloadin' your shite now! " \
+    __log_info "$(printf "%s" "Hotreloadin' your shite now! " \
                         "'{" \
                         "\"watch_dir\": \"$(realpath ${watch_dir})\", "\
-                        "\"tab_name\": \"${tab_name}\", " \
                         "\"browser_name\": \"${browser_name}\", " \
                         "\"base_url\": \"${base_url}\", " \
                         "\"window_id\": \"${window_id}\"" \
-                        "}'")
+                        "}'")"
 
     # RUN PIPELINE
     shite_hot_watch_file_events ${watch_dir} |

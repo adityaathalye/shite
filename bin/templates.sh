@@ -203,7 +203,8 @@ __shite_template_posts_article_toc_items() {
 }
 
 __shite_template_posts_article_prepend_toc() {
-    local temp_shite_post_body="$(mktemp --tmpdir=$(pwd) 'shite_post_body_tmp.XXXXXXXXXX')"
+    local temp_shite_post_body
+    temp_shite_post_body="$(mktemp --tmpdir=$(pwd) 'shite_post_body_tmp.XXXXXXXXXX')"
     trap "rm -f ${temp_shite_post_body}" 0 HUP TERM PIPE INT
 
     cat - > "${temp_shite_post_body}"

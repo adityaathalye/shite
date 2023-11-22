@@ -70,8 +70,7 @@
                             > "${eventsource}"
 
         __log_info "About to rebuild content."
-        cat ${eventsource} |
-            stdbuf -oL grep -v -E "rootindex|blogindex$" |
+        stdbuf -oL grep -v -E "rootindex|blogindex$" "${eventsource}" |
             shite_hot_build "${base_url}" > /dev/null
         __log_info "Content rebuilt."
 
@@ -80,8 +79,7 @@
         __log_info "Posts index CSV rebuilt."
 
         __log_info "About to rebuild index pages."
-        cat ${eventsource} |
-            stdbuf -oL grep -E "rootindex|blogindex$" |
+        stdbuf -oL grep -E "rootindex|blogindex$" "${eventsource}" |
             shite_hot_build "${base_url}" > /dev/null
         __log_info "Index pages rebuilt."
 

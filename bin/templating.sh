@@ -203,7 +203,8 @@ shite_templating_publish_sources() {
             # transform content url_slug -to-> html file name
             local html_url_slug="${url_slug%\.*}.html"
             # transform content url_slug -to-> directory root for the html content
-            local url_slug_root="$(dirname ${url_slug})"
+            local url_slug_root
+            url_slug_root="$(dirname ${url_slug})"
 
             __shite_templating_set_page_data \
                 "${watch_dir}/sources/${url_slug}" \

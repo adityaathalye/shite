@@ -5,11 +5,11 @@
 
 __to_stderr() {
     # Ref: I/O Redirection: http://tldp.org/LDP/abs/html/io-redirection.html
-    1>&2 printf "%s\n" "$(date --iso-8601=seconds) $@"
+    1>&2 printf "%s %s\n" "$(date --iso-8601=seconds)" "$@"
 }
 
 __log_info() {
-    __to_stderr "$(echo "INFO $0 $@")"
+    __to_stderr "$(printf "%s %s\n" "INFO $0" "$@")"
 }
 
 __tap_stream() {
@@ -37,7 +37,7 @@ __ensure_min_bash_version() {
     local semver="${1:-4.0.0}"
     local bashver="${BASH_VERSINFO[0]}.${BASH_VERSINFO[1]}.${BASH_VERSINFO[2]}"
 
-    [[ $(printf "%s\n" ${semver} ${bashver} | sort -V | head -1) == ${semver} ]]
+    [[ $(printf "%s\n" ${semver} ${bashver} | sort -V | head -1) == "${semver}" ]]
 }
 
 __html_escape() {

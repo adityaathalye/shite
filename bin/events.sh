@@ -20,11 +20,13 @@ __shite_events_detect_changes() {
     # UNIX_EPOCH_SECONDS,EVENT_TYPE,WATCHED_DIR,FILE_NAME
     #
     # Downstream, we massage this CSV into shite's canonical CSV record.
-    local watch_dir="$(realpath -e ${1:-$(pwd)})"
+    local watch_dir
+    watch_dir="$(realpath -e ${1:-$(pwd)})"
     local watch_events=${2}
     local indefinite=0 # seconds
     local one_time=10 #seconds
-    local seconds=$([[ ${SHITE_BUILD} == "full" ]] && printf ${one_time} || printf ${indefinite})
+    local seconds
+    seconds=$([[ ${SHITE_BUILD} == "full" ]] && printf "%s" "${one_time}" || printf "%s" "${indefinite}")
     # WATCH A DIRECTORY
     inotifywait -m --timeout ${seconds} -r --exclude '/\.git/|/\.#|/#|.*(swp|swx|\~)$' \
                 --timefmt "%s" \
@@ -37,7 +39,8 @@ __shite_events_detect_changes() {
 }
 
 __shite_events_gen_csv() {
-    local base_dir="$(realpath -e ${1:?'Fail. Please specify a directory to generate events for.'})"
+    local base_dir
+    base_dir="$(realpath -e ${1:?'Fail. Please specify a directory to generate events for.'})"
     # Given a raw stream of file events, emit a rich CSV record of event info,
     # having fields:
     #
